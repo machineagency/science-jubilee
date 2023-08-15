@@ -3,8 +3,8 @@ import numpy as np
 from dataclasses import dataclass
 from typing import Dict, Tuple
 
-from labware.Utils import json2dict
-from labware.Labware import Labware
+from labware.utils import json2dict
+from labware.labware import Labware
 
 
 @dataclass
@@ -82,7 +82,7 @@ class Deck(SlotSet):
         else:
             pass
         
-    def load_labware(self, labware_filename, slot, path = '../Labware/LabwareDefinition/'):
+    def load_labware(self, labware_filename, slot, path = '../labware/LabwareDefinition/'):
         # get slot offset
         lab_file= json2dict(labware_filename, path )
         labware  = Labware(lab_file)

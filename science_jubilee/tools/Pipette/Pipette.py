@@ -1,7 +1,7 @@
 # from Platform.Jubilee_controller import JubileeMotionController
 from Tool import Tool, ToolStateError, ToolConfigurationError
-from labware.Utils import json2dict
-from labware.Labware import Well
+from labware.utils import json2dict
+from labware.labware import Well
 from typing import List, Dict, Tuple
 
 import logging
@@ -130,6 +130,7 @@ class Pipette(Tool):
         self._machine.move_to(x=x, y=y, z=z)
         self._dispense(vol, s=s)
 
+
     def transfer(self, vol: float, s:int = 200, source_well :Well = None,
                  destination_well :Well = None, blowout= None):
         
@@ -146,9 +147,13 @@ class Pipette(Tool):
         #     z = top + from_top
 
         vol = self.vol2move(vol)
-        self._machine.move_to(x= xs, y=ys, z=zs+5) # should not be hardcoded
+        self._machine.safe_z_movement()
+        self._machine.move_to(x= xs, y=ys)
+        self._machine.move_to(z =zs+5)
         self._aspirate(vol, s=s)
-        self._machine.move_to(x=xd, y=yd, z=zd+5)
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=xd, y=yd)
+        self._machine.move_to(z=zd+5)
         self._dispense(vol, s=s)
         if blowout is not None:
             self.blowout()

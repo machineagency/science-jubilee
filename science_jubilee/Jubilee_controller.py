@@ -7,11 +7,11 @@ import requests # for issuing commands
 import json
 import time
 # import curses
-import pprint
+# import pprint
 #from inpromptu import Inpromptu, cli_method
 from functools import wraps
-from labware.Labware import Labware
-from decks.Deck import Deck
+from labware.utils import json2dict
+from decks.deck import Deck
 #TODO: Figure out how to print error messages from the Duet.
 
 class MachineStateError(Exception):
@@ -63,7 +63,7 @@ class JubileeMotionController():
         self.connect()
         if reset:
             self.reset() # also does a reconnect.
-        self._set_absolute_positioning(force=True)
+        self._set_absolute_positioning()#force=True)
 
     def connect(self):
         """Connect to Jubilee over http."""
@@ -74,7 +74,8 @@ class JubileeMotionController():
             print(f"Connecting to {self.address} ...")
         try:
             # "Ping" the machine by updating the only cacheable information we care about.
-            self.axes_homed = json.loads(self.gcode("M409 K\"move.axes[].homed\"", timeout=1))["result"][:4]
+            response = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
+            self.axes_homed = response
 
             # These data members are tied to @properties of the same name
             # without the '_' prefix.
@@ -86,20 +87,53 @@ class JubileeMotionController():
 
             # To save time upon connecting, let's just hit the API on the
             # first try for all the @properties we care about.
-            self.configured_axes
-            self.active_tool_index
-            self.tool_z_offsets
-            self.axis_limits
+            # self.configured_axes
+            # self.active_tool_index
+            # self.tool_z_offsets
+            # self.axis_limits
             #pprint.pprint(json.loads(requests.get("http://127.0.0.1/machine/status").text))
             # TODO: recover absolute/relative from object model instead of enforcing it here.
-            self._set_absolute_positioning(force=True)
+            self._set_absolute_positioning()
         except json.decoder.JSONDecodeError as e:
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError("Connection timed out. URL may be invalid, or machine may not be connected to the network.") from e
         if self.debug:
             print("Connected.")
+
+    # @property
+    # def configured_axes(self):
+    #     """Return the configured axes of the machine."""
+    #     if self._configured_axes is None: # Starting from a fresh connection
+    #         try:
+    #             response = json.loads(self.gcode('M409 K"move.axes[]"'))["result"]
+    #             self._configured_axes = []
+    #             for axis in response:
+    #                 self._configured_axes.append(axis['letter'])
+    #         except ValueError as e:
+    #             print("Error occurred trying to read axis limits on each axis!")
+    #             raise e
+        
+    #     # Return the cached value.
+    #     return self._configured_axes
     
+    # @property
+    # def configured_tools(self):
+    #     """Return the configured tools."""
+    #     if self._configured_tools is None: # Starting from a fresh connection
+    #         try:
+    #             response = json.loads(self.gcode('M409 K"tools[]"'))["result"]
+    #             self._configured_tools = {}
+    #             for tool in response:
+    #                 self._configured_tools[tool['number']] = tool['name']
+    #         except ValueError as e:
+    #             print("Error occurred trying to read axis limits on each axis!")
+    #             raise e
+        
+    #     # Return the cached value.
+    #     return self._configured_tools
+
+
     def gcode(self, cmd: str = "", response_wait: float = 10):
         """Send a GCode cmd; return the response"""
         if self.debug or self.simulated:
@@ -121,7 +155,7 @@ class JubileeMotionController():
                 response = None
                 break
             time.sleep(0.02)
-        
+
         if self.debug:
             print(f"received: {response}")
             #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
@@ -188,7 +222,7 @@ class JubileeMotionController():
         if self.active_tool_index != -1:
             self.park_tool()
         self.gcode("G28")
-        self._set_absolute_moves(force=True)
+        self._set_absolute_moves()
         # Update homing state. Do not query the object model because of race condition.
         self.axes_homed = [True, True, True, True] # X, Y, Z, U
         
@@ -202,7 +236,7 @@ class JubileeMotionController():
         self.gcode("G28 Y")
         self.gcode("G28 X")
         self.gcode("G28 U")
-        self._set_absolute_positioning(force=True)
+        self._set_absolute_positioning()
         # Update homing state. Pull Z from the object model which will not create a race condition.
         z_home_status = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][2]
         self.axes_homed = [True, True, z_home_status, True]
@@ -236,7 +270,7 @@ class JubileeMotionController():
             self.gcode("G28 Z")
         else:
             print('The deck needs to be empty of all labware before proceeding.')
-        self._set_absolute_positioning(force=True)
+        self._set_absolute_positioning()
 
     def home_e(self):
         """
@@ -283,7 +317,7 @@ class JubileeMotionController():
         s = "{0:.2f}".format(s)
 
         # initialize coordinates commands
-        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = ''
+        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = param_cmd = ''
         
         if x is not None:
             x_cmd = f'X{x}'
@@ -306,7 +340,7 @@ class JubileeMotionController():
             self.gcode(f"M400")
 
     def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None,
-                 v: float = None, s: float = 6000, param: str =None, force: bool = True, wait: bool = False):
+                 v: float = None, s: float = 6000, param: str =None, wait: bool = False):
         """Move to an absolute X/Y/Z/E/V position.
 
         Parameters
@@ -325,13 +359,13 @@ class JubileeMotionController():
 
         """
         self._set_absolute_positioning()
-        if force:
-            self._set_absolute_extrusion()
+        # if force:
+        #     self._set_absolute_extrusion()
         
-        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param=param, wait=wait, force=force)
+        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param=param, wait=wait)
 
     def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None,
-              dv: float = None, s: float = 6000,  param: str =None,  force: bool = True, wait: bool = False):
+              dv: float = None, s: float = 6000,  param: str =None, wait: bool = False):
         """Move relative to the current position
 
         Parameters
@@ -350,11 +384,18 @@ class JubileeMotionController():
 
         """
         self._set_relative_positioning()
-        if force:
-            self._set_relative_extrusion()
+        # if force:
+        #     self._set_relative_extrusion()
         
-        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param=param, wait=wait, force=force)
+        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param=param, wait=wait)
 
+    def safe_z_movement(self):
+        current_z = self._machine.get_position()['Z']
+        safe_z = self._machine.deck.safe_z
+        if float(current_z) < safe_z :
+            self._machine.move_to(z = safe_z + 5)
+        else:
+            pass
 
     def dwell(self, t: float, millis: bool =True):
         """Pause the machine for a period of time.
@@ -416,9 +457,9 @@ class JubileeMotionController():
                 # On HTTP Interface, we get a string instead of the tool index.
                 elif response.startswith('Tool'):
                     # Recover from the string: 'Tool X is selected.'
-                    self._active_tool_index = int(response.split()[1])
+                    self.active_tool_index = int(response.split()[1])
                 else:
-                    self._active_tool_index = int(response)
+                    self.active_tool_index = int(response)
             except ValueError as e:
                 #print("Error occurred trying to read current tool!")
                 raise e
@@ -431,7 +472,7 @@ class JubileeMotionController():
         # Starting from fresh connection, query from the Duet.
         if self._tool_z_offsets is None:
             try:
-                response = json.loads(self.gcode("M409 K\"tools\""))["result"]
+                response = json.loads(self.gcode('M409 K"tools"'))["result"]
                 #pprint.pprint(response)
                 self._tool_z_offsets = [] # Create a fresh list.
                 for tool_data in response:
@@ -480,9 +521,12 @@ class JubileeMotionController():
         # Return the cached value.
         return self._axis_limits     
 
-    def load_deck(self, deck_config: str):
+    def load_deck(self, deck_filename: str, path :str = './decks/DeckDefinition/'):
         # do thing
-        self.deck = deck                        
+        deck_config = json2dict(deck_filename, path)
+        deck =  Deck(deck_config)
+        self.deck = deck
+        return deck                        
         
     # ***************MACROS***************
     def tool_lock(self):
