@@ -10,10 +10,6 @@ from labware.Labware import Labware
 @dataclass
 class Slot:
     slot_index : int
-    UL: Tuple[float]
-    UR: Tuple[float]
-    BL: Tuple[float]
-    BR: Tuple[float]
     offset: Tuple[float]
     has_labware : bool
     labware : str
@@ -82,7 +78,7 @@ class Deck(SlotSet):
         else:
             pass
         
-    def load_labware(self, labware_filename, slot, path = '../labware/LabwareDefinition/'):
+    def load_labware(self, labware_filename, slot, path = '../labware/labware_definition/'):
         # get slot offset
         lab_file= json2dict(labware_filename, path )
         labware  = Labware(lab_file)

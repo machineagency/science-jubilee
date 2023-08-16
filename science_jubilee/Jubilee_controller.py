@@ -351,7 +351,7 @@ class JubileeMotionController():
         if param is not None:
             param_cmd = param
         
-        cmd = f"G0 {z_cmd} {x_cmd} {y_cmd} {e_cmd} {v_cmd} {f_cmd} {param_cmd}"
+        cmd = f"G0 {x_cmd} {y_cmd} {z_cmd} {e_cmd} {v_cmd} {f_cmd} {param_cmd}"
         self.gcode(cmd)
         if wait:
             self.gcode(f"M400")
@@ -538,7 +538,7 @@ class JubileeMotionController():
         # Return the cached value.
         return self._axis_limits     
 
-    def load_deck(self, deck_filename: str, path :str = './decks/DeckDefinition/'):
+    def load_deck(self, deck_filename: str, path :str = './decks/deck_definition/'):
         # do thing
         deck_config = json2dict(deck_filename, path)
         deck =  Deck(deck_config)

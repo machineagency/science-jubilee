@@ -1,0 +1,160 @@
+{
+    "bedType": "Lab Automation Plate",
+    "deckSlots": {
+        "total": 6,
+        "type": "SLAS Standard Labware"
+    },
+    "slots": {
+        "0": {
+            "UL": [
+                13.8,
+                93
+            ],
+            "UR": [
+                144.4,
+                93.3
+            ],
+            "BL": [
+                13.8,
+                5
+            ],
+            "BR": [
+                143.4,
+                5.1
+            ],
+            "offset": [
+                13.8,
+                5
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "1": {
+            "UL": [
+                153.7,
+                92.4
+            ],
+            "UR": [
+                283.1,
+                92
+            ],
+            "BL": [
+                153.5,
+                5.4
+            ],
+            "BR": [
+                282.5,
+                4.8
+            ],
+            "offset": [
+                153.5,
+                5.4
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "2": {
+            "UL": [
+                14.3,
+                191
+            ],
+            "UR": [
+                143.8,
+                190
+            ],
+            "BL": [
+                14,
+                103.3
+            ],
+            "BR": [
+                143.2,
+                102.3
+            ],
+            "offset": [
+                14,
+                103.3
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "3": {
+            "UL": [
+                154.3,
+                189.7
+            ],
+            "UR": [
+                283.3,
+                189.4
+            ],
+            "BL": [
+                153.8,
+                102.4
+            ],
+            "BR": [
+                283.3,
+                102
+            ],
+            "offset": [
+                153.8,
+                102.4
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "4": {
+            "UL": [
+                14.3,
+                287.2
+            ],
+            "UR": [
+                144.5,
+                287.2
+            ],
+            "BL": [
+                14.3,
+                199.6
+            ],
+            "BR": [
+                22.5,
+                199.6
+            ],
+            "offset": [
+                14.3,
+                199.6
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "5": {
+            "UL": [
+                154.3,
+                287.4
+            ],
+            "UR": [
+                283.5,
+                286.4
+            ],
+            "BL": [
+                154.2,
+                199.7
+            ],
+            "BR": [
+                283.5,
+                199.4
+            ],
+            "offset": [
+                154.2,
+                199.7
+            ],
+            "has_labware": false,
+            "labware": null
+        }
+    },
+    "offsetFrom": {
+        "corner": "Upper Right"
+    },
+    "material": {
+        "plate": "aluminum",
+        "mask": "Delrin"
+    }
+}
