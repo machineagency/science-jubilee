@@ -1,197 +1,254 @@
-from .Tool import Tool, ToolStateError, ToolConfigurationError
-import os
-import json
+# from Platform.Jubilee_controller import JubileeMotionController
+from Tool import Tool, ToolStateError, ToolConfigurationError
+from labware.Utils import json2dict
+from labware.Labware import Labware, Well
+from typing import List, Dict, Tuple
+
+import logging
+logger = logging.getLogger(__name__)
 
 class Pipette(Tool):
-    """Control an OpenTrons Pipette"""
-    def __init__(self, machine, index, name, details):
-        """Set default values and load in pipette configuration."""
-        super().__init__(machine, index, name, details)
+
+    def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
+                  min_volume, zero_position, blowout_position, has_tip,
+                  drop_tip_position, mmToVol):
+        super().__init__(machine , index, name, tiprack, brand=brand, model= model,
+                         max_volume = max_volume, min_volume= min_volume,
+                         zero_position= zero_position,
+                         blowout_position=blowout_position, has_tip = has_tip,
+                         drop_tip_position= drop_tip_position, mmToVol= mmToVol)
+        self.is_active_tool = False
         
-        self.has_tip = False
-        self.min_range = 0
-        self.max_range = None
-        self.eject_start = None
-        self.mm_to_ul = None
-        self.available_tips = None
-        
-        self.load_config(details)
-        
-    def load_config(self, details):
-        """Load the relevant configuration file for this pipette."""
-        if not details:
-            raise ToolConfigurationError("Error: Specify the pipette model in your tool_types.json file")
+    @classmethod
+    def from_config(cls, machine, index, name, config_file: str, tiprack: Labware = None):
+        kwargs = json2dict(config_file)
+        return cls(machine=machine, index=index, name=name, tiprack= tiprack,  **kwargs)
+
+    def vol2move(self, vol):
+        #Function that converts uL to movement
+        """
+        Converts desired uL to movement on v-axis
+
+        ---------Parameters---------
+
+        vol: float
+            The desired amount of liquid expressed in uL
+
+        ---------Returns----------
+
+        v: float
+           The corresponding v-axix movement for the desired volume of liquid
+
+        """
+        dv = vol / self.mmToVol
+        v = self.zero_position - dv
+
+        return v
+    @staticmethod
+    def _getxyz(well: Well = None, location: Tuple[float] = None):
+        if well is not None and location is not None:
+            raise ValueError("Specify only one of Well or x,y,z location")
+        elif well is not None:
+            x, y, z = well.x, well.y, well.z
         else:
-            config_path = os.path.join(self.get_root_dir(), f'config/tools/{self._details}.json')
-            if not os.path.isfile(config_path):
-                raise ToolConfigurationError(f"Error: Config file {self._details}.json does not exist!")
-                
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            try:
-                self.max_range = config['max_range']
-                self.eject_start = config['eject_start']
-                self.mm_to_ul = config['mm_to_ul'] 
-            except:
-                raise ToolConfigurationError("Error: Problem with provided configuration file.")
-        
-        # Check that all information was provided
-        if None in [self.max_range, self.eject_start, self.mm_to_ul]:
-            raise ToolConfigurationError("Error: Not enough information provided in configuration file.")
-                
-    def check_bounds(self, pos):
-        """Disallow commands outside of the pipette's configured range"""
-        if pos > self.max_range or pos < self.min_range:
-            raise ToolStateError(f"Error: {pos} is out of bounds for the syringe!")
+            x, y, z = location
+        return x,y,z
     
-    def pickup_tip(self, tip_rack, position="A1"):
-        """Pick up a pipette tip."""
-        if self.has_tip:
+    @staticmethod
+    def _getTopBottom(well: Well = None):
+        top = well.top
+        bottom = well.bottom
+        return top, bottom
+    
+    def prime(self):
+        """
+        Moves the plunger to the low-point on the v-axis to prepare for further commands
+        This position should not engage the pipette tip plunger
+        """
+        self._machine.move_to(v=self.zero_position, s = 150, wait=True)
+        self.is_primed = True
+
+    def _aspirate(self, vol: float, s:int = 200):
+        """
+        """
+
+        v = self.vol2move(vol)
+        if self.is_primed == True:
+            self._machine.move_to(v= v, s=s )
+        else:
+            self.prime()
+            self._machine.move_to(v= v, s=s )
+
+    def aspirate(self, vol: float, s:int = 200, well: Well = None,
+                 from_bottom :float =10, from_top :float = None,
+                 location: Tuple[float] = None):
+       
+        x, y, z = self._getxyz(well=well, location=location)
+        
+        if well is not None:
+            top, bottom = self._getTopBottom(well=well)
+
+        if from_bottom is not None and well is not None:
+            z = bottom+ from_bottom
+        elif from_top is not None and well is not None:
+            z = top + from_top
+            pass
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y)
+        self._machine.move_to(z=z)
+        self._aspirate(vol, s=s)
+
+
+    def _dispense(self,vol: float, s:int = 200):
+        """
+        """
+        v = self.vol2move(vol)
+
+        current_v = float(self._machine.get_position()['V']) 
+        dv = current_v + v
+
+        ####  check that 4th item is v-axis position
+        if current_v < self.zero_position:
+            raise ToolStateError("Error: Pipette does not have anything to dispense")
+        elif dv <= self.zero_position:
+            raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated")    
+        self._machine.move_to(v= dv, s=s )
+
+    def dispense(self, vol: float, s:int = 200, well: Well = None,
+                 from_bottom :float =10, from_top :float = None,
+                 location: Tuple[float] = None):
+       
+        x, y, z = self._getxyz(well=well, location=location)
+        
+        if well is not None:
+            top, bottom = self._getTopBottom(well=well)
+
+        if from_bottom is not None and well is not None:
+            z = bottom+ from_bottom
+        elif from_top is not None and well is not None:
+            z = top + from_top
+            pass
+
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y)
+        self._machine.move_to(z=z)
+        self._dispense(vol, s=s)
+
+
+    def _transfer(self, vol: float, s:int = 200, source_well :Well = None,
+                 destination_well :Well = None, blowout= None, mix_before: tuple = None,
+                 mix_after: tuple = None):
+        
+        vol_ = self.vol2move(vol)
+        # get locations
+        xs, ys, zs = self._getxyz(well=source_well)
+
+        # saves some code if we make a list regardless    
+        if type(destination_well) != list:
+            destination_well = list(destination_well) 
+
+        if isinstance(destination_well, list):
+            for well in destination_well:
+                xd, yd, zd =self._getxyz(well=destination_well[well])
+
+                self._machine.safe_z_movement()
+                self._machine.move_to(x= xs, y=ys)
+                self._machine.move_to(z =zs+5)
+                self._aspirate(vol_, s=s)
+                
+                if mix_before:
+                    self.mix(mix_before[0], mix_before[1]) 
+                else:
+                    pass
+
+                self._machine.safe_z_movement()
+                self._machine.move_to(x=xd, y=yd)
+                self._machine.move_to(z=zd+5)
+                self._dispense(vol_, s=s)
+                
+                if mix_after:
+                    self.mix(mix_after[0], mix_after[1]) 
+                else:
+                    pass
+
+                if blowout is not None:
+                    self.blowout()
+                else:
+                    pass
+
+                # need to add new_tip option!
+
+
+    def blowout(self, well: Well = None,  s : int = 300):
+        """
+        """
+
+        if well is not None:
+            self._machine.move_to(z = well.top +5)
+        self._machine.move_to(v = self.blowout_postion, s=s)
+        self.prime()
+
+        return 
+    
+    def _pickup_tip(self, z):
+        """
+        """
+        if self.has_tip == False:
+            self._machine.move_to(z=z, param = 'H4')
+        else:
             raise ToolStateError("Error: Pipette already equipped with a tip.")
-            
-        # The first time we pickup a tip, start to keep track of available tips on the rack
-        # N.B. We assume the rack is full to start
+        
+
+    def pickup_tip(self, tiprack : Labware = None):
+        """
+        """
+        if self.tiprack is None and tiprack is not None:
+            self.tiprack = tiprack
+
         if self.available_tips is None:
-            self.available_tips = iter(tip_rack["wells"])
-        
-        well = next(self.available_tips)
-        tip_rack_slot = tip_rack['slot_index']
-        well_pos = self._machine.plate.get_well_position(tip_rack_slot, well)
-        self._machine.move_to(x=well_pos[0], y=well_pos[1])
-        
-        #ToDo: Implement pickup
-        self._machine.move_to(z=46)
-        self._machine.move_to(z=125)
-        self.aspirate_prime()
+            self.available_tips = iter(tiprack.wells)
+        well = self.tiprack[next(self.available_tips)]       
+        x, y, z = self._getxyz(well=well)
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y)
+        self._pickup_tip(z)
         self.has_tip = True
-            
-    def eject_tip(self):
-        """Eject attached pipette tip."""
-        # ToDo: only eject over sharps container/drop bed and move there automatically?
-        if not self.has_tip:
-            raise ToolStateError("Error: Pipette does not have tip to eject.")
-        
-        self._machine.move_to(z=125)
-        garbage_pos = self._machine.plate.sharps_container['origin']
-        self._machine.move_to(x=garbage_pos[0], y=garbage_pos[1])
-        self._machine.move_to(z=45)
-        self._machine.move_to(v=420) # todo: config file
-        self.aspirate_prime()
-        self._machine.move_to(z=125)
-        self.has_tip = False
-    
-    def aspirate(self, vol): 
-        """Aspirate a certain number of microliters."""
-        dv = vol* -1 * self.mm_to_ul
-        pos = self._machine.get_position()
-        end_pos = float(pos['V']) + dv
-        self.check_bounds(end_pos)
-        self._machine.move_to(v=end_pos)
-        
-    def dispense(self, vol): 
-        """Dispense a certain number of microliters."""
-        dv = vol * self.mm_to_ul
-        pos = self._machine.get_position()
-        end_pos = float(pos['V']) + dv
-        self.check_bounds(end_pos)
-        self._machine.move_to(v=end_pos)      
 
-    def aspirate_prime(self):
-        """Move to the bottom of the pipette's aspiration range."""
-        self._machine.move_to(v=self.eject_start)
+        # move the plate down( should be + z) for safe movement
+        self._machine.move_to(z= self._machine.deck.top_z + 5)
         
-    def transfer(self, volume, source, destination, mix_after = None):
-        """Transfer liquid from a source to destination well(s)"""
-        m = self._machine
-        plate = m.plate
-#         m.move_to(z=125) # move to a safe z
-        
-        # ToDo: Calibrate this more generally
-        safe_height = 70
-        aspirate_height = 47
-        dispense_height = 60
-        
-        # Our destination might be an individual well, or a dictionary of wells
-        if isinstance(destination, dict):
-            for well in destination:
-                well_position = destination[well]
-                # move in (x,y) to the source well
-                m.move_to(x=source[0], y=source[1])
-#               Aspirate
-#               ToDo: Calibrate this more generally
-                m.move_to(z=aspirate_height)
-                self.aspirate(volume)
-                m.move_to(z=safe_height)
-                m.move_to(x=well_position[0], y=well_position[1])
-                m.move_to(z=dispense_height)
-                self.dispense(volume)
-                self.blowout()
-                if mix_after is not None:
-                    number_of_mixes = mix_after[0]
-                    mix_volume = mix_after[1]
-                    m.move_to(z=aspirate_height)
-                    self.mix(number_of_mixes, mix_volume)
-                    m.move_to(z=dispense_height)
-                    self.blowout()
-                m.move_to(z=safe_height)
+
+    def _drop_tip(self):
+        """
+        Moves the plunger to eject the pipette tip
+
+        """
+        if self.has_tip == True:
+            self._machine.move_to(v= self.drop_tip_position, s= 150)
         else:
-            # move in (x,y) to the source well
-            m.move_to(x=source[0], y=source[1])
-#           Aspirate
-#           ToDo: Calibrate this more generally
-            m.move_to(z=aspirate_height)
-            self.aspirate(volume)
-            m.move_to(z=safe_height)
-            m.move_to(x=destination[0], y=destination[1])
-            m.move_to(z=dispense_height)
-            self.dispense(volume)
-            self.blowout()
-            if mix_after is not None:
-                    number_of_mixes = mix_after[0]
-                    mix_volume = mix_after[1]
-                    m.move_to(z=aspirate_height)
-                    self.mix(number_of_mixes, mix_volume)
-                    m.move_to(z=dispense_height)
-                    self.blowout()
-            m.move_to(z=safe_height)
+            raise ToolConfigurationError('Error: No pipette tip attached to drop')
 
         
-            
-    def mix(self, number_of_mixes, volume):
-        for i in range(number_of_mixes):
-            self.aspirate(volume)
-            self.dispense(volume)
-            
-    def blowout(self, volume = 30):
-        self.dispense(volume)
-        self.aspirate_prime()
-        
-    def air_gap(self, volume = 20):
-        # ToDo: move to height based on labware calibration
-        self._machine.move_to(z=60)
-        self.aspirate(volume)
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-      
+    def drop_tip(self, well: Well = None, location: Tuple[float] = None):
+        x, y, z = self._getxyz(well=well, location=location)
+
+        self._machine.safe_z_movement()
+        if x is not None or y is not None:
+            self._machine.move_to(x=x, y=y)
+        self._drop_tip()
+        self.prime()
+        self.has_tip = False
+
+        # logger.info(f"Dropped tip at {(x,y,z)}")
+
+    def mix(self, vol: float, n: int, s: int =150):
+        v = self.vol2mov(vol)
+        self._machine.move(z=-5) 
+        for i in range(0,n)
+            self.prime()
+            self._machine.move_to(v=v, s=s)
+
+        self.prime()
+
+    # def air_gap(self,vol):
+        # return

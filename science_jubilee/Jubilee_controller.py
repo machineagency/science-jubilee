@@ -10,13 +10,22 @@ import time
 # import pprint
 #from inpromptu import Inpromptu, cli_method
 from functools import wraps
-from labware.utils import json2dict
-from decks.deck import Deck
+from labware.Utils import json2dict
+from decks.Deck import Deck
+from tools.Tool import Tool
 #TODO: Figure out how to print error messages from the Duet.
 
-class MachineStateError(Exception):
-    """Raise this error if the machine is in the wrong state to perform such a command."""
+##########################################
+#               ERRORS
+##########################################
+class MachineConfigurationError(Exception):
+    """Raise this error if there is something wrong with how the machine is configured"""
     pass
+
+class MachineStateError(Exception):
+    """Raise this error if the machine is in the wrong state to perform the requested action."""
+    pass
+
 
 def machine_is_homed(func):
     def homing_check(self, *args, **kwds):
@@ -57,10 +66,13 @@ class JubileeMotionController():
         self._axis_limits = None # Cached value under the @property.
         self.axes_homed = [False]*4 # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
         self.deck = None
+        self.tools = {}
+
         if deck_config is not None:
             self.load_deck(deck_config)
 
         self.connect()
+
         if reset:
             self.reset() # also does a reconnect.
         self._set_absolute_positioning()#force=True)
@@ -393,7 +405,7 @@ class JubileeMotionController():
         current_z = self._machine.get_position()['Z']
         safe_z = self._machine.deck.safe_z
         if float(current_z) < safe_z :
-            self._machine.move_to(z = safe_z + 5)
+            self._machine.move_to(z = safe_z + 10)
         else:
             pass
 
@@ -424,14 +436,21 @@ class JubileeMotionController():
         positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
         return positions
 
-
-    def pickup_tool(self, tool_index: int):
+    def pickup_tool(self, tool_index: int = None, tool_name: str = None):
         """Pick up the tool specified by tool index."""
-        if tool_index < 0:
-            return
-        self.gcode(f"T{tool_index}")
-        # Update the cached value to prevent read delays.
-        self._active_tool_index = tool_index
+        if tool_index is not None:
+            if tool_index < 0:
+                return
+            self.gcode(f"T{tool_index}")
+            # Update the cached value to prevent read delays.
+            self._active_tool_index = tool_index
+        elif tool_name is not None:
+            if tool_name in self.tools.keys():
+                tool_idx = self.tools[tool_name]
+            else:
+                raise MachineConfigurationError("Error: tool name not recognized")
+        else:
+            raise MachineConfigurationError("Error: either tool index or tool name needs to be provided")
 
 
     def park_tool(self):
@@ -486,8 +505,15 @@ class JubileeMotionController():
 
     def get_position(self):
         """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
-        # I've changed this; todo: check it all works
-        resp = self.gcode("M114")  
+
+        max_tries = 25
+        for i in range(max_tries):
+            resp = self.gcode("M114")
+            if "Count" not in resp:
+                continue
+            else:
+                break
+
         positions = {}
         keyword = " Count " # this is the keyword hosts like e.g. pronterface search for to track position
         keyword_idx = resp.find(keyword)
@@ -521,12 +547,24 @@ class JubileeMotionController():
         # Return the cached value.
         return self._axis_limits     
 
-    def load_deck(self, deck_filename: str, path :str = './decks/DeckDefinition/'):
+    def load_deck(self, deck_filename: str, path :str = './decks/deck_definition/'):
         # do thing
         deck_config = json2dict(deck_filename, path)
         deck =  Deck(deck_config)
         self.deck = deck
         return deck                        
+    
+    def load_tool(self, tool: Tool = None):
+        name= tool.name
+        idx = tool.index
+        for k,v in self.tools.items():
+            if k == name:
+                raise MachineConfigurationError("Error: tool name already used by a different tool")
+            elif v ==idx:
+                raise MachineConfigurationError("Error: tool index already set for a different tool")
+            else:
+                self.tools[name]= idx
+
         
     # ***************MACROS***************
     def tool_lock(self):

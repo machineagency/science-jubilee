@@ -207,74 +207,15 @@ class Labware(WellSet):
                 w.offset = new_offset
         
     
-    def withWellOrder(self, order = 'rows') -> list:
+    def withWellOrder(self, order = 'cols') -> list:
 
         if order in ['rows', 'row', 'Rows', 'Row', 'R']:
             for row in self.row_data.values():
                 for well in row:
                     yield well
-        elif order in ['cols', 'C', 'columns', 'Columns']:
+        elif order in ['cols', 'col' ,'C', 'columns', 'Columns']:
             for col in self.column_data.values():
                 for well in col:
                     yield well
         else:
-            print('Order nee')
-# @dataclass
-# class Slot:
-#     slot_index : int
-#     UL: Tuple[float]
-#     UR: Tuple[float]
-#     BL: Tuple[float]
-#     BR: Tuple[float]
-#     offset: Tuple[float]
-#     has_labware : bool
-#     labware : str
-
-# @dataclass
-# class SlotSet:
-#     slots: Dict[str, Slot]
-#     def __repr__(self):
-#         return str(self.bedType)
-#     def __getitem__(self,id_):
-#         try:
-#             return self.slots[id_]
-#         except KeyError:
-#             return list(self.slots.values())[id_]
-
-
-# class Deck(SlotSet):
-#     def __init__(self, config):
-#         self.deck_config = config
-#         self.slots_data = self.deck_config.get('slots', {})
-#         self.slots = self._get_slots()
-    
-#     def _get_slots(self):
-#         slots = {}
-#         for s, sv in self.slots_data.items():
-#             if type(sv) == list:
-#                 sv= tuple(sv)
-#             else:
-#                 pass
-#             slots[s] = Slot(slot_index = s, **self.slots_data[s])#{k: tuple(v) for k, v in self.slots_data[s].items()})
-#         return slots
-        
-#     @property
-#     def bedType(self):
-#         return self.deck_config.get('bedType',"")
-#     @property
-#     def totalslots(self):
-#         deckslots= self.deck_config.get('deckSlots', {})
-#         return deckslots['total'] 
-
-#     @property
-#     def slotType(self):
-#         deckslots= self.deck_config.get('deckSlots', {})
-#         return deckslots['type'] 
-
-#     @property
-#     def offsetFrom(self):
-#         return self.deck_config.get('offsetFrom', {})
-    
-#     @property
-#     def deck_material(self):
-#         return self.deck_config.get('material', {})
+            print('Order needs to be either rows or columns')
