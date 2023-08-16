@@ -1,7 +1,7 @@
 # from Platform.Jubilee_controller import JubileeMotionController
 from Tool import Tool, ToolStateError, ToolConfigurationError
-from labware.utils import json2dict
-from labware.labware import Well
+from labware.Utils import json2dict
+from labware.Labware import Well
 from typing import List, Dict, Tuple
 
 import logging

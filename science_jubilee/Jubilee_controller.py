@@ -10,13 +10,21 @@ import time
 # import pprint
 #from inpromptu import Inpromptu, cli_method
 from functools import wraps
-from labware.utils import json2dict
+from labware.Utils import json2dict
 from decks.deck import Deck
-#TODO: Figure out how to print error messages from the Duet.
+from tools.Tool import Tool
+
+##########################################
+#               ERRORS
+##########################################
+class MachineConfigurationError(Exception):
+    """Raise this error if there is something wrong with how the machine is configured"""
+    pass
 
 class MachineStateError(Exception):
-    """Raise this error if the machine is in the wrong state to perform such a command."""
+    """Raise this error if the machine is in the wrong state to perform the requested action."""
     pass
+
 
 def machine_is_homed(func):
     def homing_check(self, *args, **kwds):
@@ -29,6 +37,14 @@ def machine_is_homed(func):
             raise MachineStateError("Error: machine must first be homed.")
         return func(self, *args, **kwds)
     return homing_check
+
+def requires_bed_plate(func):
+    """Check if a bed plate has been configured before performing certain actions."""
+    def deck_check(self, *args, **kwds):
+        if self.decke is None:
+            raise MachineStateError("Error: No bed plate is set up")
+        return func(self, *args, **kwds)
+    return deck_check
 
 
 class JubileeMotionController():
@@ -57,6 +73,7 @@ class JubileeMotionController():
         self._axis_limits = None # Cached value under the @property.
         self.axes_homed = [False]*4 # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
         self.deck = None
+        self.tools = {}
         if deck_config is not None:
             self.load_deck(deck_config)
 
@@ -528,6 +545,17 @@ class JubileeMotionController():
         self.deck = deck
         return deck                        
         
+    def load_tool(self, tool: Tool = None):
+        name= tool.name
+        idx = tool.index
+        for k,v in self.tools.items():
+            if k == name:
+                raise MachineConfigurationError("Error: tool name already used by a different tool")
+            elif v ==idx:
+                raise MachineConfigurationError("Error: tool index already set for a different tool")
+            else:
+                self.tools[name]= idx
+
     # ***************MACROS***************
     def tool_lock(self):
         """Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists."""
