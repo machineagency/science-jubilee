@@ -4,7 +4,7 @@
     "max_volume": 300,
     "min_volume": 20,
     "zero_position": 20,
-    "blowout_postion": 23.2,
+    "blowout_position": 23.2,
     "has_tip": false,
     "drop_tip_position": 28,
     "mmToVol": 18.7

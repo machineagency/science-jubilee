@@ -9,8 +9,8 @@ class ToolConfigurationError(Exception):
 class Tool:
     def __init__(self, machine, index, name, **kwargs):
         self._machine = machine
-        self._index = index
-        self._name = name
+        self.index = index
+        self.name = name
         for k,v in kwargs.items():
             setattr(self, k, v )
     

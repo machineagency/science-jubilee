@@ -1,5 +1,6 @@
 # from Platform.Jubilee_controller import JubileeMotionController
-from Tool import Tool, ToolStateError, ToolConfigurationError
+import os
+from .Tool import Tool, ToolStateError, ToolConfigurationError
 from labware.Utils import json2dict
 from labware.Labware import Labware, Well
 from typing import List, Dict, Tuple
@@ -12,16 +13,19 @@ class Pipette(Tool):
     def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, has_tip,
                   drop_tip_position, mmToVol):
-        super().__init__(machine , index, name, tiprack, brand=brand, model= model,
+        super().__init__(machine , index, name, tiprack=tiprack, brand=brand, model= model,
                          max_volume = max_volume, min_volume= min_volume,
                          zero_position= zero_position,
                          blowout_position=blowout_position, has_tip = has_tip,
                          drop_tip_position= drop_tip_position, mmToVol= mmToVol)
         self.is_active_tool = False
         
+
     @classmethod
-    def from_config(cls, machine, index, name, config_file: str, tiprack: Labware = None):
-        kwargs = json2dict(config_file)
+    def from_config(cls, machine, index, name, config_file: str,
+                    path :str = os.path.join(os.path.dirname(__file__), 'configs'),
+                    tiprack: Labware = None):
+        kwargs = json2dict(config_file, path = path)
         return cls(machine=machine, index=index, name=name, tiprack= tiprack,  **kwargs)
 
     def vol2move(self, vol):
@@ -87,6 +91,7 @@ class Pipette(Tool):
         
         if well is not None:
             top, bottom = self._getTopBottom(well=well)
+            self.current_well = well
 
         if from_bottom is not None and well is not None:
             z = bottom+ from_bottom
@@ -122,6 +127,7 @@ class Pipette(Tool):
         
         if well is not None:
             top, bottom = self._getTopBottom(well=well)
+            self.current_well = well
 
         if from_bottom is not None and well is not None:
             z = bottom+ from_bottom
@@ -135,9 +141,9 @@ class Pipette(Tool):
         self._dispense(vol, s=s)
 
 
-    def _transfer(self, vol: float, s:int = 200, source_well :Well = None,
+    def transfer(self, vol: float, s:int = 200, source_well :Well = None,
                  destination_well :Well = None, blowout= None, mix_before: tuple = None,
-                 mix_after: tuple = None):
+                 mix_after: tuple = None, new_tip : str = 'always'):
         
         vol_ = self.vol2move(vol)
         # get locations
@@ -150,10 +156,12 @@ class Pipette(Tool):
         if isinstance(destination_well, list):
             for well in destination_well:
                 xd, yd, zd =self._getxyz(well=destination_well[well])
-
+                
+                
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
                 self._machine.move_to(z =zs+5)
+                self.current_well = source_well
                 self._aspirate(vol_, s=s)
                 
                 if mix_before:
@@ -164,6 +172,7 @@ class Pipette(Tool):
                 self._machine.safe_z_movement()
                 self._machine.move_to(x=xd, y=yd)
                 self._machine.move_to(z=zd+5)
+                self.current_well = destination_well[well]
                 self._dispense(vol_, s=s)
                 
                 if mix_after:
@@ -175,21 +184,29 @@ class Pipette(Tool):
                     self.blowout()
                 else:
                     pass
+                # if new_tip == 'always':
 
                 # need to add new_tip option!
 
 
-    def blowout(self, well: Well = None,  s : int = 300):
+    def blowout(self,  s : int = 300):
         """
         """
 
-        if well is not None:
-            self._machine.move_to(z = well.top +5)
+        well = self._machine.current_well
+        self._machine.move_to(z = well.top +5)
         self._machine.move_to(v = self.blowout_postion, s=s)
         self.prime()
 
         return 
     
+    def air_gap(self, vol):
+        
+        dv = self.vol2move(vol)
+        well = self._machine.current_well
+        self._machine.move_to(z = well.top +5)
+        self._machine.move(v= -1*dv)
+
     def _pickup_tip(self, z):
         """
         """
@@ -199,6 +216,8 @@ class Pipette(Tool):
             raise ToolStateError("Error: Pipette already equipped with a tip.")
         
 
+
+
     def pickup_tip(self, tiprack : Labware = None):
         """
         """
@@ -207,12 +226,15 @@ class Pipette(Tool):
 
         if self.available_tips is None:
             self.available_tips = iter(tiprack.wells)
-        well = self.tiprack[next(self.available_tips)]       
-        x, y, z = self._getxyz(well=well)
+
+        tip = self.tiprack[next(self.available_tips)]
+
+        x, y, z = self._getxyz(well=tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
         self.has_tip = True
+        # self.update_tool_offset(tip) ### to do!
 
         # move the plate down( should be + z) for safe movement
         self._machine.move_to(z= self._machine.deck.top_z + 5)
@@ -243,8 +265,9 @@ class Pipette(Tool):
 
     def mix(self, vol: float, n: int, s: int =150):
         v = self.vol2mov(vol)
-        self._machine.move(z=-5) 
-        for i in range(0,n)
+        
+        self._machine.move(z= -5) 
+        for i in range(0,n):
             self.prime()
             self._machine.move_to(v=v, s=s)
 

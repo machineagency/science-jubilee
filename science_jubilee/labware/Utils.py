@@ -5,7 +5,7 @@ import os
 def json2dict(f, path =None):
     lab_def = {}
     if path:
-        file_path = path+f
+        file_path = os.path.join(path,f)
     else:
         file_path = f
     with open(file_path) as lab_file:
