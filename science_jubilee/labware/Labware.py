@@ -59,7 +59,7 @@ class Well:
 class WellSet:
     wells: Dict[str, Well]
     def __repr__(self):
-        return str(list(self.wells.keys()))
+        return str(list(f'{self.wells.keys()} on slot {self.slot}'))
     def __getitem__(self, id_):
         try:
             return self.wells[id_]
@@ -81,9 +81,14 @@ class Labware(WellSet):
         self.data['ordering'] = np.array(self.data['ordering']).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
         self.offset = offset
+        self.slot= None 
         
     def __repr__(self):
-        return 'Labware: '+ self.metadata()['displayName']
+
+        display = self.metadata()['displayCategory'] + ': ' + self.parameters()['loadName'] 
+        if self.slot is not None:
+            display = display + ' ' + f" on {self.slot}"
+        return display
 
     def _create_rows_and_columns(self):
         rows = {}
@@ -205,7 +210,9 @@ class Labware(WellSet):
         if new_offset is not None:
             for w in self:
                 w.offset = new_offset
-        
+    
+    def add_slot(self, slot_):
+        self.slot = slot_
     
     def withWellOrder(self, order = 'cols') -> list:
 

@@ -83,9 +83,11 @@ class Deck(SlotSet):
         # get slot offset
         lab_file= json2dict(labware_filename, path )
         labware  = Labware(lab_file)
+        labware.add_slot(slot)
         offset = self.slots[str(slot)].offset 
         
-        labware.offset = offset
+        labware.offset = offset      
+
         self.slots[str(slot)].has_labware = True
         self.slots[str(slot)].labware = labware
         self.safe_z = labware.dimensions['zDimension']

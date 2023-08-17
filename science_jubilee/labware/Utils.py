@@ -36,3 +36,26 @@ def dict2json(filename: str , dict: dict , path : str= None):
          pass
         
     return print('The JSON file was saved as *{}* in {}'. format(filename, path))
+
+class pipette_iterator():
+
+    def __init__(self, tiprack):
+        self.tiprack = tiprack
+        self.index = 0
+
+    def next(self):
+        try:
+            result = self.tiprack[self.index]
+            self.index += 1
+        except IndexError:
+            raise StopIteration
+        return result
+
+    def prev(self):
+        self.index -= 1
+        if self.index < 0:
+            raise StopIteration
+        return self.tiprack[self.index]
+
+    def __iter__(self):
+        return self

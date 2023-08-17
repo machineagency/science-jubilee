@@ -3,9 +3,8 @@
     "model": "P300 Gen 2",
     "max_volume": 300,
     "min_volume": 20,
-    "zero_position": 20,
-    "blowout_position": 23.2,
-    "has_tip": false,
-    "drop_tip_position": 28,
-    "mmToVol": 18.7
+    "zero_position": 310,
+    "blowout_position": 350,
+    "drop_tip_position": 425,
+    "volToMove": 1.10
 }

@@ -1,7 +1,4 @@
-#!/usr/bin/env python3
 """Driver for Controlling Jubilee"""
-
-"""Copied from Joshua Vasquez/sonication station with modifications to work on http api"""
 #import websocket # for reading the machine model
 import requests # for issuing commands
 import json
@@ -601,19 +598,25 @@ class Machine():
     def load_tool(self, tool: Tool = None):
         name= tool.name
         idx = tool.index
-        if name in self.tools:
+        if idx in self.tools:
             raise MachineConfigurationError("Error: tool name already used by a different tool")
         else:
             pass
 
-        if idx in set(self.tools.values()):
+        if name in set(self.tools.values()):
             raise MachineConfigurationError("Error: tool index already set for a different tool")
         else:
             pass
-        self.tools[name] = idx
+        self.tools[idx] = name
 
-                
+    def load_labware(self, labware_filename : str, slot: int, path : str = None ):
 
+        if path is not None:
+            labware = self.deck.load_labware(labware_filename, slot, path = path)
+        else:
+            labware = self.deck.load_labware(labware_filename, slot)         
+
+        return labware  
         
     # ***************MACROS***************
     def tool_lock(self):
