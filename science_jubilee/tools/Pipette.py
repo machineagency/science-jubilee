@@ -1,7 +1,7 @@
 # from Platform.Jubilee_controller import JubileeMotionController
 import os
 from .Tool import Tool, ToolStateError, ToolConfigurationError
-from labware.Utils import json2dict
+from labware.Utils import json2dict, pipette_iterator
 from labware.Labware import Labware, Well
 from typing import Tuple, Union
 
@@ -229,21 +229,23 @@ class Pipette(Tool):
         self._machine.gcode(f'M92 Z{new_z}')
         
 
-    # def add_tiprack(self, tiprack: Union[Labware, list]):
-
+    def add_tiprack(self, tiprack: Union[Labware, list]):
+        if isinstance(tiprack, list):
+            for rack in len(tiprack):
+                tips = []
+                for t in range(96):
+                    tips.append(rack[t])
+            
+            self.tiprack = pipette_iterator(tips)
+        else:
+            self.tiprack = pipette_iterator(tiprack)
+        
+        self.first_available_tip = next(self.tiprack)
 
 
     def pickup_tip(self, tip_ : Well = None):
         """
         """
-        # if self.tiprack is None and tiprack is not None:
-        #     self.tiprack = tiprack
-        # elif self.tiprack is None and tiprack is None:
-        #     raise ToolStateError ('Error: tiprack labware unknown. A tiprack can either be added here or ')
-
-        # if self.available_tips is None:
-        #     self.available_tips = iter(tiprack.wells)
-
         if tip is None:
             tip = self.first_available_tip
         else:
@@ -255,10 +257,10 @@ class Pipette(Tool):
         self._pickup_tip(z)
         self.has_tip = True
         self.update_z_offset(tip= True) ### to do!
-
+        self.first_available_tip =  self.tiprack.next()
         # move the plate down( should be + z) for safe movement
         self._machine.move_to(z= self._machine.deck.top_z + 5)
-        
+
 
     def _drop_tip(self):
         """
@@ -271,8 +273,14 @@ class Pipette(Tool):
             raise ToolConfigurationError('Error: No pipette tip attached to drop')
 
 
-    # def return_tip(self):
-
+    def return_tip(self):
+        x, y, z = self._getxyz(well=self.first_available_tip)
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y)
+        self._drop_tip()
+        self.prime()
+        self.has_tip = False
+        self.update_z_offset(tip=False)
 
 
     def drop_tip(self, well: Well = None, location: Tuple[float] = None):
@@ -285,6 +293,8 @@ class Pipette(Tool):
         self.prime()
         self.has_tip = False
         self.update_z_offset(tip=False)
+
+        self.first_available_tip = self.tiprack.next()
         # logger.info(f"Dropped tip at {(x,y,z)}")
 
     def mix(self, vol: float, n: int, s: int =1500):
