@@ -1,19 +1,21 @@
-#!/usr/bin/env python
-# coding: utf-8
+#!/usr/bin/env python3
+"""Driver for Controlling Jubilee"""
 
-import serial
-from serial.tools import list_ports
-import os
-import sys
+"""Copied from Joshua Vasquez/sonication station with modifications to work on http api"""
+#import websocket # for reading the machine model
+import requests # for issuing commands
 import json
-from pathlib import Path
-from enum import Enum
-import duckbot.tools
-import duckbot.plates
-
-def get_root_dir():
-    """Return the path to the duckbot directory."""
-    return Path(__file__).parent.parent
+import time
+import os
+# import curses
+# import pprint
+#from inpromptu import Inpromptu, cli_method
+from typing import Union
+from functools import wraps
+from labware.Utils import json2dict
+from decks.Deck import Deck
+from tools.Tool import Tool
+#TODO: Figure out how to print error messages from the Duet.
 
 ##########################################
 #               ERRORS
@@ -27,134 +29,111 @@ class MachineStateError(Exception):
     pass
 
 
-##########################################
-#               DECORATORS
-##########################################
-def machine_homed(func):
-    """Check if the machine is homed before performing certain actions."""
+def machine_is_homed(func):
     def homing_check(self, *args, **kwds):
         # Check the cached value if one exists.
-        if self.simulated:
-            return func(self, *args, **kwds)
         if self.axes_homed and all(self.axes_homed):
             return func(self, *args, **kwds)
         # Request homing status from the object model if not known.
-        self.axes_homed = json.loads(self.send('M409 K"move.axes[].homed"'))["result"]
+        self.axes_homed = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
         if not all(self.axes_homed):
             raise MachineStateError("Error: machine must first be homed.")
         return func(self, *args, **kwds)
     return homing_check
 
-def requires_bed_plate(func):
-    """Check if a bed plate has been configured before performing certain actions."""
-    def plate_check(self, *args, **kwds):
-        if self.plate is None:
-            raise MachineStateError("Error: No bed plate is set up")
-        return func(self, *args, **kwds)
-    return plate_check
 
-##########################################
-#             MACHINE CLASS
-##########################################
-class Machine:
-    """Connect and send commands to the machine"""
+class Machine():
+    """Driver for sending motion cmds and polling the machine state."""
 
-    # All tools and bed plates need to be configured before use in tool_types.json and must be accompanied by a matching Tool or Plate module
-    # N.B: There should be only one plate name "Plate" in tool_types.json
-    with open(os.path.join(get_root_dir(), "config/machine/tool_types.json"), 'r') as f:
-        TOOL_TYPES = json.load(f)
+    LOCALHOST = "192.168.1.2"
 
-    # Check if the Tool or Plate module exists 
-    for tool_name, tool_type in TOOL_TYPES.items():
-        tool_type, *tool_details = tool_type.split("_", 1)
-        module = duckbot.tools.__name__
-        if f"{module}.{tool_type}" not in sys.modules.keys():
-            module = duckbot.plates.__name__
-            if f"{module}.{tool_type}" not in sys.modules.keys():
-                raise MachineConfigurationError(f"Error: there is no {tool_type} module.")
-
-        # Store a reference to the class to be instantiated during operation
-        TOOL_TYPES[tool_name] = {}
-        TOOL_TYPES[tool_name]['tool_type'] = getattr(sys.modules[module], tool_type)
-        TOOL_TYPES[tool_name]['details'] = tool_details[0] if tool_details else ''
-    
-    def __init__(self, port: str = None, baudrate: int = 115200, plate_config: str = None ,simulated: bool = False):
-        """Set default values and connect to the machine"""
-
-        # Serial Info
-        self.ser = None
-        self.lineEnding = '\n'
-        
-        # Machine Info
+    def __init__(self, address=LOCALHOST, debug=False, simulated=False, reset=False, deck_config: str=None):
+        """Start with sane defaults. Setup command and subscribe connections."""
+        if address != self.__class__.LOCALHOST:
+            print("Warning: disconnecting this application from the network will halt connection to Jubilee.")
+        # Machine Specs
+        self.address = address
+        self.debug = debug
         self.simulated = simulated
+        self.model_update_timestamp = 0
+        self.command_ws = None
+        self.wake_time = None # Next scheduled time that the update thread updates.
+
+        self._absolute_positioning = True
+        self._absolute_extrusion = True # Extrusion positioning is set separately from other axes
         self._configured_axes = None
         self._configured_tools = None
-        self._absolute_positioning = True # Absolute positioning by default
-        self._absolute_extrusion = True   # Extrusion positioning is set separately from other axes
-        self._active_tool_index = None    # Cached value under the @property.
-        self._tool_z_offsets = None       # Cached value under the @property.
-        self._axis_limits = None          # Cached value under the @property.
-        self.axes_homed = [False]*4       # We have at least XYZU axes to home. Additional axes handled below in connect().
-        self.tool = None 
-        self.plate = None 
+        self._active_tool_index = None # Cached value under the @property.
+        self._tool_z_offsets = None # Cached value under the @property.
+        self._axis_limits = None # Cached value under the @property.
+        self.axes_homed = [False]*4 # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
+        self.deck = None
+        self.tools = {}
+        self.current_well = None
 
-        # Camera Info
-        # ToDo: separate this out to the Camera tool module
-        self.transform = []
-        self.img_size = []
-        
-        self.connect(port, baudrate)
-    
-    def connect(self, port: str, baudrate: int):
-        """Connect to the machine over serial."""
+        if deck_config is not None:
+            self.load_deck(deck_config)
+
+        self.connect()
+
+        if reset:
+            self.reset() # also does a reconnect.
+        self._set_absolute_positioning()#force=True)
+
+    def connect(self):
+        """Connect to Jubilee over http."""
         if self.simulated:
-            # Sample simulated tools for my machine.
-            # ToDo: Read this in from e.g. tool_types.json.
-            self._configured_tools = {
-                                        0 : "Inoculation Loop",
-                                        1 : "BrokenTrons",
-                                        2 : "Side Camera",
-                                        3 : "Top-Down Camera",
-                                        4 : "10cc Syringe"
-                                     }
             return
-        
-        if port == None:
-            # Autoconnect to ttyACM* if it exists & is unique
-            ports = [p.name for p in serial.tools.list_ports.comports() if 'ttyACM' in p.name]
-            if len(ports) > 1:
-                raise MachineStateError("More than one possible serial device found. Please connect to an explicit port.")
-            else:
-                port = f"/dev/{ports[0]}"
-        self.ser = serial.Serial(port, baudrate, timeout = 1) 
-        self.send("M450") # Sample command to initialize serial connection
+        # Do the equivalent of a ping to see if the machine is up.
+        if self.debug:
+            print(f"Connecting to {self.address} ...")
+        try:
+            # "Ping" the machine by updating the only cacheable information we care about.
+            max_tries = 25
+            for i in range(max_tries):
+                response = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
+                if len(response) == 0 :
+                    continue
+                else:
+                    break             
+            self.axes_homed = response
 
-        # Update machine state with info from the object model
-        self.axes_homed = json.loads(self.send('M409 K"move.axes[].homed"'))["result"]
-            
-        # Clear all previous values and reset
-        self._configured_axes = None
-        self._configured_tools = None
-        self._active_tool_index = None
-        self._tool_z_offsets = None
-        self._axis_limits = None
-        
-        self.configured_axes
-        self.configured_tools
-        self.active_tool_index
-        self.tool_z_offsets
-#         self.axis_limits
-        self._set_absolute_positioning()
+            # These data members are tied to @properties of the same name
+            # without the '_' prefix.
+            # Upon reconnecting, we need to flag that the @property must
+            # refresh; otherwise we will retrieve old values that may be invalid.
+            self._active_tool_index = None
+            self._tool_z_offsets = None
+            self._axis_limits = None
 
-    ##########################################
-    #             PROPERTIES
-    ##########################################
+            # To save time upon connecting, let's just hit the API on the
+            # first try for all the @properties we care about.
+            self.configured_axes
+            self.active_tool_index
+            self.tool_z_offsets
+            self.axis_limits
+            #pprint.pprint(json.loads(requests.get("http://127.0.0.1/machine/status").text))
+            # TODO: recover absolute/relative from object model instead of enforcing it here.
+            self._set_absolute_positioning()
+        except json.decoder.JSONDecodeError as e:
+            raise MachineStateError("DCS not ready to connect.") from e
+        except requests.exceptions.Timeout as e:
+            raise MachineStateError("Connection timed out. URL may be invalid, or machine may not be connected to the network.") from e
+        if self.debug:
+            print("Connected.")
+
     @property
     def configured_axes(self):
         """Return the configured axes of the machine."""
         if self._configured_axes is None: # Starting from a fresh connection
             try:
-                response = json.loads(self.send('M409 K"move.axes[]"'))["result"]
+                max_tries = 25
+                for i in range(max_tries):
+                    response = json.loads(self.gcode('M409 K"move.axes[]"'))["result"]
+                    if len(response) == 0 :
+                        continue
+                    else:
+                        break  
                 self._configured_axes = []
                 for axis in response:
                     self._configured_axes.append(axis['letter'])
@@ -170,7 +149,13 @@ class Machine:
         """Return the configured tools."""
         if self._configured_tools is None: # Starting from a fresh connection
             try:
-                response = json.loads(self.send('M409 K"tools[]"'))["result"]
+                max_tries = 25
+                for i in range(max_tries):
+                    response = json.loads(self.gcode('M409 K"tools[]"'))["result"]
+                    if len(response) == 0 :
+                        continue
+                    else:
+                        break  
                 self._configured_tools = {}
                 for tool in response:
                     self._configured_tools[tool['number']] = tool['name']
@@ -180,166 +165,162 @@ class Machine:
         
         # Return the cached value.
         return self._configured_tools
-    
-    @property
-    def active_tool_index(self):
-        """Return the index of the current tool."""
-        if self._active_tool_index is None: # Starting from a fresh connection.
-            print("tool is None")
-            try:
-                response = self.send("T")
-                # We get a string instead of -1 when there are no tools.
-                if response.startswith('No tool'):
-                    self.active_tool_index = -1
-                # We get a string instead of the tool index.
-                elif response.startswith('Tool'):
-                    # Recover from the string: 'Tool X is selected.'
-                    self.active_tool_index = int(response.split()[1])
-                else:
-                    self.active_tool_index = int(response)
-            except ValueError as e:
-                print("Error occurred trying to read current tool!")
-                raise e
-        # Return the cached value.
-        return self._active_tool_index
-
-    @active_tool_index.setter
-    def active_tool_index(self, tool_index: int):
-        """Set the current tool"""
-        if tool_index < 0:
-            self._active_tool_index = -1
-            self.tool = None
-        else:
-            self._active_tool_index = tool_index
-            tool_name = self._configured_tools[tool_index]
-            tool_type = Machine.TOOL_TYPES[tool_name]['tool_type']
-            tool_details = Machine.TOOL_TYPES[tool_name]['details']
-            self.tool = tool_type(self, tool_index, tool_name, tool_details)
-
-    @property
-    def tool_z_offsets(self):
-        """Return (in tool order) a list of tool's z offsets"""
-        if self._tool_z_offsets is None: # Starting from a fresh connection.
-            try:
-                response = json.loads(self.send('M409 K"tools"'))["result"]
-                self._tool_z_offsets = [] # Create a fresh list.
-                for tool_data in response:
-                    tool_z_offset = tool_data["offsets"][2] # Pull Z axis
-                    self._tool_z_offsets.append(tool_z_offset)
-            except ValueError as e:
-                print("Error occurred trying to read z offsets of all tools!")
-                raise e
-        # Return the cached value.
-        return self._tool_z_offsets
 
 
-    @property
-    def axis_limits(self):
-        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit"""
-        if self._axis_limits is None:  # Starting from a fresh connection.
-            try:
-                response = json.loads(self.send('M409 K"move.axes"'))["result"]
-                self._axis_limits = [] # Create a fresh list.
-                for axis_data in response:
-                    axis_min = axis_data["min"]
-                    axis_max = axis_data["max"]
-                    self._axis_limits.append((axis_min, axis_max))
-            except ValueError as e:
-                print("Error occurred trying to read axis limits on each axis!")
-                raise e
-        # Return the cached value.
-        return self._axis_limits
-    
-    ##########################################
-    #                BED PLATE
-    ##########################################
-    def set_plate(self, **kwargs):
-        """Setup the bed plate based on the configuration file."""
-        plate_type = Machine.TOOL_TYPES['Plate']['tool_type'] # assumes only 1 plate named 'Plate' in tool_types.json
-        tool_details = Machine.TOOL_TYPES['Plate']['details']
-        self.plate = plate_type(self, "Plate", **kwargs)
-
-    ##########################################
-    #                GCODE
-    ##########################################
-    def send(self, cmd: str = ""):
-        """Send GCode over serial connection"""
+    def gcode(self, cmd: str = "", response_wait: float = 10):
+        """Send a GCode cmd; return the response"""
+        if self.debug or self.simulated:
+            print(f"sending: {cmd}")
         if self.simulated:
             return None
-        cmd += self.lineEnding
-        bcmd = cmd.encode('UTF-8')
-        self.ser.write(bcmd)
-        
-        # Read response
-        self.ser.reset_input_buffer() # flush the buffer
-        resp = self.ser.readline().decode('UTF-8')
-        
-#         if resp == 'ok\n':
-#             print('got an ok')
-#             resp = self.ser.readline().decode('UTF-8') # read another line if first is just confirmation
-        return resp
-    
+        # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
+        # we need to watch the 'reply count' and request the new response when it increments
+        old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+        buffer_response = requests.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
+        # wait for a response code to be appended
+        tic = time.time()
+        while True:
+            new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+            if new_reply_count != old_reply_count:
+                response = requests.get(f'http://192.168.1.2/rr_reply').text
+                break
+            elif time.time() - tic > response_wait:
+                response = None
+                break
+            time.sleep(0.02)
+
+        if self.debug:
+            print(f"received: {response}")
+            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
+        return response
+
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""
-        self.send("G90")
+        self.gcode("G90")
         self._absolute_positioning = True
-        
 
     def _set_relative_positioning(self):
         """Set relative positioning for all axes except extrusion"""
-        self.send("G91")
+        self.gcode("G91")
         self.absolute_positioning = False
         
     def _set_absolute_extrusion(self):
         """Set absolute positioning for extrusion"""
-        self.send("M82")
+        self.gcode("M82")
         self._absolute_extrusion = True
 
     def _set_relative_extrusion(self):
         """Set relative positioning for extrusion"""
-        self.send("M83")
+        self.gcode("M83")
         self.absolute_extrusion = False
     
     def push_machine_state(self):
         """Push machine state onto a stack"""
-        self.send("M120")
+        self.gcode("M120")
 
     def pop_machine_state(self):
         """Recover previous machine state"""
-        self.send("M121")
+        self.gcode("M121")   
+
+    
+    def download_file(self, filepath: str = None, timeout: float = None):
+        """Download the file into a file object. Full filepath must be specified.
+        Example: /sys/tfree0.g
+        """
+        # RRF3 Only
+        file_contents = requests.get(f"http://{self.address}/rr_download?name={filepath}",
+                                     timeout=timeout)
+        return file_contents
+
+
+    def reset(self):
+        """Issue a software reset."""
+        # End the subscribe thread first.
+        self.gcode("M999") # Issue a board reset. Assumes we are already connected
+        self.axes_homed = [False]*4
+        self.disconnect()
+        print("Reconnecting...")
+        for i in range(10):
+            time.sleep(1)
+            try:
+                self.connect()
+                return
+            except MachineStateError as e:
+                pass
+        raise MachineStateError("Reconnecting failed.")
+
+
+    def home_all(self):
+        # Having a tool is only possible if the machine was already homed.
+        if self.active_tool_index != -1:
+            self.park_tool()
+        self.gcode("G28")
+        self._set_absolute_positioning()
+        # Update homing state. Do not query the object model because of race condition.
+        self.axes_homed = [True, True, True, True] # X, Y, Z, U
         
+        ### test to see if we can get the number of axis home using the pop_machine_state(self) !! MP 07/25/23
+
+
+    def home_xyu(self):
+        """Home the XY axes.
+        Home Y before X to prevent possibility of crashing into the tool rack.
+        """
+        self.gcode("G28 Y")
+        self.gcode("G28 X")
+        self.gcode("G28 U")
+        self._set_absolute_positioning()
+        # Update homing state. Pull Z from the object model which will not create a race condition.
+        z_home_status = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][2]
+        self.axes_homed = [True, True, z_home_status, True]
+
     def home_x(self):
         """Home the X axis"""
         cmd = "G28 X"
-        self.send(cmd)
+        self.gcode(cmd)
         
     def home_y(self):
         """Home the Y axis"""
         cmd = "G28 Y"
-        self.send(cmd)
-        
-    def home_z(self):
-        """Home the Z axis"""
-        cmd = "G28 Z"
-        self.send(cmd)
+        self.gcode(cmd)
         
     def home_u(self):
         """Home the U (tool) axis"""
         cmd = "G28 U"
-        self.send(cmd)
+        self.gcode(cmd)
     
     def home_v(self):
         """Home the V axis"""
         cmd = "G28 V"
-        self.send(cmd)
-    
-    def home_all(self):
-        """Home all axes. This will look for the homeall.g macro-- ensure that this file homes any added axes (e.g. V)"""
-        cmd = "G28"
-        self.send(cmd)
-       
-    @machine_homed
-    def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000):
+        self.gcode(cmd)
+
+    def home_z(self):
+        """Home the Z axis.
+        Note that the Deck must be clear first.
+        """
+        response = input("Is the Deck free of obstacles? [y/n]")
+        if response.lower() in ["y", "yes", "Yes", "Y", "YES"]:
+            self.gcode("G28 Z")
+        else:
+            print('The deck needs to be empty of all labware before proceeding.')
+        self._set_absolute_positioning()
+
+    def home_e(self):
+        """
+        Home the extruder axis (syringe)
+        """
+        pass
+
+    def home_in_place(self, *args: str):
+        """Set the current location of a machine axis or axes to 0."""
+        for axis in args:
+            if axis.upper() not in ['X', 'Y', 'Z', 'U']:
+                raise TypeError(f"Error: cannot home unknown axis: {axis}.")
+            self.gcode(f"G92 {axis.upper()}0")
+
+    @machine_is_homed
+    def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None,
+                     v: float = None, s: float = 6000, param: str=None , wait: bool = False):
         """Move X/Y/Z/E/V axes. Set absolute/relative mode externally.
 
         Parameters
@@ -356,13 +337,20 @@ class Machine:
         Nothing
 
         """
+        
+        if v and (v > 200 or v < 0):
+            v=None
+            raise Exception('V cannot be less than O or greater than 200')
+        
         x = "{0:.2f}".format(x) if x is not None else None
         y = "{0:.2f}".format(y) if y is not None else None
         z = "{0:.2f}".format(z) if z is not None else None
         e = "{0:.2f}".format(e) if e is not None else None
         v = "{0:.2f}".format(v) if v is not None else None
         s = "{0:.2f}".format(s)
-        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = ''
+
+        # initialize coordinates commands
+        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = param_cmd = ''
         
         if x is not None:
             x_cmd = f'X{x}'
@@ -376,12 +364,16 @@ class Machine:
             v_cmd = f'V{v}'
         if s is not None:
             f_cmd = f'F{s}'
+        if param is not None:
+            param_cmd = param
         
-        cmd = f"G0 {x_cmd} {y_cmd} {z_cmd} {e_cmd} {v_cmd} {f_cmd}"
-        self.send(cmd)
-        
-    
-    def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, force_extrusion: bool = True):
+        cmd = f"G0 {z_cmd} {x_cmd} {y_cmd} {e_cmd} {v_cmd} {f_cmd} {param_cmd}"
+        self.gcode(cmd)
+        if wait:
+            self.gcode(f"M400")
+
+    def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None,
+                 v: float = None, s: float = 6000, param: str =None, wait: bool = False):
         """Move to an absolute X/Y/Z/E/V position.
 
         Parameters
@@ -400,12 +392,13 @@ class Machine:
 
         """
         self._set_absolute_positioning()
-        if force_extrusion:
-            self._set_absolute_extrusion()
+        # if force:
+        #     self._set_absolute_extrusion()
         
-        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s)
-        
-    def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None, dv: float = None, s: float = 6000, force_extrusion: bool = True):
+        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param=param, wait=wait)
+
+    def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None,
+              dv: float = None, s: float = 6000,  param: str =None, wait: bool = False):
         """Move relative to the current position
 
         Parameters
@@ -424,11 +417,19 @@ class Machine:
 
         """
         self._set_relative_positioning()
-        if force_extrusion:
-            self._set_relative_extrusion()
+        # if force:
+        #     self._set_relative_extrusion()
         
-        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s)
-        
+        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param=param, wait=wait)
+
+    def safe_z_movement(self):
+        current_z = self.get_position()['Z']
+        safe_z = self.deck.safe_z
+        if float(current_z) < safe_z :
+            self.move_to(z = safe_z + 20)
+        else:
+            pass
+
     def dwell(self, t: float, millis: bool =True):
         """Pause the machine for a period of time.
 
@@ -436,7 +437,6 @@ class Machine:
         ----------
         t: time to pause, in milliseconds by default
         millis (optional): boolean, set to false to use seconds. default unit is milliseconds.
-        dz: change in z position, in whatever units have been set (default mm)
 
         Returns
         -------
@@ -447,37 +447,111 @@ class Machine:
         param = 'P' if millis else 'S'
         cmd = f"G4 {param}{t}"
         
-        self.send(cmd)
-
-    def tool_change(self, tool_id: int):
-        """Change to specified tool."""
-        if isinstance(tool_id, str): # Accept either tool number or tool name
-            # Get the tool index from the configured tools list
-            try:
-                tool_idx = list(self._configured_tools.keys())[list(self._configured_tools.values()).index(tool_id)]
-                tool_name = tool_id # The tool name was passed
-            except:
-                raise MachineConfigurationError(f'Error: no tool named {tool_id} found in current configuration!')
-        else:
-            try:
-                tool_idx = tool_id # the tool id was passed
-            except:
-                raise MachineConfigurationError(f'Erro: no tool with index {tool_id} found in current configuration!')
-        
-        cmd = f'T{tool_idx}'
-        self.send(cmd)
-
-        self.active_tool_index = tool_idx
-        
-    def park_tool(self):
-        """Deselect tool"""
-        self.send("T-1")
-        self.active_tool_index = -1
+        self.gcode(cmd)
     
+    @property
+    def position(self):
+        """Returns the machine control point in mm."""
+        # Axes are ordered X, Y, Z, U, E, E0, E1, ... En, where E is a copy of E0.
+        response_chunks = self.gcode("M114").split()
+        positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
+        return positions
+
+    def _get_tool_index(self, tool_item: Union[int, Tool, str]):
+        if type(tool_item) == int:
+            assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            return tool_item
+        elif type(tool_item) == str:
+            assert tool_item in set(self.tools.keys()), f"Tool {tool_item} not loaded"
+            return self.tools[tool_item]
+        elif isinstance(tool_item, Tool):
+            assert tool_item.index in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            return tool_item.index
+        else:
+            raise ValueError(f"Unknown tool format {type(tool_item)}")
+
+
+    def pickup_tool(self, tool_item: Union[int, Tool, str] = None):
+        """Pick up the tool specified by tool index."""
+        tool_index = self._get_tool_index(tool_item=tool_item)
+        
+        self.gcode(f"T{tool_index}")
+        # Update the cached value to prevent read delays.
+        self._active_tool_index = tool_index
+
+
+    def park_tool(self):
+        """Park the current tool."""
+        self.gcode("T-1")
+        # Update the cached value to prevent read delays.
+        self._active_tool_index = -1
+
+
+    @property
+    def active_tool_index(self):
+        """Return the index of the current tool."""
+        #print('calling the property func')
+        #print(self._active_tool_index)
+        if self._active_tool_index is None: # Starting from a fresh connection.
+            try:
+                max_tries = 25
+                for i in range(max_tries):
+                    response = self.gcode("T")
+                    if len(response)==0:
+                        continue
+                    else:
+                        break              
+                # On HTTP Interface, we get a string instead of -1 when there are no tools.
+                if response.startswith('No tool'):
+                    #print('active tool prop thinks theres no tool')
+                    return -1
+                # On HTTP Interface, we get a string instead of the tool index.
+                elif response.startswith('Tool'):
+                    # Recover from the string: 'Tool X is selected.'
+                    self.active_tool_index = int(response.split()[1])
+                else:
+                    self.active_tool_index = int(response)
+            except ValueError as e:
+                #print("Error occurred trying to read current tool!")
+                raise e
+        # Return the cached value.
+        return self._active_tool_index
+
+    @property
+    def tool_z_offsets(self):
+        """Return (in tool order) a list of tool's z offsets"""
+        # Starting from fresh connection, query from the Duet.
+        if self._tool_z_offsets is None:
+            try:
+                max_tries = 25
+                for i in range(max_tries):
+                    response = json.loads(self.gcode('M409 K"tools"'))["result"]
+                    if len(response) == 0 :
+                        continue
+                    else:
+                        break               
+                #pprint.pprint(response)
+                self._tool_z_offsets = [] # Create a fresh list.
+                for tool_data in response:
+                    tool_z_offset = tool_data["offsets"][2] # Pull Z axis
+                    self._tool_z_offsets.append(tool_z_offset)
+            except ValueError as e:
+                print("Error occurred trying to read z offsets of all tools!")
+                raise e
+        # Return the cached value.
+        return self._tool_z_offsets
+
     def get_position(self):
         """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
-        # I've changed this; todo: check it all works
-        resp = self.send("M114")  
+
+        max_tries = 25
+        for i in range(max_tries):
+            resp = self.gcode("M114")
+            if "Count" not in resp:
+                continue
+            else:
+                break
+
         positions = {}
         keyword = " Count " # this is the keyword hosts like e.g. pronterface search for to track position
         keyword_idx = resp.find(keyword)
@@ -492,32 +566,75 @@ class Machine:
 
         return positions
     
-    # ToDo: Move this to camera class and configuration
-    def px_to_real(self, x,y, relative = False):
-        """Convert pixel location to bed location. Requires camera-machine calibration"""
-        x = (x / self.img_size[0]) - 0.5
-        y = (y / self.img_size[1]) - 0.5
-        rel = 1 if relative else 0
+    @property
+    def axis_limits(self):
+        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit"""
+        # Starting from fresh connection, query from the Duet.
+        if self._axis_limits is None:
+            try:
+                max_tries = 25
+                for i in range(max_tries):
+                    response = json.loads(self.gcode("M409 K\"move.axes\""))["result"]
+                    if len(response) == 0 :
+                        continue
+                    else:
+                        break
+                #pprint.pprint(response)
+                self._axis_limits = [] # Create a fresh list.
+                for axis_data in response:
+                    axis_min = axis_data["min"]
+                    axis_max = axis_data["max"]
+                    self._axis_limits.append((axis_min, axis_max))
+            except ValueError as e:
+                print("Error occurred trying to read axis limits on each axis!")
+                raise e
+        # Return the cached value.
+        return self._axis_limits     
 
-        return (self.transform.T @ np.array([x**2, y**2, x * y, x, y, rel]))
-                             
-    ##########################################
-    #                MACROS
-    ##########################################
-    # ToDo: Check if the macro exists before running?
+    def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition')):
+        # do thing
+        deck_config = json2dict(deck_filename, path)
+        deck =  Deck(deck_config)
+        self.deck = deck
+        return deck                        
+    
+    def load_tool(self, tool: Tool = None):
+        name= tool.name
+        idx = tool.index
+        if name in self.tools:
+            raise MachineConfigurationError("Error: tool name already used by a different tool")
+        else:
+            pass
+
+        if idx in set(self.tools.values()):
+            raise MachineConfigurationError("Error: tool index already set for a different tool")
+        else:
+            pass
+        self.tools[name] = idx
+
+                
+
+        
+    # ***************MACROS***************
     def tool_lock(self):
         """Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists."""
         macro_file = "0:/macros/tool_lock.g"
         cmd = f"M98 P{macro_file}"
-        self.send(cmd)
+        self.gcode(cmd)
         
     def tool_unlock(self):
         """Runs Jubilee tool unlock macro. Assumes tool_unlock.g macro exists."""
         macro_file = "0:/macros/tool_unlock.g"
         cmd = f"M98 P{macro_file}"
-        self.send(cmd)
-        
-    
-        
-        
-        
+        self.gcode(cmd)
+
+    def disconnect(self):
+        """Close the connection."""
+        # Nothing to do?
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        self.disconnect()
