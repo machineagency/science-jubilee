@@ -7,48 +7,48 @@
     "slots": {
         "0": {
             "offset": [
-                13.8,
-                5
+                17.4,
+                6
             ],
             "has_labware": false,
             "labware": null
         },
         "1": {
             "offset": [
-                153.5,
-                5.4
+                157.0,
+                5.8
             ],
             "has_labware": false,
             "labware": null
         },
         "2": {
             "offset": [
-                14,
-                103.3
+                17.7,
+                103.5
             ],
             "has_labware": false,
             "labware": null
         },
         "3": {
             "offset": [
-                153.8,
-                102.4
+                157.0,
+                103.1
             ],
             "has_labware": false,
             "labware": null
         },
         "4": {
             "offset": [
-                14.3,
-                199.6
+                17.1,
+                201.1
             ],
             "has_labware": false,
             "labware": null
         },
         "5": {
             "offset": [
-                154.2,
-                199.7
+                157.0,
+                201.9
             ],
             "has_labware": false,
             "labware": null
@@ -58,7 +58,7 @@
         "corner": "Bottom Left"
     },
     "material": {
-        "plate": "Aluminum",
+        "Deck": "Aluminum",
         "mask": "Delrin"
     }
 }
