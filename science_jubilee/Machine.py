@@ -86,7 +86,7 @@ class Machine():
             print(f"Connecting to {self.address} ...")
         try:
             # "Ping" the machine by updating the only cacheable information we care about.
-            max_tries = 25
+            max_tries = 50
             for i in range(max_tries):
                 response = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
                 if len(response) == 0 :
@@ -124,7 +124,7 @@ class Machine():
         """Return the configured axes of the machine."""
         if self._configured_axes is None: # Starting from a fresh connection
             try:
-                max_tries = 25
+                max_tries = 50
                 for i in range(max_tries):
                     response = json.loads(self.gcode('M409 K"move.axes[]"'))["result"]
                     if len(response) == 0 :
@@ -146,7 +146,7 @@ class Machine():
         """Return the configured tools."""
         if self._configured_tools is None: # Starting from a fresh connection
             try:
-                max_tries = 25
+                max_tries = 50
                 for i in range(max_tries):
                     response = json.loads(self.gcode('M409 K"tools[]"'))["result"]
                     if len(response) == 0 :
@@ -335,10 +335,6 @@ class Machine():
 
         """
         
-        if v and (v > 200 or v < 0):
-            v=None
-            raise Exception('V cannot be less than O or greater than 200')
-        
         x = "{0:.2f}".format(x) if x is not None else None
         y = "{0:.2f}".format(y) if y is not None else None
         z = "{0:.2f}".format(z) if z is not None else None
@@ -459,10 +455,10 @@ class Machine():
             assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
             return tool_item
         elif type(tool_item) == str:
-            assert tool_item in set(self.tools.keys()), f"Tool {tool_item} not loaded"
+            assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
             return self.tools[tool_item]
         elif isinstance(tool_item, Tool):
-            assert tool_item.index in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            assert tool_item.index in set(self.tools.keys()), f"Tool {tool_item} not loaded"
             return tool_item.index
         else:
             raise ValueError(f"Unknown tool format {type(tool_item)}")
@@ -471,14 +467,20 @@ class Machine():
     def pickup_tool(self, tool_item: Union[int, Tool, str] = None):
         """Pick up the tool specified by tool index."""
         tool_index = self._get_tool_index(tool_item=tool_item)
-        
+        self.safe_z_movement()
         self.gcode(f"T{tool_index}")
         # Update the cached value to prevent read delays.
         self._active_tool_index = tool_index
+        
+        if isinstance(tool_item, Tool):
+            tool_item.is_active_tool = True
+        # need to figure out how to add the is_active_tool
+        # if user provides index or name instead
 
 
     def park_tool(self):
         """Park the current tool."""
+        self.safe_z_movement()
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         self._active_tool_index = -1
@@ -491,7 +493,7 @@ class Machine():
         #print(self._active_tool_index)
         if self._active_tool_index is None: # Starting from a fresh connection.
             try:
-                max_tries = 25
+                max_tries = 50
                 for i in range(max_tries):
                     response = self.gcode("T")
                     if len(response)==0:
@@ -518,30 +520,30 @@ class Machine():
     def tool_z_offsets(self):
         """Return (in tool order) a list of tool's z offsets"""
         # Starting from fresh connection, query from the Duet.
-        if self._tool_z_offsets is None:
-            try:
-                max_tries = 25
-                for i in range(max_tries):
-                    response = json.loads(self.gcode('M409 K"tools"'))["result"]
-                    if len(response) == 0 :
-                        continue
-                    else:
-                        break               
-                #pprint.pprint(response)
-                self._tool_z_offsets = [] # Create a fresh list.
-                for tool_data in response:
-                    tool_z_offset = tool_data["offsets"][2] # Pull Z axis
-                    self._tool_z_offsets.append(tool_z_offset)
-            except ValueError as e:
-                print("Error occurred trying to read z offsets of all tools!")
-                raise e
+        # if self._tool_z_offsets is None:
+        try:
+            max_tries = 50
+            for i in range(max_tries):
+                response = json.loads(self.gcode('M409 K"tools"'))["result"]
+                if len(response) == 0 :
+                    continue
+                else:
+                    break               
+            #pprint.pprint(response)
+            self._tool_z_offsets = [] # Create a fresh list.
+            for tool_data in response:
+                tool_z_offset = tool_data["offsets"][2] # Pull Z axis
+                self._tool_z_offsets.append(tool_z_offset)
+        except ValueError as e:
+            print("Error occurred trying to read z offsets of all tools!")
+            raise e
         # Return the cached value.
         return self._tool_z_offsets
 
     def get_position(self):
         """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
 
-        max_tries = 25
+        max_tries = 50
         for i in range(max_tries):
             resp = self.gcode("M114")
             if "Count" not in resp:
@@ -569,7 +571,7 @@ class Machine():
         # Starting from fresh connection, query from the Duet.
         if self._axis_limits is None:
             try:
-                max_tries = 25
+                max_tries = 50
                 for i in range(max_tries):
                     response = json.loads(self.gcode("M409 K\"move.axes\""))["result"]
                     if len(response) == 0 :
