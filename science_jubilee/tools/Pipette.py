@@ -8,6 +8,7 @@ from typing import Tuple, Union
 import logging
 logger = logging.getLogger(__name__)
 
+
 class Pipette(Tool):
 
     def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
@@ -20,7 +21,8 @@ class Pipette(Tool):
         self.has_tip = False
         self.is_active_tool = False
         self.first_available_tip = None
-        self.tool_offset = self._machine.tool_z_offset[self.index] 
+        self.tool_offset = self._machine.tool_z_offsets[self.index]
+        self.is_primed = False 
         
 
     @classmethod
@@ -48,8 +50,8 @@ class Pipette(Tool):
         """
         dv = vol / self.volToMove
         v = self.zero_position - dv
-
         return v
+    
     @staticmethod
     def _getxyz(well: Well = None, location: Tuple[float] = None):
         if well is not None and location is not None:
@@ -74,21 +76,22 @@ class Pipette(Tool):
         self._machine.move_to(v=self.zero_position, s = 2500, wait=True)
         self.is_primed = True
 
-    def _aspirate(self, vol: float, s:int = 1500):
+    def _aspirate(self, vol: float, s:int = 2000):
         """
         """
 
         v = self.vol2move(vol)
-        if self.is_primed == True:
-            self._machine.move_to(v= v, s=s )
-        else:
-            self.prime()
-            self._machine.move_to(v= v, s=s )
+        self._machine.move_to(v= v, s=s )
 
-    def aspirate(self, vol: float, s:int = 1500, well: Well = None,
+    def aspirate(self, vol: float, s:int = 2000, well: Well = None,
                  from_bottom :float =10, from_top :float = None,
                  location: Tuple[float] = None):
        
+        if self.has_tip is False:
+            raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
+        else:
+            pass
+
         x, y, z = self._getxyz(well=well, location=location)
         
         if well is not None:
@@ -102,26 +105,31 @@ class Pipette(Tool):
             pass
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
+        if self.is_primed == True:
+            pass
+        else:
+            self.prime()
         self._machine.move_to(z=z)
         self._aspirate(vol, s=s)
 
 
-    def _dispense(self,vol: float, s:int = 1500):
+    def _dispense(self,vol: float, s:int = 2000):
         """
         """
-        v = self.vol2move(vol)
+        v =  self.vol2move(vol)
 
         current_v = float(self._machine.get_position()['V']) 
         dv = current_v + v
-
-        ####  check that 4th item is v-axis position
-        if current_v < self.zero_position:
+        
+        print(dv)
+        
+        if current_v > self.zero_position:
             raise ToolStateError("Error: Pipette does not have anything to dispense")
-        elif dv <= self.zero_position:
+        elif dv > self.zero_position:
             raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated")    
-        self._machine.move_to(v= dv, s=s )
+        self._machine.move(v= dv, s=s )
 
-    def dispense(self, vol: float, s:int = 1500, well: Well = None,
+    def dispense(self, vol: float, s:int = 2000, well: Well = None,
                  from_bottom :float =10, from_top :float = None,
                  location: Tuple[float] = None):
        
@@ -136,14 +144,14 @@ class Pipette(Tool):
         elif from_top is not None and well is not None:
             z = top + from_top
             pass
-
+        
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
         self._dispense(vol, s=s)
 
 
-    def transfer(self, vol: float, s:int = 1500, source_well :Well = None,
+    def transfer(self, vol: float, s:int = 2000, source_well :Well = None,
                  destination_well :Well = None, blowout= None, mix_before: tuple = None,
                  mix_after: tuple = None, new_tip : str = 'always'):
         
@@ -195,9 +203,9 @@ class Pipette(Tool):
         """
         """
 
-        well = self._machine.current_well
-        self._machine.move_to(z = well.top + 20)
-        self._machine.move_to(v = self.blowout_postion, s=s)
+        well = self.current_well
+        self._machine.move_to(z = well.top + 5 )
+        self._machine.move_to(v = self.blowout_position, s=s)
         self.prime()
 
         return 
@@ -205,7 +213,7 @@ class Pipette(Tool):
     def air_gap(self, vol):
         
         dv = self.vol2move(vol)
-        well = self._machine.current_well
+        well = self.current_well
         self._machine.move_to(z = well.top + 20)
         self._machine.move(v= -1*dv)
 
@@ -213,20 +221,24 @@ class Pipette(Tool):
         """
         """
         if self.has_tip == False:
-            self._machine.move_to(z=z, param = 'H4')
+            self._machine.move_to(z=z, s=800, param = 'H4')
         else:
             raise ToolStateError("Error: Pipette already equipped with a tip.")      
 
     def update_z_offset(self, tip: bool = None):
         
-        tip_offset = self.tiprack.tipLength- self.tiprack.tipOverlap
-        current_z = self._machine.get_position['Z']
+        if isinstance(self.tiprack, list):
+            tip_offset = self.tiprack[0].tipLength- self.tiprack[0].tipOverlap
+        else:
+            tip_offset = self.tiprack.tipLength- self.tiprack.tipOverlap
 
         if tip == True:
-            new_z = current_z - tip_offset
+            new_z = self.tool_offset - tip_offset
         else:
-            new_z = current_z + tip_offset
-        self._machine.gcode(f'M92 Z{new_z}')
+            new_z = self.tool_offset + tip_offset
+
+        self._machine.gcode(f'G10 P{self.index} Z{new_z}')
+        # self._machine.
         
 
     def add_tiprack(self, tiprack: Union[Labware, list]):
@@ -236,17 +248,19 @@ class Pipette(Tool):
                 for t in range(96):
                     tips.append(rack[t])
             
-            self.tiprack = pipette_iterator(tips)
+            self.tipiterator = pipette_iterator(tips)
+            self.tiprack = tiprack
         else:
-            self.tiprack = pipette_iterator(tiprack)
+            self.tipiterator = pipette_iterator(tiprack)
+            self.tiprack = tiprack
         
-        self.first_available_tip = next(self.tiprack)
+        self.first_available_tip = self.tipiterator.next()
 
 
     def pickup_tip(self, tip_ : Well = None):
         """
         """
-        if tip is None:
+        if tip_ is None:
             tip = self.first_available_tip
         else:
             tip = tip_
@@ -257,9 +271,10 @@ class Pipette(Tool):
         self._pickup_tip(z)
         self.has_tip = True
         self.update_z_offset(tip= True) ### to do!
-        self.first_available_tip =  self.tiprack.next()
+        # if tip is not None:
+        #     self.first_available_tip =  self.tiprack.next()
         # move the plate down( should be + z) for safe movement
-        self._machine.move_to(z= self._machine.deck.top_z + 5)
+        self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
 
     def _drop_tip(self):
@@ -268,7 +283,7 @@ class Pipette(Tool):
 
         """
         if self.has_tip == True:
-            self._machine.move_to(v= self.drop_tip_position, s= 800)
+            self._machine.move_to(v= self.drop_tip_position, s= 2000)
         else:
             raise ToolConfigurationError('Error: No pipette tip attached to drop')
 
@@ -294,10 +309,10 @@ class Pipette(Tool):
         self.has_tip = False
         self.update_z_offset(tip=False)
 
-        self.first_available_tip = self.tiprack.next()
+        self.first_available_tip = self.tipiterator.next()
         # logger.info(f"Dropped tip at {(x,y,z)}")
 
-    def mix(self, vol: float, n: int, s: int =1500):
+    def mix(self, vol: float, n: int, s: int =2000):
         
         v = self.vol2mov(vol)
         
