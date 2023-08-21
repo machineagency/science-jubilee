@@ -1,4 +1,4 @@
-<h1 align="center">🔬🧪 Science Jubilee: Controlling Jubilees for Science!⚡⚙️ </h3>
+# 🔬🧪 Science Jubilee: Controlling Jubilees for Science!⚡⚙️
 
 <p align="center"><img src="./docs/images/pipetting.gif" width="800"/></p>
 
