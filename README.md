@@ -1,10 +1,6 @@
-# Science Jubilee
-🔬🧪**Controlling Jubilees for Science!**⚡⚙️
+<h1 align="center">🔬🧪 Science Jubilee: Controlling Jubilees for Science!⚡⚙️ </h3>
 
-![pipetting](./docs/images/pipetting.gif)
-![imaging](./docs/images/lm-loop.gif)
-
-
+<p align="center"><img src="./docs/images/pipetting.gif" width="800"/></p>
 
 This repository hosts files to build and control a [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) for scientific applications. The core of the software is a Python interface for Jubilee to navigate labware installed in the machine. We currently provide assembly instructions, control software, and examples for various tools including OT-2 pipettes, syringes, and cameras. While these tools might cater exactly to your planned use case, they most likely will not! We share these files as a starting point rather than an endpoint: we also provide instructions for developing new tools and associated software for controlling them. We hope you will build new tools for your application and contribute them back to the community for others to use and extend 🛠️
 
