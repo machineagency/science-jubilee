@@ -16,7 +16,7 @@ This repository is designed to be used with the Jubilee platform, outfitted with
 The software here is intended to control Jubilee from Python scripts or Jupyter notebooks to design and run experiments. Check out the examples notebooks for more info.
 
 ### Labware and Wetware
-The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standards size microplates. 
+The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates. 
 
 
 
