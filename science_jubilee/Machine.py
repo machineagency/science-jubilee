@@ -8,8 +8,6 @@ import sys
 import json
 from pathlib import Path
 from enum import Enum
-import duckbot.tools
-import duckbot.plates
 
 def get_root_dir():
     """Return the path to the duckbot directory."""
@@ -59,24 +57,24 @@ def requires_bed_plate(func):
 class Machine:
     """Connect and send commands to the machine"""
 
-    # All tools and bed plates need to be configured before use in tool_types.json and must be accompanied by a matching Tool or Plate module
-    # N.B: There should be only one plate name "Plate" in tool_types.json
-    with open(os.path.join(get_root_dir(), "config/machine/tool_types.json"), 'r') as f:
-        TOOL_TYPES = json.load(f)
+    # # All tools and bed plates need to be configured before use in tool_types.json and must be accompanied by a matching Tool or Plate module
+    # # N.B: There should be only one plate name "Plate" in tool_types.json
+    # with open(os.path.join(get_root_dir(), "config/machine/tool_types.json"), 'r') as f:
+    #     TOOL_TYPES = json.load(f)
 
-    # Check if the Tool or Plate module exists 
-    for tool_name, tool_type in TOOL_TYPES.items():
-        tool_type, *tool_details = tool_type.split("_", 1)
-        module = duckbot.tools.__name__
-        if f"{module}.{tool_type}" not in sys.modules.keys():
-            module = duckbot.plates.__name__
-            if f"{module}.{tool_type}" not in sys.modules.keys():
-                raise MachineConfigurationError(f"Error: there is no {tool_type} module.")
+    # # Check if the Tool or Plate module exists 
+    # for tool_name, tool_type in TOOL_TYPES.items():
+    #     tool_type, *tool_details = tool_type.split("_", 1)
+    #     module = duckbot.tools.__name__
+    #     if f"{module}.{tool_type}" not in sys.modules.keys():
+    #         module = duckbot.plates.__name__
+    #         if f"{module}.{tool_type}" not in sys.modules.keys():
+    #             raise MachineConfigurationError(f"Error: there is no {tool_type} module.")
 
-        # Store a reference to the class to be instantiated during operation
-        TOOL_TYPES[tool_name] = {}
-        TOOL_TYPES[tool_name]['tool_type'] = getattr(sys.modules[module], tool_type)
-        TOOL_TYPES[tool_name]['details'] = tool_details[0] if tool_details else ''
+    #     # Store a reference to the class to be instantiated during operation
+    #     TOOL_TYPES[tool_name] = {}
+    #     TOOL_TYPES[tool_name]['tool_type'] = getattr(sys.modules[module], tool_type)
+    #     TOOL_TYPES[tool_name]['details'] = tool_details[0] if tool_details else ''
     
     def __init__(self, port: str = None, baudrate: int = 115200, plate_config: str = None ,simulated: bool = False):
         """Set default values and connect to the machine"""
