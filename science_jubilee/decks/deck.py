@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Dict, Tuple
 
-from labware.Utils import json2dict
-from labware.Labware import Labware
+from science_jubilee.labware.Utils import json2dict
+from science_jubilee.labware.Labware import Labware
 
 
 @dataclass
@@ -36,7 +36,7 @@ class Deck(SlotSet):
         slots = {}
         for s, sv in self.slots_data.items():
             if type(sv) == list:
-                sv= tuple(sv)
+                sv = tuple(sv)
             else:
                 pass
             slots[s] = Slot(slot_index = s, **self.slots_data[s])#{k: tuple(v) for k, v in self.slots_data[s].items()})

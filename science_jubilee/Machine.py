@@ -8,6 +8,11 @@ import sys
 import json
 from pathlib import Path
 from enum import Enum
+from typing import Union
+
+
+from science_jubilee.tools.Tool import Tool
+from science_jubilee.decks.Deck import Deck
 
 def get_root_dir():
     """Return the path to the duckbot directory."""
@@ -43,13 +48,13 @@ def machine_homed(func):
         return func(self, *args, **kwds)
     return homing_check
 
-def requires_bed_plate(func):
-    """Check if a bed plate has been configured before performing certain actions."""
-    def plate_check(self, *args, **kwds):
-        if self.plate is None:
-            raise MachineStateError("Error: No bed plate is set up")
+def requires_deck(func):
+    """Check if a deck has been configured before performing certain actions."""
+    def deck_check(self, *args, **kwds):
+        if self.deck is None:
+            raise MachineStateError("Error: No deck is set up")
         return func(self, *args, **kwds)
-    return plate_check
+    return deck_check
 
 ##########################################
 #             MACHINE CLASS
@@ -76,7 +81,7 @@ class Machine:
     #     TOOL_TYPES[tool_name]['tool_type'] = getattr(sys.modules[module], tool_type)
     #     TOOL_TYPES[tool_name]['details'] = tool_details[0] if tool_details else ''
     
-    def __init__(self, port: str = None, baudrate: int = 115200, plate_config: str = None ,simulated: bool = False):
+    def __init__(self, port: str = None, baudrate: int = 115200, deck_config: str = None ,simulated: bool = False):
         """Set default values and connect to the machine"""
 
         # Serial Info
@@ -93,8 +98,8 @@ class Machine:
         self._tool_z_offsets = None       # Cached value under the @property.
         self._axis_limits = None          # Cached value under the @property.
         self.axes_homed = [False]*4       # We have at least XYZU axes to home. Additional axes handled below in connect().
-        self.tool = None 
-        self.plate = None 
+        self.tools = {} 
+        self.deck = None 
 
         # Camera Info
         # ToDo: separate this out to the Camera tool module
@@ -251,12 +256,21 @@ class Machine:
     ##########################################
     #                BED PLATE
     ##########################################
-    def set_plate(self, **kwargs):
-        """Setup the bed plate based on the configuration file."""
-        plate_type = Machine.TOOL_TYPES['Plate']['tool_type'] # assumes only 1 plate named 'Plate' in tool_types.json
-        tool_details = Machine.TOOL_TYPES['Plate']['details']
-        self.plate = plate_type(self, "Plate", **kwargs)
+    # def set_plate(self, **kwargs):
+    #     """Setup the bed plate based on the configuration file."""
+    #     plate_type = Machine.TOOL_TYPES['Plate']['tool_type'] # assumes only 1 plate named 'Plate' in tool_types.json
+    #     tool_details = Machine.TOOL_TYPES['Plate']['details']
+    #     self.plate = plate_type(self, "Plate", **kwargs)
 
+    def load_deck(self, deck_filename: str):
+        config_path = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition', f'{deck_filename}.json')
+        with open(config_path, 'r') as f:
+            deck_config = json.load(f)
+        deck = Deck(deck_config)
+        self.deck = deck
+        return deck                        
+    
+   
     ##########################################
     #                GCODE
     ##########################################
@@ -337,7 +351,7 @@ class Machine:
         self.send(cmd)
        
     @machine_homed
-    def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000):
+    def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, param: str = None):
         """Move X/Y/Z/E/V axes. Set absolute/relative mode externally.
 
         Parameters
@@ -360,7 +374,7 @@ class Machine:
         e = "{0:.2f}".format(e) if e is not None else None
         v = "{0:.2f}".format(v) if v is not None else None
         s = "{0:.2f}".format(s)
-        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = ''
+        x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = param_cmd =  ''
         
         if x is not None:
             x_cmd = f'X{x}'
@@ -374,12 +388,13 @@ class Machine:
             v_cmd = f'V{v}'
         if s is not None:
             f_cmd = f'F{s}'
-        
-        cmd = f"G0 {x_cmd} {y_cmd} {z_cmd} {e_cmd} {v_cmd} {f_cmd}"
+        if param is not None:
+            param_cmd = param
+        cmd = f"G0 {x_cmd} {y_cmd} {z_cmd} {e_cmd} {v_cmd} {f_cmd} {param_cmd}"
         self.send(cmd)
         
     
-    def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, force_extrusion: bool = True):
+    def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, force_extrusion: bool = True, param: str = None):
         """Move to an absolute X/Y/Z/E/V position.
 
         Parameters
@@ -401,9 +416,9 @@ class Machine:
         if force_extrusion:
             self._set_absolute_extrusion()
         
-        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s)
+        self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param = param)
         
-    def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None, dv: float = None, s: float = 6000, force_extrusion: bool = True):
+    def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None, dv: float = None, s: float = 6000, force_extrusion: bool = True, param: str = None):
         """Move relative to the current position
 
         Parameters
@@ -425,7 +440,7 @@ class Machine:
         if force_extrusion:
             self._set_relative_extrusion()
         
-        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s)
+        self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param = param)
         
     def dwell(self, t: float, millis: bool =True):
         """Pause the machine for a period of time.
@@ -446,8 +461,61 @@ class Machine:
         cmd = f"G4 {param}{t}"
         
         self.send(cmd)
+    
+    def safe_z_movement(self):
+        current_z = self.get_position()['Z']
+        safe_z = self.deck.safe_z
+        if float(current_z) < safe_z:
+            self.move_to(z = safe_z + 20)
+        else:
+            pass
+
+    def load_tool(self, tool: Tool = None):
+        """Add a new tool for use on the machine."""
+        name = tool.name
+        idx = tool.index
+
+        # Ensure that the provided tool index and name are unique
+        if idx in self.tools:
+            raise MachineConfigurationError("Error: Tool index already in use.")
+        for loaded_tool in self.tools.values():
+            if loaded_tool['name'] is name:
+                raise MachineConfigurationError("Error: Tool name already in use.")
+
+        self.tools[idx] = {"name": name, "tool": tool}
+
+
+    def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
+        """Pick up the tool specified by tool id."""
+        if isinstance(tool_id, int): # Accept either tool index, tool name, or reference to the tool itself
+            try:
+                tool_index = tool_id 
+            except:
+                raise MachineConfigurationError(f'Error: No tool with index {tool_id} is currently loaded.')
+        elif isinstance(tool_id, str):
+            try:
+                for loaded_tool_index in self.tools:
+                    if self.tools[loaded_tool_index]['name'] is tool_id:
+                        tool_index = loaded_tool_index
+                        break
+            except:
+                raise MachineConfigurationError(f'Error: No tool with name {tool_id} is currently loaded.')
+        elif isinstance(tool_id, Tool):
+            tool_index = tool_id.index
+        else:
+            raise ValueError(f"Unknown tool format {type(tool_id)}")
+        # self.safe_z_movement() # TODO removed this; need to test on machine and put back
+        self.send(f"T{tool_index}")
+        # Update the cached value to prevent read delays.
+        self._active_tool_index = tool_index
+
+        tool = self.tools[tool_index]['tool']
+        tool.is_active_tool = True
+        # TODO: Need to set the old active tool to false
 
     def tool_change(self, tool_id: int):
+        # This is my old tool change function
+        # TODO: i think i'd like to change pickup_tool above to tool_change
         """Change to specified tool."""
         if isinstance(tool_id, str): # Accept either tool number or tool name
             # Get the tool index from the configured tools list
@@ -475,6 +543,8 @@ class Machine:
     def get_position(self):
         """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
         # I've changed this; todo: check it all works
+        if self.simulated:
+            return {'X': "100", 'Y': "100", 'Z': "100" }
         resp = self.send("M114")  
         positions = {}
         keyword = " Count " # this is the keyword hosts like e.g. pronterface search for to track position

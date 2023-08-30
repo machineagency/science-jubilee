@@ -2,41 +2,46 @@ from .Tool import Tool, ToolStateError, ToolConfigurationError
 import os
 import json
 
+
 class Pipette(Tool):
     """Control an OpenTrons Pipette"""
-    def __init__(self, machine, index, name, details):
+    def __init__(self, machine, index, name, config):
         """Set default values and load in pipette configuration."""
-        super().__init__(machine, index, name, details)
+        super().__init__(machine, index, name)
         
+        self.brand = None # Do we need this?
+        self.model = None # Do we need this?
         self.has_tip = False
         self.min_range = 0
         self.max_range = None
-        self.eject_start = None
+        self.zero_position = None
+        self.blowout_position = None
+        self.eject_tip_position = None
         self.mm_to_ul = None
-        self.available_tips = None
+        # self.available_tips = None
         
-        self.load_config(details)
+        self.load_config(config)
         
-    def load_config(self, details):
+    def load_config(self, config):
         """Load the relevant configuration file for this pipette."""
-        if not details:
-            raise ToolConfigurationError("Error: Specify the pipette model in your tool_types.json file")
-        else:
-            config_path = os.path.join(self.get_root_dir(), f'config/tools/{self._details}.json')
-            if not os.path.isfile(config_path):
-                raise ToolConfigurationError(f"Error: Config file {self._details}.json does not exist!")
-                
-            with open(config_path, 'r') as f:
-                config = json.load(f)
-            try:
-                self.max_range = config['max_range']
-                self.eject_start = config['eject_start']
-                self.mm_to_ul = config['mm_to_ul'] 
-            except:
-                raise ToolConfigurationError("Error: Problem with provided configuration file.")
+        config_directory = os.path.join(os.path.dirname(__file__), 'configs')
+        config_path = os.path.join(config_directory, f'{config}.json')
+        if not os.path.isfile(config_path):
+            raise ToolConfigurationError(f"Error: Config file {config_path} does not exist!")
+            
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        self.brand              = config['brand']
+        self.model              = config['model']
+        self.min_range          = config['min_range']
+        self.max_range          = config['max_range']
+        self.zero_position      = config['zero_position']
+        self.blowout_position   = config['blowout_position']
+        self.eject_tip_position = config['eject_tip_position']
+        self.mm_to_ul           = config['mm_to_ul'] 
         
         # Check that all information was provided
-        if None in [self.max_range, self.eject_start, self.mm_to_ul]:
+        if None in vars(self):
             raise ToolConfigurationError("Error: Not enough information provided in configuration file.")
                 
     def check_bounds(self, pos):
