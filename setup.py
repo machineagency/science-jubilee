@@ -23,5 +23,5 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     python_requires='>=3.6',
-    install_requires=['pyserial==3.5', 'ipykernel==6.25.1', 'numpy==1.24.4']
+    install_requires=['pyserial==3.5', 'ipykernel', 'numpy==1.24.4']
 )
