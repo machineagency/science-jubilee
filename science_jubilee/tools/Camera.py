@@ -14,8 +14,8 @@ if platform.system() == "Linux":
 
 
 class Camera(Tool):
-    def __init__(self, index, name, details):
-        super().__init__(index, name, details)
+    def __init__(self, index, name):
+        super().__init__(index, name)
         self._camera_matrix = None
         self._dist_matrix = None
 

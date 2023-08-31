@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import serial
+from serial.tools import list_ports
 import os
 import sys
 import json
@@ -192,7 +193,6 @@ class Machine:
     def active_tool_index(self):
         """Return the index of the current tool."""
         if self._active_tool_index is None:  # Starting from a fresh connection.
-            print("tool is None")
             try:
                 response = self.send("T")
                 # We get a string instead of -1 when there are no tools.
@@ -525,24 +525,32 @@ class Machine:
         if isinstance(
             tool_id, int
         ):  # Accept either tool index, tool name, or reference to the tool itself
-            try:
+            if tool_id in self.tools:
                 tool_index = tool_id
-            except:
+            else:
                 raise MachineConfigurationError(
                     f"Error: No tool with index {tool_id} is currently loaded."
                 )
         elif isinstance(tool_id, str):
-            try:
-                for loaded_tool_index in self.tools:
-                    if self.tools[loaded_tool_index]["name"] is tool_id:
-                        tool_index = loaded_tool_index
-                        break
-            except:
+            tool_index = None
+            for loaded_tool_index in self.tools:
+                if self.tools[loaded_tool_index]["name"] is tool_id:
+                    tool_index = loaded_tool_index
+                    break
+            if tool_index is None:
                 raise MachineConfigurationError(
                     f"Error: No tool with name {tool_id} is currently loaded."
                 )
         elif isinstance(tool_id, Tool):
-            tool_index = tool_id.index
+            tool_index = None
+            for loaded_tool_index in self.tools:
+                if self.tools[loaded_tool_index]["tool"] is tool_id:
+                    tool_index = loaded_tool_index
+                    break
+            if tool_index is None:
+                raise MachineConfigurationError(
+                    f"Error: No tool of type {tool_id} is currently loaded."
+                )
         else:
             raise ValueError(f"Unknown tool format {type(tool_id)}")
 
