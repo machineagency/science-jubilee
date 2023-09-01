@@ -1,5 +1,5 @@
 {
-    "deck_type": {{deck_type}},
+    "deck_type": "{{deck_type}}",
     "deck_slots": {
         "total": {{num_slots}},
         "type": {{slot_type}}
@@ -13,10 +13,10 @@
              {% endfor %}
              },
     "offset_from": {
-        "corner": {{offset_corner}}
+        "corner": "{{offset_corner}}"
     },
     "material": {
-        "plate": {{plate_material}},
-        "mask": {{mask_material}}
+        "plate": "{{plate_material}}",
+        "mask": "{{mask_material}}"
     }
 }

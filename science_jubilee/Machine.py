@@ -270,7 +270,7 @@ class Machine:
         config_path = os.path.join(
             os.path.dirname(__file__),
             "decks",
-            "deck_definition",
+            "configs",
             f"{deck_filename}.json",
         )
         with open(config_path, "r") as f:
