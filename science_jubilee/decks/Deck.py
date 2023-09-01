@@ -59,11 +59,11 @@ class Deck(SlotSet):
 
     @property
     def bed_type(self):
-        return self.deck_config.get("bedType", "")
+        return self.deck_config.get("bed_type", "")
 
     @property
     def total_slots(self):
-        deckslots = self.deck_config.get("deckSlots", {})
+        deckslots = self.deck_config.get("deck_slots", {})
         return deckslots["total"]
 
     @property
@@ -73,7 +73,7 @@ class Deck(SlotSet):
 
     @property
     def offset_from(self):
-        return self.deck_config.get("offsetFrom", {})
+        return self.deck_config.get("offset_from", {})
 
     @property
     def deck_material(self):
@@ -100,7 +100,20 @@ class Deck(SlotSet):
         with open(config_path, "r") as f:
             labware_config = json.load(f)
         labware = Labware(labware_config)
+        
+        # Flip offsets to align with machine coordinates, if necessary
+        # TODO: Test this from all orientations
         offset = self.slots[str(slot)].offset
+        offset_from = self.offset_from['corner']
+        OFFSET_OPTIONS = ['top_left', 'top_right', 'bottom_left', 'bottom_right']
+        if offset_from not in OFFSET_OPTIONS:
+            print("Error: unknown offset option.") # TODO: Make a DeckStateError in base deck class
+        
+        labware_dims = labware.dimensions
+        if 'right' in offset_from:
+            offset[0] -= labware_dims['xDimension']
+        if 'top' in offset_from:
+            offset[1] -= labware_dims['yDimension']
 
         labware.offset = offset
         self.slots[str(slot)].has_labware = True

@@ -1,12 +1,10 @@
 class ToolStateError(Exception):
     """Raise this error if the tool is in the wrong state to perform such a command."""
-
     pass
 
 
 class ToolConfigurationError(Exception):
     """Raise this error if there is something wrong with how the tool is configured"""
-
     pass
 
 

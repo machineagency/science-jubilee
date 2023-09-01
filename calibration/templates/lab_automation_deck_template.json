@@ -5,13 +5,13 @@
         "type": {{slot_type}}
     },
     "slots": { {% for slot in range(-num_sharps_containers, num_slots) %}
-                {{slot}}: {
+                "{{slot}}": {
                     "offset": {{slot_data[slot]}},
                     "has_labware": false,
                     "labware": null
                 },
              {% endfor %}
-             },
+             }
     "offset_from": {
         "corner": "{{offset_corner}}"
     },
