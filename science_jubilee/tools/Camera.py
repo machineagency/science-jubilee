@@ -99,7 +99,6 @@ class Camera(Tool):
             ret, frame = cap.read()
             h, w = frame.shape[0:2]
             center = (int(w / 2), int(h / 2))
-            print(center)
 
         while True:
             ret, frame = cap.read()

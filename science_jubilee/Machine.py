@@ -8,6 +8,7 @@ import sys
 import json
 from pathlib import Path
 from typing import Union
+import warnings
 
 
 from science_jubilee.tools.Tool import Tool
@@ -201,7 +202,7 @@ class Machine:
                 # We get a string instead of the tool index.
                 elif response.startswith("Tool"):
                     # Recover from the string: 'Tool X is selected.'
-                    self.active_tool_index = int(response.split()[1])
+                    self.active_tool_index = int(response.split()[1]) 
                 else:
                     self.active_tool_index = int(response)
             except ValueError as e:
@@ -221,6 +222,10 @@ class Machine:
             self.tool = None
         else:
             self._active_tool_index = tool_index
+            if tool_index not in self.tools:
+                warnings.warn("Connection initiated with tool equipped. Use reload_tool() after instantiate this tool.")
+                temp_tool = Tool(tool_index, "temp_tool")
+                self.load_tool(temp_tool)
             tool = self.tools[tool_index]["tool"]
             self.tool = tool
             tool.is_active_tool = True
@@ -453,6 +458,7 @@ class Machine:
         force_extrusion: bool = True,
         param: str = None,
         wait: bool = False,
+        axis_limits: tuple = (None, 300, None)
     ):
         """Move relative to the current position
 
@@ -471,6 +477,17 @@ class Machine:
         Nothing
 
         """
+        # Check that the relative move doesn't exceed user-defined limit
+        # By default, ensure that it won't crash into the parked tools
+        if any(axis_limits):
+            x_limit, y_limit, z_limit = axis_limits
+            pos = self.get_position()
+            if x_limit and float(pos['X']) + dx > x_limit: 
+                raise MachineStateError("Error: Relative move exceeds X axis limit!")
+            if y_limit and float(pos['Y']) + dy > y_limit: 
+                raise MachineStateError("Error: Relative move exceeds Y axis limit!")
+            if z_limit and float(pos['Z']) + dz > z_limit: 
+                raise MachineStateError("Error: Relative move exceeds Z axis limit!")
         self._set_relative_positioning()
         if force_extrusion:
             self._set_relative_extrusion()
@@ -513,6 +530,21 @@ class Machine:
         # Ensure that the provided tool index and name are unique.
         if idx in self.tools:
             raise MachineConfigurationError("Error: Tool index already in use.")
+        for loaded_tool in self.tools.values():
+            if loaded_tool["name"] is name:
+                raise MachineConfigurationError("Error: Tool name already in use.")
+
+        self.tools[idx] = {"name": name, "tool": tool}
+        tool._machine = self
+        
+    def reload_tool(self, tool: Tool = None):
+        """Update a tool which has already been loaded."""
+        name = tool.name
+        idx = tool.index
+
+        # Ensure that the provided tool index and name are unique.
+        if idx not in self.tools:
+            raise MachineConfigurationError(f"Error: No tool with index {idx} to update.")
         for loaded_tool in self.tools.values():
             if loaded_tool["name"] is name:
                 raise MachineConfigurationError("Error: Tool name already in use.")
