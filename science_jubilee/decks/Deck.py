@@ -3,6 +3,7 @@ from typing import Dict, Tuple
 from pathlib import Path
 import os
 import json
+import copy
 from science_jubilee.labware.Utils import json2dict
 from science_jubilee.labware.Labware import Labware
 
@@ -103,7 +104,7 @@ class Deck(SlotSet):
         
         # Flip offsets to align with machine coordinates, if necessary
         # TODO: Test this from all orientations
-        offset = self.slots[str(slot)].offset
+        offset = copy.copy(self.slots[str(slot)].offset)
         offset_from = self.offset_from['corner']
         OFFSET_OPTIONS = ['top_left', 'top_right', 'bottom_left', 'bottom_right']
         if offset_from not in OFFSET_OPTIONS:
@@ -112,6 +113,8 @@ class Deck(SlotSet):
         labware_dims = labware.dimensions
         if 'right' in offset_from:
             offset[0] -= labware_dims['xDimension']
+            print(offset[0])
+            print(self.slots[str(slot)].offset[0])
         if 'top' in offset_from:
             offset[1] -= labware_dims['yDimension']
 
