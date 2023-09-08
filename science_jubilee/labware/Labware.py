@@ -1,6 +1,9 @@
 import numpy as np
 from dataclasses import dataclass
 from typing import List, Dict, Tuple
+import os
+import json
+from pathlib import Path
 
 
 @dataclass
@@ -91,8 +94,15 @@ class Column(WellSet):
 
 
 class Labware(WellSet):
-    def __init__(self, data: dict, offset: Tuple[float] = None):
-        self.data = data
+    def __init__(self, labware_filename: str, offset: Tuple[float] = None):
+        # load in the labware definition
+        labware_dir = Path(__file__).parent
+        config_path = os.path.join(
+            labware_dir, "labware_definitions", f"{labware_filename}.json"
+        )
+        with open(config_path, "r") as f:
+            labware_config = json.load(f)
+        self.data = labware_config
         self.wells_data = self.data.get("wells", {})
         self.data["ordering"] = np.array(self.data["ordering"]).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
@@ -181,6 +191,10 @@ class Labware(WellSet):
     @property
     def is_tip_rack(self):
         return self.parameters()["isTiprack"]
+    
+    @property
+    def load_name(self):
+        return self.parameters()["loadName"]
 
     @property
     def tip_length(self):

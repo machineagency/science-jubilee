@@ -94,13 +94,13 @@ class Deck(SlotSet):
             pass
 
     def load_labware(self, labware_filename, slot):
-        root_dir = Path(__file__).parent.parent
-        config_path = os.path.join(
-            root_dir, "labware", "labware_definitions", f"{labware_filename}.json"
-        )
-        with open(config_path, "r") as f:
-            labware_config = json.load(f)
-        labware = Labware(labware_config)
+        # root_dir = Path(__file__).parent.parent
+        # config_path = os.path.join(
+        #     root_dir, "labware", "labware_definitions", f"{labware_filename}.json"
+        # )
+        # with open(config_path, "r") as f:
+        #     labware_config = json.load(f)
+        labware = Labware(labware_filename)
         
         # Flip offsets to align with machine coordinates, if necessary
         # TODO: Test this from all orientations
