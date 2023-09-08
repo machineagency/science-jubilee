@@ -35,5 +35,25 @@ science_jubilee/
 ### Labware and Wetware
 The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates. 
 
+### Using science_jubilee
+You can import and use science_jubilee modules by importing the modules you need at the top of your python file/notebook. For example, if we want to pipette using a lab automation deck, we might write:
+```python
+from science_jubilee.Machine import Machine                             # import machine driver
+from science_jubilee.decks.LabAutomationDeck import LabAutomationDeck   # import lab automation deck module
+from science_jubilee.tools.Pipette import Pipette                       # import pipette module
+...                                                                     # you can import other decks/tools here, or make your own!
+```
+We can then amke use of these modules in our code:
+```python
+m = Machine()                                                  # connect to your jubilee
+deck = m.load_deck(deck_config_name)                           # setup your deck
+tip_rack = deck.load_labware(opentrons_96_tiprack_300ul, 0)    # install an opentrons tip rack in slot 0 of the deck
+pipette = Pipette(<index>, <name>, <tip_rack>, <config_file>)  # instantiate your pipette tool
+m.load_tool(pipette)                                           # configure the pipette for use on the machine
+...
+```
+
+
+
 
 
