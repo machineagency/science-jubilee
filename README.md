@@ -43,7 +43,7 @@ from science_jubilee.decks.LabAutomationDeck import LabAutomationDeck   # import
 from science_jubilee.tools.Pipette import Pipette                       # import pipette module
 ...                                                                     # you can import other decks/tools here, or make your own!
 ```
-We can then amke use of these modules in our code:
+We can then make use of these modules in our code:
 ```python
 m = Machine()                                                  # connect to your jubilee
 deck = m.load_deck(deck_config_name)                           # setup your deck
