@@ -72,6 +72,8 @@ class Deck(SlotSet):
     
     @safe_z.setter
     def safe_z(self, val):
+        """Function that updates the movement clearance height 
+        every time a new labware is loaded onto the deck """
         if self._safe_z is None:
             self._safe_z = val
         elif self._safe_z <= val:
@@ -80,6 +82,8 @@ class Deck(SlotSet):
             pass
         
     def load_labware(self, labware_filename, slot, path = os.path.join(os.path.dirname(__file__),'..', 'labware', 'labware_definition')):
+        """Function that loads a labware and associates it with a specific slot on the deck.
+         The slot offset is also applied to the labware asocaite with it."""
         # get slot offset
         lab_file= json2dict(labware_filename, path )
         labware  = Labware(lab_file)

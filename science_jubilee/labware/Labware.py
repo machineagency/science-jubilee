@@ -21,7 +21,7 @@ class Well:
         
     @property
     def x(self):
-        "Offsets the x-position of the each well with respect to the deck-slot coordinates"
+        """Offsets the x-position of the each well with respect to the deck-slot coordinates"""
         if self.offset is not None:
             return self._x + self.offset[0]
         else:
@@ -33,7 +33,7 @@ class Well:
         
     @property
     def y(self):
-        "Offsets the y-position of the each well with respect to the deck-slot coordinates"
+        """Offsets the y-position of the each well with respect to the deck-slot coordinates"""
         if self.offset is not None:
             return self._y + self.offset[1]
         else:
@@ -53,12 +53,12 @@ class Well:
 
     @property
     def top(self):
-        "Defines the top-most point of the well"
+        """Defines the top-most point of the well"""
         return self.z + self.depth
 
     @property
     def bottom(self):
-        "Defines the bottom-most point of the well"
+        """Defines the bottom-most point of the well"""
         return self.z
         
 
@@ -66,7 +66,7 @@ class Well:
 class WellSet:
     wells: Dict[str, Well]
     def __repr__(self):
-        "Displays the wellset as the list of wells and the deck-slot nunmber"
+        """Displays the wellset as the list of wells and the deck-slot nunmber"""
         return str(f'{list(self.wells.keys())}')
     def __getitem__(self, id_):
         try:
@@ -223,10 +223,11 @@ class Labware(WellSet):
                 w.offset = new_offset
     
     def add_slot(self, slot_):
+        """Add name of deck slot after labware has been loaded"""
         self.slot = slot_
     
     def withWellOrder(self, order) -> list:
-        "Reorders the wells by rows or by columns. Automatically updates"
+        """Reorders the wells by rows or by columns. Automatically updates"""
         ordered_wells = {}
         if order in ['rows', 'row', 'Rows', 'Row', 'R']:
             for well in list(chain(*self.row_data.values())):
