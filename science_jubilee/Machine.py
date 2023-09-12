@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import Union
 import warnings
+import requests
 
 
 from science_jubilee.tools.Tool import Tool
@@ -77,13 +78,19 @@ class Machine:
         self,
         port: str = None,
         baudrate: int = 115200,
+        address: str = None,
         deck_config: str = None,
-        simulated: bool = False,
+        simulated: bool = False
     ):
         """Set default values and connect to the machine."""
-
+        
+        # We can connect via http or serial. Defaults to serial.
+        self.address = address
+            
         # Serial Info
         self.ser = None
+        self.port = port
+        self.baudrate = baudrate
         self.lineEnding = "\n"
 
         # Machine Info
@@ -109,10 +116,10 @@ class Machine:
         self.transform = []
         self.img_size = []
 
-        self.connect(port, baudrate)
+        self.connect()
 
-    def connect(self, port: str, baudrate: int):
-        """Connect to the machine over serial."""
+    def connect(self):
+        """Connect to the machine over serial or http."""
         if self.simulated:
             # Sample simulated tools for my machine.
             self._configured_tools = {
@@ -123,19 +130,24 @@ class Machine:
                 4: "10cc Syringe",
             }
             return
-
-        if port == None:
-            # Autoconnect to ttyACM* if it exists & is unique
-            ports = [
-                p.name for p in serial.tools.list_ports.comports() if "ttyACM" in p.name
-            ]
-            if len(ports) > 1:
-                raise MachineStateError(
-                    "More than one possible serial device found. Please connect to an explicit port."
-                )
-            else:
-                port = f"/dev/{ports[0]}"
-        self.ser = serial.Serial(port, baudrate, timeout=1)
+        
+        # Connect over http if address is provided
+        if self.address:
+            return
+        else:
+            if self.port == None:
+                # Autoconnect to ttyACM* if it exists & is unique
+                ports = [
+                    p.name for p in serial.tools.list_ports.comports() if "ttyACM" in p.name
+                ]
+                if len(ports) > 1:
+                    raise MachineStateError(
+                        "More than one possible serial device found. Please connect to an explicit port."
+                    )
+                else:
+                    self.port = f"/dev/{ports[0]}"
+            self.ser = serial.Serial(self.port, self.baudrate, timeout=1)
+            
         self.send("M450")  # Sample command to initialize serial connection
 
         # Update machine state with info from the object model
@@ -282,22 +294,23 @@ class Machine:
     ##########################################
     #                GCODE
     ##########################################
-    def send(self, cmd: str = ""):
-        """Send GCode over serial connection"""
+    def send(self, cmd: str = "", timeout: float = None):
+        """Send GCode over serial/http"""
         if self.simulated:
             return None
-        cmd += self.lineEnding
-        bcmd = cmd.encode("UTF-8")
-        self.ser.write(bcmd)
+        if self.port:
+            cmd += self.lineEnding
+            bcmd = cmd.encode("UTF-8")
+            self.ser.write(bcmd)
 
-        # Read response
-        self.ser.reset_input_buffer()  # flush the buffer
-        resp = self.ser.readline().decode("UTF-8")
-
-        #         if resp == 'ok\n':
-        #             print('got an ok')
-        #             resp = self.ser.readline().decode('UTF-8') # read another line if first is just confirmation
-        return resp
+            # Read response
+            self.ser.reset_input_buffer()  # flush the buffer
+            response = self.ser.readline().decode("UTF-8")
+        elif self.address:
+            # RRF3 Only
+            response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
+        
+        return response
 
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""

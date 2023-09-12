@@ -10,9 +10,9 @@ import os
 # from inpromptu import Inpromptu, cli_method
 from typing import Union
 from functools import wraps
-from labware.Utils import json2dict
-from decks.Deck import Deck
-from tools.Tool import Tool
+from science_jubilee.labware.Utils import json2dict
+from science_jubilee.decks.Deck import Deck
+from science_jubilee.tools.Tool import Tool
 
 # TODO: Figure out how to print error messages from the Duet.
 
@@ -51,8 +51,8 @@ def machine_is_homed(func):
 class Machine:
     """Driver for sending motion cmds and polling the machine state."""
 
-    LOCALHOST = "192.168.1.2"
-
+    # LOCALHOST = "192.168.1.2"
+    LOCALHOST = "Jubilee.local"
     def __init__(
         self,
         address=LOCALHOST,
@@ -66,6 +66,7 @@ class Machine:
             print(
                 "Warning: disconnecting this application from the network will halt connection to Jubilee."
             )
+        print('connecting')
         # Machine Specs
         self.address = address
         self.debug = debug
@@ -107,9 +108,11 @@ class Machine:
         if self.debug:
             print(f"Connecting to {self.address} ...")
         try:
+            print('connect()')
             # "Ping" the machine by updating the only cacheable information we care about.
             max_tries = 50
             for i in range(max_tries):
+                print(i)
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
@@ -188,8 +191,21 @@ class Machine:
 
         # Return the cached value.
         return self._configured_tools
+    
+    def gcode(self, cmd: str = "", timeout: float = None):
+        """Send a GCode cmd; return the response"""
+        if self.debug or self.simulated:
+            print(f"sending: {cmd}")
+        if self.simulated:
+            return None
+        # RRF3 Only
+        response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
+        if self.debug:
+            print(f"received: {response}")
+            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
+        return response
 
-    def gcode(self, cmd: str = "", response_wait: float = 10):
+    def gcode_new(self, cmd: str = "", response_wait: float = 10):
         """Send a GCode cmd; return the response"""
         if self.debug or self.simulated:
             print(f"sending: {cmd}")
