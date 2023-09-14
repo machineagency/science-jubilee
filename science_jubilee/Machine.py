@@ -497,7 +497,7 @@ class Machine:
             pos = self.get_position()
             if x_limit and float(pos['X']) + dx > x_limit: 
                 raise MachineStateError("Error: Relative move exceeds X axis limit!")
-            if y_limit and float(pos['Y']) + dy > y_limit: 
+            if y_limit and dy and float(pos['Y']) + dy > y_limit: 
                 raise MachineStateError("Error: Relative move exceeds Y axis limit!")
             if z_limit and float(pos['Z']) + dz > z_limit: 
                 raise MachineStateError("Error: Relative move exceeds Z axis limit!")
@@ -549,6 +549,7 @@ class Machine:
 
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
+        tool.post_load()
         
     def reload_tool(self, tool: Tool = None):
         """Update a tool which has already been loaded."""

@@ -1,0 +1,8 @@
+{
+    "unit" : "milliliters",
+    "max_volume": 10,
+    "min_volume": 0,
+    "min_range": -70,
+    "max_range": 0,
+    "mm_to_ml": 7
+}
