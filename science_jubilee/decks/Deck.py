@@ -113,8 +113,6 @@ class Deck(SlotSet):
         labware_dims = labware.dimensions
         if 'right' in offset_from:
             offset[0] -= labware_dims['xDimension']
-            print(offset[0])
-            print(self.slots[str(slot)].offset[0])
         if 'top' in offset_from:
             offset[1] -= labware_dims['yDimension']
 
