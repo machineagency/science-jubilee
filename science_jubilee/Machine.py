@@ -435,7 +435,7 @@ class Machine:
         cmd = f"G0 {x_cmd} {y_cmd} {z_cmd} {e_cmd} {v_cmd} {f_cmd} {param_cmd}"
         self.send(cmd)
         if wait:
-            self.gcode(f"M400")
+            self.send(f"M400")
 
     def move_to(
         self,

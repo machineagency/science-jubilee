@@ -62,16 +62,15 @@ class Syringe(Tool):
         pos = self._machine.get_position()
         end_pos = float(pos[self.e_drive]) + de
         self.check_bounds(end_pos)
-        current_pos = pos[self.e_drive]
-        self._machine.move(de=de)
-
+        self._machine.move(de=de, wait = True)
+        
     def _dispense(self, vol, s: int = 2000):
         """Dispense a certain number of milliliters."""
         de = vol * self.mm_to_ml
         pos = self._machine.get_position()
         end_pos = float(pos[self.e_drive]) + de
         self.check_bounds(end_pos)
-        self._machine.move(de=de)
+        self._machine.move(de=de, wait = True)
         
     def aspirate(
         self,
@@ -159,7 +158,7 @@ class Syringe(Tool):
                                         
         source_destination_pairs = list(zip(source, destination))
         for source_well, destination_well in source_destination_pairs:
-            # Get locations
+            # TODO: Large volume transfers which exceed tool capacity should be split up into several transfers
             xs, ys, zs = self._get_xyz(well=source_well)
             xd, yd, zd = self._get_xyz(well=destination_well)
 
