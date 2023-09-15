@@ -67,6 +67,18 @@ def requires_deck(func):
 
     return deck_check
 
+def requires_safe_z(func):
+    """Ensure deck is at a safe height before performing certain actions."""
+    
+    def z_check(self, *args, **kwds):
+        current_z = float(self.get_position()["Z"])
+        safe_z = self.deck.safe_z
+        if current_z < safe_z:
+            self.move_to(z=safe_z + 20)
+        return func(self, *args, **kwds)
+    
+    return z_check
+        
 
 ##########################################
 #             MACHINE CLASS
@@ -566,6 +578,7 @@ class Machine:
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
 
+    @requires_safe_z
     def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
         """Pick up the tool specified by tool id."""
         if isinstance(
@@ -600,7 +613,7 @@ class Machine:
         else:
             raise ValueError(f"Unknown tool format {type(tool_id)}")
 
-        # self.safe_z_movement() # TODO removed this; need to test on machine and put back
+#         self.safe_z_movement()
         self.send(f"T{tool_index}")
         self.active_tool_index = tool_index
 
@@ -626,6 +639,7 @@ class Machine:
 
     #     self.active_tool_index = tool_idx
 
+    @requires_safe_z
     def park_tool(self):
         """Deselect tool"""
         self.send("T-1")
