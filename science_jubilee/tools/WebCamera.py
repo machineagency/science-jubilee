@@ -119,4 +119,4 @@ class Camera(Tool):
         plt.setp(plt.gca(), autoscale_on=True)
         ax.imshow(image)
 
-        return fig
+        return fig # need to test this return statement
