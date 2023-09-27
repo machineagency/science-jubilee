@@ -12,7 +12,21 @@ from functools import wraps
 from labware.Utils import json2dict
 from decks.Deck import Deck
 from tools.Tool import Tool
+
+import serial
+from serial.tools import list_ports
+from pathlib import Path
+import warnings
+
+
 #TODO: Figure out how to print error messages from the Duet.
+
+
+# copied from machine agency version, may not be needed here
+
+def get_root_dir():
+    """Return the path to the duckbot directory."""
+    return Path(__file__).parent.parent
 
 ##########################################
 #               ERRORS
@@ -25,30 +39,80 @@ class MachineStateError(Exception):
     """Raise this error if the machine is in the wrong state to perform the requested action."""
     pass
 
+##########################################
+#               DECORATORS
+##########################################
+def machine_homed(func):
+    """Check if the machine is homed before performing certain actions."""
 
-def machine_is_homed(func):
     def homing_check(self, *args, **kwds):
         # Check the cached value if one exists.
+        if self.simulated:
+            return func(self, *args, **kwds)
         if self.axes_homed and all(self.axes_homed):
             return func(self, *args, **kwds)
         # Request homing status from the object model if not known.
-        self.axes_homed = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
+        self.axes_homed = json.loads(self.gcode('M409 K"move.axes[].homed"'))["result"]
         if not all(self.axes_homed):
             raise MachineStateError("Error: machine must first be homed.")
         return func(self, *args, **kwds)
+
     return homing_check
 
+def requires_deck(func):
+    """Check if a deck has been configured before performing certain actions."""
+
+    def deck_check(self, *args, **kwds):
+        if self.deck is None:
+            raise MachineStateError("Error: No deck is set up")
+        return func(self, *args, **kwds)
+
+    return deck_check
+
+def requires_safe_z(func):
+    """Ensure deck is at a safe height before performing certain actions."""
+    
+    def z_check(self, *args, **kwds):
+        current_z = float(self.get_position()["Z"])
+        safe_z = self.deck.safe_z
+        if current_z < safe_z:
+            self.move_to(z=safe_z + 20)
+        return func(self, *args, **kwds)
+    
+    return z_check
+
+
+##########################################
+#             MACHINE CLASS
+##########################################
 
 class Machine():
     """Driver for sending motion cmds and polling the machine state."""
 
     LOCALHOST = "192.168.1.2"
 
-    def __init__(self, address=LOCALHOST, debug=False, simulated=False, reset=False, deck_config: str=None):
+    def __init__(self,
+        port: str = None,
+        baudrate: int = 115200,
+        address: str = None,
+        deck_config: str = None,
+        simulated: bool = False
+    ):
         """Start with sane defaults. Setup command and subscribe connections."""
         if address != self.__class__.LOCALHOST:
             print("Warning: disconnecting this application from the network will halt connection to Jubilee.")
         # Machine Specs
+
+
+
+        #serial info
+        self.ser = None
+        self.port = port
+        self.baudrate = baudrate
+        self.lineEnding = "\n"        # serial stuff
+
+
+
         self.address = address
         self.debug = debug
         self.simulated = simulated
@@ -73,15 +137,15 @@ class Machine():
 
         self.connect()
 
-        if reset:
-            self.reset() # also does a reconnect.
         self._set_absolute_positioning()#force=True)
 
     def connect(self):
         """Connect to Jubilee over http."""
+        #TODO: incorporate serial connection from machine agency version
         if self.simulated:
             return
         # Do the equivalent of a ping to see if the machine is up.
+
         if self.debug:
             print(f"Connecting to {self.address} ...")
         try:
@@ -162,10 +226,135 @@ class Machine():
         
         # Return the cached value.
         return self._configured_tools
+    
 
+    @property
+    def active_tool_index(self):
+        """Return the index of the current tool."""
+        #print('calling the property func')
+        #print(self._active_tool_index)
+        if self._active_tool_index is None: # Starting from a fresh connection.
+            try:
+                max_tries = 50
+                for i in range(max_tries):
+                    response = self.gcode("T")
+                    if len(response)==0:
+                        continue
+                    else:
+                        break              
+                # On HTTP Interface, we get a string instead of -1 when there are no tools.
+                if response.startswith('No tool'):
+                    #print('active tool prop thinks theres no tool')
+                    return -1
+                # On HTTP Interface, we get a string instead of the tool index.
+                elif response.startswith('Tool'):
+                    # Recover from the string: 'Tool X is selected.'
+                    self.active_tool_index = int(response.split()[1])
+                else:
+                    self.active_tool_index = int(response)
+            except ValueError as e:
+                #print("Error occurred trying to read current tool!")
+                raise e
+        # Return the cached value.
+        return self._active_tool_index
+    
+
+    @active_tool_index.setter
+    def active_tool_index(self, tool_index: int):
+        """Set the current tool, and toggle the old tool off."""
+        if self.tool is not None:
+            self.tool.is_active_tool = False
+
+        if tool_index < 0:
+            self._active_tool_index = -1
+            self.tool = None
+        else:
+            self._active_tool_index = tool_index
+            if tool_index not in self.tools:
+                warnings.warn("Connection initiated with tool equipped. Use reload_tool() after instantiate this tool.")
+                temp_tool = Tool(tool_index, "temp_tool")
+                self.load_tool(temp_tool)
+            tool = self.tools[tool_index]["tool"]
+            self.tool = tool
+            tool.is_active_tool = True
+
+    @property
+    def tool_z_offsets(self):
+        """Return (in tool order) a list of tool's z offsets"""
+        # Starting from fresh connection, query from the Duet.
+        # if self._tool_z_offsets is None:
+        try:
+            max_tries = 50
+            for i in range(max_tries):
+                response = json.loads(self.gcode('M409 K"tools"'))["result"]
+                if len(response) == 0 :
+                    continue
+                else:
+                    break               
+            #pprint.pprint(response)
+            self._tool_z_offsets = [] # Create a fresh list.
+            for tool_data in response:
+                tool_z_offset = tool_data["offsets"][2] # Pull Z axis
+                self._tool_z_offsets.append(tool_z_offset)
+        except ValueError as e:
+            print("Error occurred trying to read z offsets of all tools!")
+            raise e
+        # Return the cached value.
+        return self._tool_z_offsets
+
+    @property
+    def axis_limits(self):
+        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit"""
+        # Starting from fresh connection, query from the Duet.
+        if self._axis_limits is None:
+            try:
+                max_tries = 50
+                for i in range(max_tries):
+                    response = json.loads(self.gcode("M409 K\"move.axes\""))["result"]
+                    if len(response) == 0 :
+                        continue
+                    else:
+                        break
+                #pprint.pprint(response)
+                self._axis_limits = [] # Create a fresh list.
+                for axis_data in response:
+                    axis_min = axis_data["min"]
+                    axis_max = axis_data["max"]
+                    self._axis_limits.append((axis_min, axis_max))
+            except ValueError as e:
+                print("Error occurred trying to read axis limits on each axis!")
+                raise e
+        # Return the cached value.
+        return self._axis_limits    
+
+
+    @property
+    def position(self):
+        """Returns the machine control point in mm."""
+        # Axes are ordered X, Y, Z, U, E, E0, E1, ... En, where E is a copy of E0.
+        response_chunks = self.gcode("M114").split()
+        positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
+        return positions 
+
+    ##########################################
+    #                BED PLATE
+    ##########################################
+    def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'configs')):
+        # do thing
+        #make sure filename has json 
+        if deck_filename[-4] != 'json':
+            deck_filename = deck_filename + '.json'
+
+        config_path = os.path.join(path, deck_filename)
+        with open(config_path, "r") as f:
+            deck_config = json.load(f)
+        deck = Deck(deck_config)
+        self.deck = deck
+        return deck    
 
     def gcode(self, cmd: str = "", response_wait: float = 10):
         """Send a GCode cmd; return the response"""
+        #TODO: Add serial option for gcode commands from MA
         if self.debug or self.simulated:
             print(f"sending: {cmd}")
         if self.simulated:
@@ -315,7 +504,7 @@ class Machine():
                 raise TypeError(f"Error: cannot home unknown axis: {axis}.")
             self.gcode(f"G92 {axis.upper()}0")
 
-    @machine_is_homed
+    @machine_homed
     def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None,
                      v: float = None, s: float = 6000, param: str=None , wait: bool = False):
         """Move X/Y/Z/E/V axes. Set absolute/relative mode externally.
@@ -415,13 +604,6 @@ class Machine():
         
         self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param=param, wait=wait)
 
-    def safe_z_movement(self):
-        current_z = self.get_position()['Z']
-        safe_z = self.deck.safe_z
-        if float(current_z) < safe_z :
-            self.move_to(z = safe_z + 20)
-        else:
-            pass
 
     def dwell(self, t: float, millis: bool =True):
         """Pause the machine for a period of time.
@@ -441,14 +623,17 @@ class Machine():
         cmd = f"G4 {param}{t}"
         
         self.gcode(cmd)
+
+    def safe_z_movement(self):
+        #TODO is this redundant? can we reuse decorator in pipette module? 
+        current_z = self.get_position()['Z']
+        safe_z = self.deck.safe_z
+        if float(current_z) < safe_z :
+            self.move_to(z = safe_z + 20)
+        else:
+            pass
     
-    @property
-    def position(self):
-        """Returns the machine control point in mm."""
-        # Axes are ordered X, Y, Z, U, E, E0, E1, ... En, where E is a copy of E0.
-        response_chunks = self.gcode("M114").split()
-        positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
-        return positions
+
 
     def _get_tool_index(self, tool_item: Union[int, Tool, str]):
         if type(tool_item) == int:
@@ -462,22 +647,80 @@ class Machine():
             return tool_item.index
         else:
             raise ValueError(f"Unknown tool format {type(tool_item)}")
-
-
-    def pickup_tool(self, tool_item: Union[int, Tool, str] = None):
-        """Pick up the tool specified by tool index."""
-        tool_index = self._get_tool_index(tool_item=tool_item)
-        self.safe_z_movement()
-        self.gcode(f"T{tool_index}")
-        # Update the cached value to prevent read delays.
-        self._active_tool_index = tool_index
         
-        if isinstance(tool_item, Tool):
-            tool_item.is_active_tool = True
-        # need to figure out how to add the is_active_tool
-        # if user provides index or name instead
+
+    def load_tool(self, tool: Tool = None):
+        """Add a new tool for use on the machine."""
+        name = tool.name
+        idx = tool.index
+
+        # Ensure that the provided tool index and name are unique.
+        if idx in self.tools:
+            raise MachineConfigurationError("Error: Tool index already in use.")
+        for loaded_tool in self.tools.values():
+            if loaded_tool["name"] is name:
+                raise MachineConfigurationError("Error: Tool name already in use.")
+
+        self.tools[idx] = {"name": name, "tool": tool}
+        tool._machine = self
+        tool.post_load()
+        
+    def reload_tool(self, tool: Tool = None):
+        """Update a tool which has already been loaded."""
+        name = tool.name
+        idx = tool.index
+
+        # Ensure that the provided tool index and name are unique.
+        if idx not in self.tools:
+            raise MachineConfigurationError(f"Error: No tool with index {idx} to update.")
+        for loaded_tool in self.tools.values():
+            if loaded_tool["name"] is name:
+                raise MachineConfigurationError("Error: Tool name already in use.")
+
+        self.tools[idx] = {"name": name, "tool": tool}
+        tool._machine = self
 
 
+    @requires_safe_z
+    def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
+        """Pick up the tool specified by tool id."""
+        if isinstance(
+            tool_id, int
+        ):  # Accept either tool index, tool name, or reference to the tool itself
+            if tool_id in self.tools:
+                tool_index = tool_id
+            else:
+                raise MachineConfigurationError(
+                    f"Error: No tool with index {tool_id} is currently loaded."
+                )
+        elif isinstance(tool_id, str):
+            tool_index = None
+            for loaded_tool_index in self.tools:
+                if self.tools[loaded_tool_index]["name"] is tool_id:
+                    tool_index = loaded_tool_index
+                    break
+            if tool_index is None:
+                raise MachineConfigurationError(
+                    f"Error: No tool with name {tool_id} is currently loaded."
+                )
+        elif isinstance(tool_id, Tool):
+            tool_index = None
+            for loaded_tool_index in self.tools:
+                if self.tools[loaded_tool_index]["tool"] is tool_id:
+                    tool_index = loaded_tool_index
+                    break
+            if tool_index is None:
+                raise MachineConfigurationError(
+                    f"Error: No tool of type {tool_id} is currently loaded."
+                )
+        else:
+            raise ValueError(f"Unknown tool format {type(tool_id)}")
+
+#         self.safe_z_movement()
+        self.gcode(f"T{tool_index}")
+        self.active_tool_index = tool_index
+
+    @requires_safe_z
     def park_tool(self):
         """Park the current tool."""
         self.safe_z_movement()
@@ -485,60 +728,6 @@ class Machine():
         # Update the cached value to prevent read delays.
         self._active_tool_index = -1
 
-
-    @property
-    def active_tool_index(self):
-        """Return the index of the current tool."""
-        #print('calling the property func')
-        #print(self._active_tool_index)
-        if self._active_tool_index is None: # Starting from a fresh connection.
-            try:
-                max_tries = 50
-                for i in range(max_tries):
-                    response = self.gcode("T")
-                    if len(response)==0:
-                        continue
-                    else:
-                        break              
-                # On HTTP Interface, we get a string instead of -1 when there are no tools.
-                if response.startswith('No tool'):
-                    #print('active tool prop thinks theres no tool')
-                    return -1
-                # On HTTP Interface, we get a string instead of the tool index.
-                elif response.startswith('Tool'):
-                    # Recover from the string: 'Tool X is selected.'
-                    self.active_tool_index = int(response.split()[1])
-                else:
-                    self.active_tool_index = int(response)
-            except ValueError as e:
-                #print("Error occurred trying to read current tool!")
-                raise e
-        # Return the cached value.
-        return self._active_tool_index
-
-    @property
-    def tool_z_offsets(self):
-        """Return (in tool order) a list of tool's z offsets"""
-        # Starting from fresh connection, query from the Duet.
-        # if self._tool_z_offsets is None:
-        try:
-            max_tries = 50
-            for i in range(max_tries):
-                response = json.loads(self.gcode('M409 K"tools"'))["result"]
-                if len(response) == 0 :
-                    continue
-                else:
-                    break               
-            #pprint.pprint(response)
-            self._tool_z_offsets = [] # Create a fresh list.
-            for tool_data in response:
-                tool_z_offset = tool_data["offsets"][2] # Pull Z axis
-                self._tool_z_offsets.append(tool_z_offset)
-        except ValueError as e:
-            print("Error occurred trying to read z offsets of all tools!")
-            raise e
-        # Return the cached value.
-        return self._tool_z_offsets
 
     def get_position(self):
         """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
@@ -565,51 +754,6 @@ class Machine():
 
         return positions
     
-    @property
-    def axis_limits(self):
-        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit"""
-        # Starting from fresh connection, query from the Duet.
-        if self._axis_limits is None:
-            try:
-                max_tries = 50
-                for i in range(max_tries):
-                    response = json.loads(self.gcode("M409 K\"move.axes\""))["result"]
-                    if len(response) == 0 :
-                        continue
-                    else:
-                        break
-                #pprint.pprint(response)
-                self._axis_limits = [] # Create a fresh list.
-                for axis_data in response:
-                    axis_min = axis_data["min"]
-                    axis_max = axis_data["max"]
-                    self._axis_limits.append((axis_min, axis_max))
-            except ValueError as e:
-                print("Error occurred trying to read axis limits on each axis!")
-                raise e
-        # Return the cached value.
-        return self._axis_limits     
-
-    def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition')):
-        # do thing
-        deck_config = json2dict(deck_filename, path)
-        deck =  Deck(deck_config)
-        self.deck = deck
-        return deck                        
-    
-    def load_tool(self, tool: Tool = None):
-        name= tool.name
-        idx = tool.index
-        if idx in self.tools:
-            raise MachineConfigurationError("Error: tool name already used by a different tool")
-        else:
-            pass
-
-        if name in set(self.tools.values()):
-            raise MachineConfigurationError("Error: tool index already set for a different tool")
-        else:
-            pass
-        self.tools[idx] = name
 
     def load_labware(self, labware_filename : str, slot: int, path : str = None ):
 
