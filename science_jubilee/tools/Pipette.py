@@ -13,11 +13,11 @@ class Pipette(Tool):
 
     def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
-                  drop_tip_position, volToMove):
+                  drop_tip_position, mm_to_ul):
         super().__init__(machine , index, name, tiprack = tiprack, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
-                         drop_tip_position = drop_tip_position, volToMove = volToMove)
+                         drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self.has_tip = False
         self.is_active_tool = False
         self.first_available_tip = None
@@ -48,7 +48,7 @@ class Pipette(Tool):
            The corresponding v-axix movement for the desired volume of liquid
 
         """
-        dv = vol / self.volToMove
+        dv = vol / self.mm_to_ul
         v = self.zero_position - dv
         return v
     

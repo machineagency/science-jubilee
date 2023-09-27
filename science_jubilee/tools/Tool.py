@@ -7,10 +7,16 @@ class ToolConfigurationError(Exception):
     pass
 
 class Tool:
-    def __init__(self, machine, index, name, **kwargs):
-        self._machine = machine
+    def __init__(self, index, name, **kwargs):
+        self._machine = None
+        if not isinstance(index, int) or not isinstance(name, str):
+            raise ToolConfigurationError("Incorrect usage: load_tool(<tool_number>, <name>, **kwargs)")
         self.index = index
         self.name = name
         for k,v in kwargs.items():
             setattr(self, k, v )
+
+    def post_load(self):
+        """Run any code after tool has been associated with the machine."""
+        pass
     
