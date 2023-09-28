@@ -290,6 +290,8 @@ class Pipette(Tool):
         # move the plate down( should be + z) for safe movement
         self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
+        #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
+
     def return_tip(self):
         x, y, z = self._getxyz(self.first_available_tip)
         self._machine.safe_z_movement()

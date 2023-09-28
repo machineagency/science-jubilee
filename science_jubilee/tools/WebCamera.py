@@ -26,6 +26,8 @@ class Camera(Tool):
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
         self.tool_offset = self._machine.tool_z_offsets[self.index] 
 
+        #TODO: Ping camera server and make sure that it is reachable
+
     @classmethod
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
