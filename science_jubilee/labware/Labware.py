@@ -1,12 +1,14 @@
 import numpy as np
-
 from dataclasses import dataclass
 from itertools import chain
 from typing import List, Dict, Tuple
+import os
+import json
+from pathlib import Path
 
 
 @dataclass
-class Well: 
+class Well:
     name: str  # Name of the well, e.g., 'A1', 'B1', etc.
     depth: float
     totalLiquidVolume: float
@@ -18,7 +20,7 @@ class Well:
     y: float
     z: float
     offset: Tuple[float] = None
-        
+
     @property
     def x(self):
         """Offsets the x-position of the each well with respect to the deck-slot coordinates"""
@@ -26,11 +28,11 @@ class Well:
             return self._x + self.offset[0]
         else:
             return self._x
-    
+
     @x.setter
     def x(self, new_x):
         self._x = new_x
-        
+
     @property
     def y(self):
         """Offsets the y-position of the each well with respect to the deck-slot coordinates"""
@@ -38,15 +40,15 @@ class Well:
             return self._y + self.offset[1]
         else:
             return self._y
-    
+
     @y.setter
     def y(self, new_y):
         self._y = new_y
-        
+
     @property
     def z(self):
         return self._z
-    
+
     @z.setter
     def z(self, new_z):
         self._z = new_z
@@ -60,39 +62,63 @@ class Well:
     def bottom(self):
         """Defines the bottom-most point of the well"""
         return self.z
-        
+
 
 @dataclass(repr=False)
 class WellSet:
     wells: Dict[str, Well]
+
     def __repr__(self):
         """Displays the wellset as the list of wells and the deck-slot nunmber"""
         return str(f'{list(self.wells.keys())}')
+
     def __getitem__(self, id_):
         try:
-            return self.wells[id_]
+            if isinstance(id_, slice):
+                well_list = []
+                start = id_.start
+                stop = id_.stop
+                if id_.step is not None:
+                    step = id_.step
+                else:
+                    step = 1
+                for sub_id in range(start, stop, step):
+                    well_list.append(self.wells[sub_id])
+                return well_list
+            else:
+                return self.wells[id_]
         except KeyError:
             return list(self.wells.values())[id_]
-        
+
+
 @dataclass(repr=False)
 class Row(WellSet):
-    # For example, "A", "B", etc.  
+    # For example, "A", "B", etc.
     identifier: str  
+
 
 @dataclass(repr=False)
 class Column(WellSet):
     # For example, 1, 2, etc.
     identifier: int  
 
+
 class Labware(WellSet):
-    def __init__(self, data: dict, offset: Tuple[float]=None):
-        self.data = data
-        self.wells_data = self.data.get('wells', {})
-        self.data['ordering'] = np.array(self.data['ordering']).T
+    def __init__(self, labware_filename: str, offset: Tuple[float] = None):
+        # load in the labware definition
+        labware_dir = Path(__file__).parent
+        config_path = os.path.join(
+            labware_dir, "labware_definitions", f"{labware_filename}.json"
+        )
+        with open(config_path, "r") as f:
+            labware_config = json.load(f)
+        self.data = labware_config
+        self.wells_data = self.data.get("wells", {})
+        self.data["ordering"] = np.array(self.data["ordering"]).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
         self.offset = offset
         self.slot= None 
-        
+
     def __repr__(self):
 
         display = self.metadata()['displayCategory'] + ': ' + self.parameters()['loadName'] 
@@ -129,92 +155,94 @@ class Labware(WellSet):
         columns = {k: Column(identifier=k, wells=v) for k, v in columns.items()}
 
         return rows, columns, wells
-    
+
     def get_row(self, row_id: str) -> Row:
-        
         return self.row_data.get(row_id)
 
     def get_column(self, col_id: int) -> Column:
         return self.column_data.get(col_id)
-    
+
     @property
     def shape(self):
         return (len(self.row_data), len(self.column_data))
-    
+
     @property
     def ordering(self) -> List[List[str]]:
-        return self.data.get('ordering', [])
+        return self.data.get("ordering", [])
 
     @property
     def brand(self) -> dict:
-        return self.data.get('brand', {})
+        return self.data.get("brand", {})
 
     # @property
     def metadata(self) -> dict:
-        return self.data.get('metadata', {})
-    
-    @property
-    def displayName(self):
-        return self.metadata()['displayName']
+        return self.data.get("metadata", {})
 
-    @ property
-    def labwareType(self):
-        return self.metadata()['displayCategory']
-    
     @property
-    def volumeUnits(self):
-        return self.metadata()['displayVolumeUnits']
+    def display_name(self):
+        return self.metadata()["displayName"]
+
+    @property
+    def labware_type(self):
+        return self.metadata()["displayCategory"]
+
+    @property
+    def volume_units(self):
+        return self.metadata()["displayVolumeUnits"]
 
     @property
     def dimensions(self) -> dict:
-        return self.data.get('dimensions', {})
+        return self.data.get("dimensions", {})
 
     @property
     def groups(self) -> List[dict]:
-        return self.data.get('groups', [])
-
+        return self.data.get("groups", [])
 
     def parameters(self) -> dict:
-        return self.data.get('parameters', {})
+        return self.data.get("parameters", {})
 
     @property
-    def isTipRack(self):
-        return self.parameters()['isTiprack']
+    def is_tip_rack(self):
+        return self.parameters()["isTiprack"]
+    
+    @property
+    def load_name(self):
+        return self.parameters()["loadName"]
 
     @property
-    def tipLength(self):
+    def tip_length(self):
         try:
-            return self.parameters()['tipLength']
+            return self.parameters()["tipLength"]
         except:
             pass
 
     @property
-    def tipOverlap(self):
+    def tip_overlap(self):
         try:
-            return self.parameters()['tipOverlap']
+            return self.parameters()["tipOverlap"]
         except:
             pass
 
     @property
     def namespace(self) -> str:
-        return self.data.get('namespace', "")
+        return self.data.get("namespace", "")
 
     @property
     def version(self) -> int:
-        return self.data.get('version', 1)
+        return self.data.get("version", 1)
 
     @property
     def schemaVersion(self) -> int:
-        return self.data.get('schemaVersion', 1)
+        return self.data.get("schemaVersion", 1)
 
     @property
-    def cornerOffsetFromSlot(self) -> dict:
-        return self.data.get('cornerOffsetFromSlot', {})
-    
+    def corner_offset_from_slot(self) -> dict:
+        return self.data.get("cornerOffsetFromSlot", {})
+
     @property
     def offset(self):
         return self._offset
-    
+
     @offset.setter
     def offset(self, new_offset):
         self._offset = new_offset

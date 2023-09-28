@@ -28,15 +28,19 @@ def get_root_dir():
     """Return the path to the duckbot directory."""
     return Path(__file__).parent.parent
 
+
 ##########################################
 #               ERRORS
 ##########################################
 class MachineConfigurationError(Exception):
     """Raise this error if there is something wrong with how the machine is configured"""
+
     pass
+
 
 class MachineStateError(Exception):
     """Raise this error if the machine is in the wrong state to perform the requested action."""
+
     pass
 
 ##########################################
@@ -80,7 +84,6 @@ def requires_safe_z(func):
         return func(self, *args, **kwds)
     
     return z_check
-
 
 ##########################################
 #             MACHINE CLASS
@@ -186,7 +189,7 @@ class Machine():
     @property
     def configured_axes(self):
         """Return the configured axes of the machine."""
-        if self._configured_axes is None: # Starting from a fresh connection
+        if self._configured_axes is None:  # Starting from a fresh connection
             try:
                 max_tries = 50
                 for i in range(max_tries):
@@ -197,18 +200,18 @@ class Machine():
                         break  
                 self._configured_axes = []
                 for axis in response:
-                    self._configured_axes.append(axis['letter'])
+                    self._configured_axes.append(axis["letter"])
             except ValueError as e:
                 print("Error occurred trying to read axis limits on each axis!")
                 raise e
-        
+
         # Return the cached value.
         return self._configured_axes
-    
+
     @property
     def configured_tools(self):
         """Return the configured tools."""
-        if self._configured_tools is None: # Starting from a fresh connection
+        if self._configured_tools is None:  # Starting from a fresh connection
             try:
                 max_tries = 50
                 for i in range(max_tries):
@@ -219,11 +222,11 @@ class Machine():
                         break  
                 self._configured_tools = {}
                 for tool in response:
-                    self._configured_tools[tool['number']] = tool['name']
+                    self._configured_tools[tool["number"]] = tool["name"]
             except ValueError as e:
                 print("Error occurred trying to read axis limits on each axis!")
                 raise e
-        
+
         # Return the cached value.
         return self._configured_tools
     
@@ -249,7 +252,7 @@ class Machine():
                 # On HTTP Interface, we get a string instead of the tool index.
                 elif response.startswith('Tool'):
                     # Recover from the string: 'Tool X is selected.'
-                    self.active_tool_index = int(response.split()[1])
+                    self.active_tool_index = int(response.split()[1]) 
                 else:
                     self.active_tool_index = int(response)
             except ValueError as e:
@@ -389,7 +392,7 @@ class Machine():
         """Set relative positioning for all axes except extrusion"""
         self.gcode("G91")
         self.absolute_positioning = False
-        
+
     def _set_absolute_extrusion(self):
         """Set absolute positioning for extrusion"""
         self.gcode("M82")
@@ -399,7 +402,7 @@ class Machine():
         """Set relative positioning for extrusion"""
         self.gcode("M83")
         self.absolute_extrusion = False
-    
+
     def push_machine_state(self):
         """Push machine state onto a stack"""
         self.gcode("M120")
@@ -535,15 +538,15 @@ class Machine():
         x_cmd = y_cmd = z_cmd = e_cmd = v_cmd = f_cmd = param_cmd = ''
         
         if x is not None:
-            x_cmd = f'X{x}'
+            x_cmd = f"X{x}"
         if y is not None:
-            y_cmd = f'Y{y}'
+            y_cmd = f"Y{y}"
         if z is not None:
-            z_cmd = f'Z{z}'
+            z_cmd = f"Z{z}"
         if e is not None:
-            e_cmd = f'E{e}'
+            e_cmd = f"E{e}"
         if v is not None:
-            v_cmd = f'V{v}'
+            v_cmd = f"V{v}"
         if s is not None:
             f_cmd = f'F{s}'
         if param is not None:
@@ -598,6 +601,17 @@ class Machine():
         Nothing
 
         """
+        # Check that the relative move doesn't exceed user-defined limit
+        # By default, ensure that it won't crash into the parked tools
+        if any(axis_limits):
+            x_limit, y_limit, z_limit = axis_limits
+            pos = self.get_position()
+            if x_limit and float(pos['X']) + dx > x_limit: 
+                raise MachineStateError("Error: Relative move exceeds X axis limit!")
+            if y_limit and dy and float(pos['Y']) + dy > y_limit: 
+                raise MachineStateError("Error: Relative move exceeds Y axis limit!")
+            if z_limit and float(pos['Z']) + dz > z_limit: 
+                raise MachineStateError("Error: Relative move exceeds Z axis limit!")
         self._set_relative_positioning()
         # if force:
         #     self._set_relative_extrusion()
@@ -618,8 +632,8 @@ class Machine():
         Nothing
 
         """
-        
-        param = 'P' if millis else 'S'
+
+        param = "P" if millis else "S"
         cmd = f"G4 {param}{t}"
         
         self.gcode(cmd)
@@ -679,7 +693,6 @@ class Machine():
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
 
-
     @requires_safe_z
     def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
         """Pick up the tool specified by tool id."""
@@ -738,7 +751,6 @@ class Machine():
                 continue
             else:
                 break
-
         positions = {}
         keyword = " Count " # this is the keyword hosts like e.g. pronterface search for to track position
         keyword_idx = resp.find(keyword)

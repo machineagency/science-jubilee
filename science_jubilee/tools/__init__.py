@@ -1,4 +1,4 @@
-# # Iterate through and impoprt all modules in the plates/
+# # Iterate through and import all modules in the plates/
 # # this allows us to add new plates in the plates folder and have it automatically usable in Machine.py
 # from inspect import isclass
 # from pkgutil import iter_modules

@@ -5,14 +5,14 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setuptools.setup(
-    name="duckbot",
+    name="science_jubilee",
     version="0.0.1",
-    author="Blair Subbaraman",
+    author="Machine Agency",
     author_email="b1air@uw.edu",
-    description="Duckweed (and other) science with Jubilee ",
+    description="Science with Jubilee",
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
-    url="https://github.com/machineagency/duckbot",
+    url="https://github.com/machineagency/science_jubilee",
     license="MIT",
     keywords= ['jubilee'],
     packages=setuptools.find_packages(),
@@ -22,6 +22,6 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: POSIX :: Linux",
     ],
-    python_requires='>=3.6'
-    #install_requires=[''] # ToDo
+    python_requires='>=3.6',
+    install_requires=['pyserial==3.5', 'ipykernel', 'numpy', 'opencv_contrib_python==4.5.3.56', 'matplotlib', "Jinja2", "picamera;platform_system=='Linux'"]
 )
