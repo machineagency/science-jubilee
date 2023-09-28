@@ -1,11 +1,33 @@
 import os
+import json
 import numpy as np
 
 from dataclasses import dataclass
+from labware.Labware import Labware
 from typing import Dict, Tuple
 
-from labware.Utils import json2dict
-from labware.Labware import Labware
+# The Automation Bed Plate and well plates are oriented as follows:                                          
+
+#                          BED PLATE TOP VIEW                          WELL PLATE TOP VIEW                                                                                            
+#         Machine Origin                                     Machine Origin               Slot Calibration                                                                     
+#             (0,0)                                              (0,0)                        Position                                                        
+#                +------------------------------------+               +--------------------+                                                                      
+#                |   +------+   +------+   +------+   |               | Well          Well |                                                                            
+#                |   |      |   |      |   |      |   |               |  i1            A1  |                                                                                                
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |  0   |   |  1   |   |  2   |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   +------+   +------+   +------+   | Tool Rack     |                    |                                                                        
+#                |   +------+   +------+   +------+   |               |                    |                                                                                            
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |  5   |   |  4   |   |  3   |   |               |                    |                                                                                            
+#   Power Supply |   |      |   |      |   |      |   |               |                    |                                                                                             
+#                |   |      |   |      |   |      |   |               | Well          Well |                                                                                            
+#                |   +------+   +------+   +------+   |               |  ij            Aj  |                                                                                            
+#                +------------------------------------+               +--------------------+
+
 
 
 @dataclass
@@ -84,9 +106,15 @@ class Deck(SlotSet):
     def load_labware(self, labware_filename, slot, path = os.path.join(os.path.dirname(__file__),'..', 'labware', 'labware_definition')):
         """Function that loads a labware and associates it with a specific slot on the deck.
          The slot offset is also applied to the labware asocaite with it."""
-        # get slot offset
-        lab_file= json2dict(labware_filename, path )
-        labware  = Labware(lab_file)
+
+        if labware_filename[-4] != 'json':
+            labware_filename = labware_filename + '.json'
+
+        config_path = os.path.join(path, labware_filename)
+        with open(config_path, "r") as f:
+            labware_config = json.load(f)
+
+        labware  = Labware(labware_config)
         labware.add_slot(slot)
         offset = self.slots[str(slot)].offset 
         
