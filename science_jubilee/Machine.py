@@ -1,22 +1,22 @@
 """Driver for Controlling Jubilee"""
 #import websocket # for reading the machine model
-import requests # for issuing commands
+
 import json
-import time
 import os
+import requests # for issuing commands
+import serial
+import time
+import warnings
 # import curses
 # import pprint
 #from inpromptu import Inpromptu, cli_method
-from typing import Union
-from functools import wraps
-from labware.Utils import json2dict
-from decks.Deck import Deck
-from tools.Tool import Tool
 
-import serial
-from serial.tools import list_ports
+from decks.Deck import Deck
 from pathlib import Path
-import warnings
+from functools import wraps
+from serial.tools import list_ports
+from tools.Tool import Tool
+from typing import Union
 
 
 #TODO: Figure out how to print error messages from the Duet.
@@ -114,7 +114,7 @@ class Machine():
 
 
         self.address = address
-        self.debug = debug
+        # self.debug = debug
         self.simulated = simulated
         self.model_update_timestamp = 0
         self.command_ws = None
@@ -633,7 +633,6 @@ class Machine():
         else:
             pass
     
-
 
     def _get_tool_index(self, tool_item: Union[int, Tool, str]):
         if type(tool_item) == int:
