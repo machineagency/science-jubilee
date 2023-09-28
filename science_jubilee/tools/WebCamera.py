@@ -32,13 +32,14 @@ class Camera(Tool):
         return cls(machine=machine, index=index, name=name,**kwargs)
     
     @staticmethod
-    def _getxyz(well: Well = None, location: Tuple[float] = None):
-        if well is not None and location is not None:
-            raise ValueError("Specify only one of Well or x,y,z location")
-        elif well is not None:
-            x, y, z = well.x, well.y, well.z
-        else:
+    def _getxyz(location: Union[Well, Tuple]):
+        if type(location) == Well:
+            x, y, z = location.x, location.y, location.z
+        elif type(location) == Tuple:
             x, y, z = location
+        else:
+            raise ValueError("Location should be of type Well or Tuple")
+        
         return x,y,z
 
 
@@ -55,9 +56,9 @@ class Camera(Tool):
 
         return response.content
     
-    def capture_image(self, well: Well = None, location: Tuple[float] = None):
+    def capture_image(self, location: Union[Well, Tuple]):
         
-        x, y, z = self._getxyz(well=well, location=location)
+        x, y, z = self._getxyz(location)
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
