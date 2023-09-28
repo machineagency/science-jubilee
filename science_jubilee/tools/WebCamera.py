@@ -1,16 +1,17 @@
-import requests
-import webbrowser
-import time
-from .Tool import Tool
-from labware.Labware import Well, Labware
-from labware.Utils import json2dict
-import os
-from typing import Tuple, Union
-
 import cv2
-import numpy as np
+import json
+import os
+import requests
 import time
+import webbrowser
+
 import matplotlib.pyplot as plt
+import numpy as np
+
+from labware.Labware import Well
+from typing import Tuple, Union
+from .Tool import Tool
+
 
 class Camera(Tool):
     """
@@ -28,7 +29,8 @@ class Camera(Tool):
     @classmethod
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
-        kwargs = json2dict(config_file, path = path)
+        config = os.path.join(path,config_file)
+        kwargs = json.load(config)
         return cls(machine=machine, index=index, name=name,**kwargs)
     
     @staticmethod

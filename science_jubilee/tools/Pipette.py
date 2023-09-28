@@ -1,11 +1,13 @@
 # from Platform.Jubilee_controller import JubileeMotionController
+import json
+import logging
 import os
-from .Tool import Tool, ToolStateError, ToolConfigurationError
-from labware.Utils import json2dict, pipette_iterator
+
 from labware.Labware import Labware, Well
+from .Tool import Tool, ToolStateError, ToolConfigurationError
 from typing import Tuple, Union
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -29,9 +31,27 @@ class Pipette(Tool):
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs'),
                     tiprack: Labware = None):
-        kwargs = json2dict(config_file, path = path)
+        config = os.path.join(path,config_file)
+        kwargs = json.load(config)
         return cls(machine=machine, index=index, name=name, tiprack= tiprack, **kwargs)
-
+   
+    @staticmethod
+    def _getxyz(location: Union[Well, Tuple]):
+        if type(location) == Well:
+            x, y, z = location.x, location.y, location.z
+        elif type(location) == Tuple:
+            x, y, z = location
+        else:
+            raise ValueError("Location should be of type Well or Tuple")
+        
+        return x,y,z
+    
+    @staticmethod
+    def _getTopBottom(location: Well):
+        top = location.top
+        bottom = location.bottom
+        return top, bottom
+        
     def vol2move(self, vol):
         #Function that converts uL to movement
         """
@@ -51,23 +71,6 @@ class Pipette(Tool):
         dv = vol / self.mm_to_ul
 
         return dv
-    
-    @staticmethod
-    def _getxyz(location: Union[Well, Tuple]):
-        if type(location) == Well:
-            x, y, z = location.x, location.y, location.z
-        elif type(location) == Tuple:
-            x, y, z = location
-        else:
-            raise ValueError("Location should be of type Well or Tuple")
-        
-        return x,y,z
-    
-    @staticmethod
-    def _getTopBottom(location: Well):
-        top = location.top
-        bottom = location.bottom
-        return top, bottom
     
     def prime(self):
         """
@@ -219,13 +222,16 @@ class Pipette(Tool):
         self._machine.move_to(z = well.top + 20)
         self._machine.move(v= -1*dv)
 
-    def _pickup_tip(self, z):
-        """
-        """
-        if self.has_tip == False:
-            self._machine.move_to(z=z, s=800, param = 'H4')
-        else:
-            raise ToolStateError("Error: Pipette already equipped with a tip.")      
+    def mix(self, vol: float, n: int, s: int =2000):
+        
+        v = self.vol2mov(vol)*-1
+        
+        self._machine.move(z= -5) 
+        for i in range(0,n):
+            self.prime()
+            self._machine.move_to(v=v, s=s)
+
+        self.prime()   
 
     def update_z_offset(self, tip: bool = None):
         
@@ -240,8 +246,7 @@ class Pipette(Tool):
             new_z = self.tool_offset + tip_offset
 
         self._machine.gcode(f'G10 P{self.index} Z{new_z}')
-        # self._machine.
-        
+        # self._machine. 
 
     def add_tiprack(self, tiprack: Union[Labware, list]):
         if isinstance(tiprack, list):
@@ -258,7 +263,14 @@ class Pipette(Tool):
         
         self.first_available_tip = self.tipiterator.next()
 
-
+    def _pickup_tip(self, z):
+        """
+        """
+        if self.has_tip == False:
+            self._machine.move_to(z=z, s=800, param = 'H4')
+        else:
+            raise ToolStateError("Error: Pipette already equipped with a tip.")      
+        
     def pickup_tip(self, tip_ : Union[Well, Tuple]):
         """
         """
@@ -278,17 +290,6 @@ class Pipette(Tool):
         # move the plate down( should be + z) for safe movement
         self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
-
-    def _drop_tip(self):
-        """
-        Moves the plunger to eject the pipette tip
-        """
-        if self.has_tip == True:
-            self._machine.move_to(v= self.drop_tip_position, s= 2000)
-        else:
-            raise ToolConfigurationError('Error: No pipette tip attached to drop')
-
-
     def return_tip(self):
         x, y, z = self._getxyz(self.first_available_tip)
         self._machine.safe_z_movement()
@@ -298,6 +299,14 @@ class Pipette(Tool):
         self.has_tip = False
         self.update_z_offset(tip=False)
 
+    def _drop_tip(self):
+        """
+        Moves the plunger to eject the pipette tip
+        """
+        if self.has_tip == True:
+            self._machine.move_to(v= self.drop_tip_position, s= 2000)
+        else:
+            raise ToolConfigurationError('Error: No pipette tip attached to drop')
 
     def drop_tip(self, location: Union[Well, Tuple] ):
         x, y, z = self._getxyz(location)
@@ -313,13 +322,26 @@ class Pipette(Tool):
         self.first_available_tip = self.tipiterator.next()
         # logger.info(f"Dropped tip at {(x,y,z)}")
 
-    def mix(self, vol: float, n: int, s: int =2000):
-        
-        v = self.vol2mov(vol)*-1
-        
-        self._machine.move(z= -5) 
-        for i in range(0,n):
-            self.prime()
-            self._machine.move_to(v=v, s=s)
 
-        self.prime()
+class pipette_iterator():
+
+    def __init__(self, tiprack):
+        self.tiprack = tiprack
+        self.index = 0
+
+    def next(self):
+        try:
+            result = self.tiprack[self.index]
+            self.index += 1
+        except IndexError:
+            raise StopIteration
+        return result
+
+    def prev(self):
+        self.index -= 1
+        if self.index < 0:
+            raise StopIteration
+        return self.tiprack[self.index]
+
+    def __iter__(self):
+        return self
