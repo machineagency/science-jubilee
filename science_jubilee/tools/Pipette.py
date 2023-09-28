@@ -44,28 +44,29 @@ class Pipette(Tool):
 
         ---------Returns----------
 
-        v: float
+        dv: float
            The corresponding v-axix movement for the desired volume of liquid
 
         """
         dv = vol / self.mm_to_ul
-        v = self.zero_position - dv
-        return v
+
+        return dv
     
     @staticmethod
-    def _getxyz(well: Well = None, location: Tuple[float] = None):
-        if well is not None and location is not None:
-            raise ValueError("Specify only one of Well or x,y,z location")
-        elif well is not None:
-            x, y, z = well.x, well.y, well.z
-        else:
+    def _getxyz(location: Union[Well, Tuple]):
+        if type(location) == Well:
+            x, y, z = location.x, location.y, location.z
+        elif type(location) == Tuple:
             x, y, z = location
+        else:
+            raise ValueError("Location should be of type Well or Tuple")
+        
         return x,y,z
     
     @staticmethod
-    def _getTopBottom(well: Well = None):
-        top = well.top
-        bottom = well.bottom
+    def _getTopBottom(location: Well):
+        top = location.top
+        bottom = location.bottom
         return top, bottom
     
     def prime(self):
@@ -80,29 +81,32 @@ class Pipette(Tool):
         """
         """
 
-        v = self.vol2move(vol)
-        self._machine.move_to(v= v, s=s )
+        dv = self.vol2move(vol)*-1
+        pos = self._machine.get_position()
+        end_pos = float(pos['V']) + dv
+        self._machine.move_to(v=end_pos, s=s )
 
-    def aspirate(self, vol: float, s:int = 2000, well: Well = None,
-                 from_bottom :float =10, from_top :float = None,
-                 location: Tuple[float] = None):
+    def aspirate(self, vol: float, location : Union[Well, Tuple], s:int = 2000,
+                 from_bottom :float =10, from_top :float = None):
        
         if self.has_tip is False:
             raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
         else:
             pass
 
-        x, y, z = self._getxyz(well=well, location=location)
+        x, y, z = self._getxyz(location)
         
-        if well is not None:
-            top, bottom = self._getTopBottom(well=well)
-            self.current_well = well
+        if type(location) == Well:
+            self.current_well = location
 
-        if from_bottom is not None and well is not None:
-            z = bottom+ from_bottom
-        elif from_top is not None and well is not None:
-            z = top + from_top
-            pass
+            top, bottom = self._getTopBottom(location)
+            if from_bottom is not None :
+                z = bottom+ from_bottom
+            elif from_top is not None:
+                z = top + from_top
+            else:
+                pass
+    
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         if self.is_primed == True:
@@ -116,34 +120,31 @@ class Pipette(Tool):
     def _dispense(self,vol: float, s:int = 2000):
         """
         """
-        v =  self.vol2move(vol)
-
-        current_v = float(self._machine.get_position()['V']) 
-        dv = current_v + v
+        dv = self.vol2move(vol)
+        pos = self._machine.get_position()
+        end_pos = float(pos['V']) + dv
         
-        print(dv)
-        
-        if current_v > self.zero_position:
+        if end_pos > self.zero_position:
             raise ToolStateError("Error: Pipette does not have anything to dispense")
         elif dv > self.zero_position:
             raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated")    
-        self._machine.move(v= dv, s=s )
+        self._machine.move(v= end_pos, s=s )
 
-    def dispense(self, vol: float, s:int = 2000, well: Well = None,
-                 from_bottom :float =10, from_top :float = None,
-                 location: Tuple[float] = None):
+    def dispense(self, vol: float, location :Union[Well, Tuple], s:int = 2000, 
+                 from_bottom :float =10, from_top :float = None):
        
-        x, y, z = self._getxyz(well=well, location=location)
+        x, y, z = self._getxyz(location)
         
-        if well is not None:
-            top, bottom = self._getTopBottom(well=well)
-            self.current_well = well
+        if type(location) == Well:
+            self.current_well = location
 
-        if from_bottom is not None and well is not None:
-            z = bottom+ from_bottom
-        elif from_top is not None and well is not None:
-            z = top + from_top
-            pass
+            top, bottom = self._getTopBottom(location)
+            if from_bottom is not None :
+                z = bottom+ from_bottom
+            elif from_top is not None:
+                z = top + from_top
+            else:
+                pass
         
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
@@ -151,13 +152,14 @@ class Pipette(Tool):
         self._dispense(vol, s=s)
 
 
-    def transfer(self, vol: float, s:int = 2000, source_well :Well = None,
-                 destination_well :Well = None, blowout= None, mix_before: tuple = None,
+    def transfer(self, vol: float, source_well: Union[Well, Tuple],
+                 destination_well :Union[Well, Tuple] , s:int = 2000,
+                 blowout= None, mix_before: tuple = None,
                  mix_after: tuple = None, new_tip : str = 'always'):
         
-        vol_ = self.vol2move(vol)
+        vol_ = self.vol2move(vol) -1
         # get locations
-        xs, ys, zs = self._getxyz(well=source_well)
+        xs, ys, zs = self._getxyz(source_well)
 
         # saves some code if we make a list regardless    
         if type(destination_well) != list:
@@ -165,7 +167,7 @@ class Pipette(Tool):
 
         if isinstance(destination_well, list):
             for well in destination_well:
-                xd, yd, zd =self._getxyz(well=destination_well[well])
+                xd, yd, zd =self._getxyz(destination_well[well])
                 
                 
                 self._machine.safe_z_movement()
@@ -196,7 +198,7 @@ class Pipette(Tool):
                     pass
                 # if new_tip == 'always':
 
-                # need to add new_tip option!
+                #TODO: need to add new_tip option!
 
 
     def blowout(self,  s : int = 2000):
@@ -212,7 +214,7 @@ class Pipette(Tool):
     
     def air_gap(self, vol):
         
-        dv = self.vol2move(vol)
+        dv = self.vol2move(vol)*-1
         well = self.current_well
         self._machine.move_to(z = well.top + 20)
         self._machine.move(v= -1*dv)
@@ -257,7 +259,7 @@ class Pipette(Tool):
         self.first_available_tip = self.tipiterator.next()
 
 
-    def pickup_tip(self, tip_ : Well = None):
+    def pickup_tip(self, tip_ : Union[Well, Tuple]):
         """
         """
         if tip_ is None:
@@ -265,7 +267,7 @@ class Pipette(Tool):
         else:
             tip = tip_
 
-        x, y, z = self._getxyz(well=tip)
+        x, y, z = self._getxyz(tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
@@ -280,7 +282,6 @@ class Pipette(Tool):
     def _drop_tip(self):
         """
         Moves the plunger to eject the pipette tip
-
         """
         if self.has_tip == True:
             self._machine.move_to(v= self.drop_tip_position, s= 2000)
@@ -289,7 +290,7 @@ class Pipette(Tool):
 
 
     def return_tip(self):
-        x, y, z = self._getxyz(well=self.first_available_tip)
+        x, y, z = self._getxyz(self.first_available_tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._drop_tip()
@@ -298,8 +299,8 @@ class Pipette(Tool):
         self.update_z_offset(tip=False)
 
 
-    def drop_tip(self, well: Well = None, location: Tuple[float] = None):
-        x, y, z = self._getxyz(well=well, location=location)
+    def drop_tip(self, location: Union[Well, Tuple] ):
+        x, y, z = self._getxyz(location)
 
         self._machine.safe_z_movement()
         if x is not None or y is not None:
@@ -314,7 +315,7 @@ class Pipette(Tool):
 
     def mix(self, vol: float, n: int, s: int =2000):
         
-        v = self.vol2mov(vol)
+        v = self.vol2mov(vol)*-1
         
         self._machine.move(z= -5) 
         for i in range(0,n):
