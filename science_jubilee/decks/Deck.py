@@ -1,43 +1,51 @@
-from dataclasses import dataclass
-from typing import Dict, Tuple
-from pathlib import Path
 import os
 import json
-import copy
-from science_jubilee.labware.Utils import json2dict
-from science_jubilee.labware.Labware import Labware
+import numpy as np
+
+from dataclasses import dataclass
+from labware.Labware import Labware
+from typing import Dict, Tuple
+
+# The Automation Bed Plate and well plates are oriented as follows:                                          
+
+#                          BED PLATE TOP VIEW                          WELL PLATE TOP VIEW                                                                                            
+#         Machine Origin                                     Machine Origin               Slot Calibration                                                                     
+#             (0,0)                                              (0,0)                        Position                                                        
+#                +------------------------------------+               +--------------------+                                                                      
+#                |   +------+   +------+   +------+   |               | Well          Well |                                                                            
+#                |   |      |   |      |   |      |   |               |  i1            A1  |                                                                                                
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |  0   |   |  1   |   |  2   |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   +------+   +------+   +------+   | Tool Rack     |                    |                                                                        
+#                |   +------+   +------+   +------+   |               |                    |                                                                                            
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |      |   |      |   |      |   |               |                    |                                                                        
+#                |   |  5   |   |  4   |   |  3   |   |               |                    |                                                                                            
+#   Power Supply |   |      |   |      |   |      |   |               |                    |                                                                                             
+#                |   |      |   |      |   |      |   |               | Well          Well |                                                                                            
+#                |   +------+   +------+   +------+   |               |  ij            Aj  |                                                                                            
+#                +------------------------------------+               +--------------------+
+
 
 
 @dataclass
 class Slot:
-    slot_index: int
+    slot_index : int
     offset: Tuple[float]
-    has_labware: bool
-    labware: str
-
+    has_labware : bool
+    labware : str
+    
 
 @dataclass
 class SlotSet:
     slots: Dict[str, Slot]
-
     def __repr__(self):
-        return str(self.bed_type)
-
-    def __getitem__(self, id_):
+        return str(self.bedType)
+    def __getitem__(self,id_):
         try:
-            if isinstance(id_, slice):
-                slot_list = []
-                start = id_.start
-                stop = id_.stop
-                if id_.step is not None:
-                    step = id_.step
-                else:
-                    step = 1
-                for sub_id in range(start, stop, step):
-                    slot_list.append(self.slots[sub_id])
-                return slot_list
-            else:
-                return self.slots[id_]
+            return self.slots[id_]
         except KeyError:
             return list(self.slots.values())[id_]
 
@@ -45,79 +53,74 @@ class SlotSet:
 class Deck(SlotSet):
     def __init__(self, config):
         self.deck_config = config
-        self.slots_data = self.deck_config.get("slots", {})
+        self.slots_data = self.deck_config.get('slots', {})
         self.slots = self._get_slots()
-        self._safe_z = 5
-
+        self._safe_z = None
+    
     def _get_slots(self):
         slots = {}
         for s, sv in self.slots_data.items():
-            if type(sv) == list:  # When would this happen?
-                print("list")
-                sv = tuple(sv)
-            slots[s] = Slot(slot_index=s, **self.slots_data[s])
+            if type(sv) == list:
+                sv= tuple(sv)
+            else:
+                pass
+            slots[s] = Slot(slot_index = s, **self.slots_data[s])#{k: tuple(v) for k, v in self.slots_data[s].items()})
         return slots
+        
+    @property
+    def bedType(self):
+        return self.deck_config.get('bedType',"")
+    @property
+    def totalslots(self):
+        deckslots= self.deck_config.get('deckSlots', {})
+        return deckslots['total'] 
 
     @property
-    def bed_type(self):
-        return self.deck_config.get("bed_type", "")
+    def slotType(self):
+        deckslots= self.deck_config.get('deckSlots', {})
+        return deckslots['type'] 
 
     @property
-    def total_slots(self):
-        deckslots = self.deck_config.get("deck_slots", {})
-        return deckslots["total"]
-
-    @property
-    def slot_type(self):
-        deckslots = self.deck_config.get("deckSlots", {})
-        return deckslots["type"]
-
-    @property
-    def offset_from(self):
-        return self.deck_config.get("offset_from", {})
-
+    def offsetFrom(self):
+        return self.deck_config.get('offsetFrom', {})
+    
     @property
     def deck_material(self):
-        return self.deck_config.get("material", {})
+        return self.deck_config.get('material', {})
 
     @property
     def safe_z(self):
         return self._safe_z
-
+    
     @safe_z.setter
     def safe_z(self, val):
+        """Function that updates the movement clearance height 
+        every time a new labware is loaded onto the deck """
         if self._safe_z is None:
             self._safe_z = val
         elif self._safe_z <= val:
             self._safe_z = val
         else:
             pass
-
-    def load_labware(self, labware_filename, slot):
-        # root_dir = Path(__file__).parent.parent
-        # config_path = os.path.join(
-        #     root_dir, "labware", "labware_definitions", f"{labware_filename}.json"
-        # )
-        # with open(config_path, "r") as f:
-        #     labware_config = json.load(f)
-        labware = Labware(labware_filename)
         
-        # Flip offsets to align with machine coordinates, if necessary
-        # TODO: Test this from all orientations
-        offset = copy.copy(self.slots[str(slot)].offset)
-        offset_from = self.offset_from['corner']
-        OFFSET_OPTIONS = ['top_left', 'top_right', 'bottom_left', 'bottom_right']
-        if offset_from not in OFFSET_OPTIONS:
-            print("Error: unknown offset option.") # TODO: Make a DeckStateError in base deck class
-        
-        labware_dims = labware.dimensions
-        if 'right' in offset_from:
-            offset[0] -= labware_dims['xDimension']
-        if 'top' in offset_from:
-            offset[1] -= labware_dims['yDimension']
+    def load_labware(self, labware_filename, slot, path = os.path.join(os.path.dirname(__file__),'..', 'labware', 'labware_definition')):
+        """Function that loads a labware and associates it with a specific slot on the deck.
+         The slot offset is also applied to the labware asocaite with it."""
 
-        labware.offset = offset
+        if labware_filename[-4] != 'json':
+            labware_filename = labware_filename + '.json'
+
+        config_path = os.path.join(path, labware_filename)
+        with open(config_path, "r") as f:
+            labware_config = json.load(f)
+
+        labware  = Labware(labware_config)
+        labware.add_slot(slot)
+        offset = self.slots[str(slot)].offset 
+        
+        labware.offset = offset      
+
         self.slots[str(slot)].has_labware = True
         self.slots[str(slot)].labware = labware
-        self.safe_z = labware.dimensions["zDimension"]
+        self.safe_z = labware.dimensions['zDimension']
         return labware
