@@ -360,6 +360,7 @@ class Machine():
     
     def gcode(self, cmd: str = "", response_wait: float = 30):
     #    """Send a GCode cmd; return the response"""
+        #TODO: Fix hardcoded stuff in here
         #TODO: Add serial option for gcode commands from MA
         #if self.debug or self.simulated:
             #print(f"sending: {cmd}")
@@ -376,15 +377,17 @@ class Machine():
         while True:
             try:
                 new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+                if new_reply_count != old_reply_count:
+                    response = requests.get(f'http://192.168.1.2/rr_reply').text
+                    break
+                elif time.time() - tic > response_wait:
+                    response = None
+                    break
             except Exception as e:
                 #print('Connection error, sleeping 1 second')
                 time.sleep(1)
-            if new_reply_count != old_reply_count:
-                response = requests.get(f'http://192.168.1.2/rr_reply').text
-                break
-            elif time.time() - tic > response_wait:
-                response = None
-                break
+                continue
+
             time.sleep(0.02)#
         #TODO: handle this with logging. Also fix so all output goes to logs
         #if self.debug:

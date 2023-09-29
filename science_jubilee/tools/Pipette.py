@@ -234,7 +234,7 @@ class Pipette(Tool):
 
     def mix(self, vol: float, n: int, s: int =2000):
         
-        v = self.vol2mov(vol)*-1
+        v = self.vol2move(vol)*-1
         
         self._machine.move(z= -5) 
         for i in range(0,n):
