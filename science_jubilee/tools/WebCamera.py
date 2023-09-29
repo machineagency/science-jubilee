@@ -19,9 +19,10 @@ class Camera(Tool):
     """
     def __init__(self, machine, index, name, ip_address, port,
                  video_endpoint, still_endpoint, image_folder):
-        super().__init__(machine, index, name, ip_address = ip_address,
+        super().__init__(index, name, ip_address = ip_address,
                          port = port, video_endpoint = video_endpoint,
                          still_endpoint = still_endpoint,image_folder= image_folder)
+        self._machine = machine
         self.still_url = f'http://{self.ip_address}:{self.port}/{self.still_endpoint}'
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
         self.tool_offset = self._machine.tool_z_offsets[self.index] 
@@ -32,7 +33,8 @@ class Camera(Tool):
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         config = os.path.join(path,config_file)
-        kwargs = json.load(config)
+        with open(config, 'rt') as f:
+            kwargs = json.load(f)
         return cls(machine=machine, index=index, name=name,**kwargs)
     
     @staticmethod

@@ -17,10 +17,12 @@ class Pipette(Tool):
     def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
-        super().__init__(machine , index, name, tiprack = tiprack, brand = brand, 
+        #TODO:Removed machine from init, check if this should be asigned here or is added later
+        super().__init__(index, name, tiprack = tiprack, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
+        self._machine = machine
         self.has_tip = False
         self.is_active_tool = False
         self.first_available_tip = None
@@ -33,9 +35,12 @@ class Pipette(Tool):
                     path :str = os.path.join(os.path.dirname(__file__), 'configs'),
                     tiprack: Labware = None):
         config = os.path.join(path,config_file)
-        kwargs = json.load(config)
-        return cls(machine=machine, index=index, name=name, tiprack= tiprack, **kwargs)
-   
+        with open(config) as f:
+            kwargs = json.load(f)
+
+        kwargs['tiprack'] = tiprack
+        #return cls(machine=machine, index=index, name=name, **kwargs)
+        return cls(machine, index, name, **kwargs)
     @staticmethod
     def _getxyz(location: Union[Well, Tuple]):
         if type(location) == Well:

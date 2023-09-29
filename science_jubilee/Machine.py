@@ -4,7 +4,7 @@
 import json
 import os
 import requests # for issuing commands
-import serial
+#import serial
 import time
 import warnings
 # import curses
@@ -14,7 +14,7 @@ import warnings
 from decks.Deck import Deck
 from pathlib import Path
 from functools import wraps
-from serial.tools import list_ports
+#from serial.tools import list_ports
 from tools.Tool import Tool
 from typing import Union
 
@@ -149,8 +149,8 @@ class Machine():
             return
         # Do the equivalent of a ping to see if the machine is up.
 
-        if self.debug:
-            print(f"Connecting to {self.address} ...")
+        #if self.debug:
+        #    print(f"Connecting to {self.address} ...")
         try:
             # "Ping" the machine by updating the only cacheable information we care about.
             max_tries = 50
@@ -183,8 +183,8 @@ class Machine():
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError("Connection timed out. URL may be invalid, or machine may not be connected to the network.") from e
-        if self.debug:
-            print("Connected.")
+        #if self.debug:
+        #    print("Connected.")
 
     @property
     def configured_axes(self):
@@ -342,10 +342,10 @@ class Machine():
     ##########################################
     #                BED PLATE
     ##########################################
-    def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'configs')):
+    def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition')):
         # do thing
         #make sure filename has json 
-        if deck_filename[-4] != 'json':
+        if deck_filename[-4:] != 'json':
             deck_filename = deck_filename + '.json'
 
         config_path = os.path.join(path, deck_filename)
@@ -354,14 +354,45 @@ class Machine():
         deck = Deck(deck_config)
         self.deck = deck
         return deck    
+    
+    #def gcode(self, cmd: str = "", response_wait: float = 10):
+    ##    """Send a GCode cmd; return the response"""
+    #    #TODO: Add serial option for gcode commands from MA
+    #    #if self.debug or self.simulated:
+    #    #    print(f"sending: {cmd}")
+    #    if self.simulated:
+    ##        return None
+    #    # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
+    #    # we need to watch the 'reply count' and request the new response when it increments
+    #    old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+    #    buffer_response = requests.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
+    #    # wait for a response code to be appended
+    #    #TODO: This is either causing or not fixing a "ConnectionError: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url:" Error
+    #    tic = time.time()
+    #    while True:
+    #        new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+    #        if new_reply_count != old_reply_count:
+    #            response = requests.get(f'http://192.168.1.2/rr_reply').text
+    #            break
+    #        elif time.time() - tic > response_wait:
+    #            response = None
+    #            break
+    #        time.sleep(0.02)#
 
-    def gcode(self, cmd: str = "", response_wait: float = 10):
+        #if self.debug:
+        #    print(f"received: {response}")
+            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
+      #  return response
+
+    #New gcode function causing major issue, patching in known one from original jub BO demo
+    #actually this does not give a response so doesn't work with current code. 
+    #TODO: Fix hard coded address here
+    def gcode(self, cmd: str = "", timeout: float = None, response_wait: float = 10):
         """Send a GCode cmd; return the response"""
-        #TODO: Add serial option for gcode commands from MA
-        if self.debug or self.simulated:
-            print(f"sending: {cmd}")
-        if self.simulated:
-            return None
+        #if self.debug or self.simulated:
+        #    print(f"sending: {cmd}")
+        #if self.simulated:
+        #    return None
         # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
         # we need to watch the 'reply count' and request the new response when it increments
         old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
@@ -377,12 +408,7 @@ class Machine():
                 response = None
                 break
             time.sleep(0.02)
-
-        if self.debug:
-            print(f"received: {response}")
-            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
-        return response
-
+    
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""
         self.gcode("G90")
@@ -441,6 +467,8 @@ class Machine():
 
     def home_all(self):
         # Having a tool is only possible if the machine was already homed.
+        #TODO: Check if machine is already homed and have a user input to verify clear deck to avoid wasting time by accidentally rerunning and \
+        #avoid major deck wrecks 
         if self.active_tool_index != -1:
             self.park_tool()
         self.gcode("G28")

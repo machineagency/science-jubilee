@@ -9,6 +9,7 @@ class ToolConfigurationError(Exception):
 
 
 class Tool:
+    #TODO: Is this init supposed to take a machine? 
     def __init__(self, index, name, **kwargs):
         self._machine = None
         if not isinstance(index, int) or not isinstance(name, str):

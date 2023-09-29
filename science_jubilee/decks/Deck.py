@@ -107,7 +107,7 @@ class Deck(SlotSet):
         """Function that loads a labware and associates it with a specific slot on the deck.
          The slot offset is also applied to the labware asocaite with it."""
 
-        if labware_filename[-4] != 'json':
+        if labware_filename[-4:] != 'json':
             labware_filename = labware_filename + '.json'
 
         config_path = os.path.join(path, labware_filename)
