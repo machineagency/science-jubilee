@@ -129,10 +129,12 @@ class Machine():
         self._configured_tools = None
         self._active_tool_index = None # Cached value under the @property.
         self._tool_z_offsets = None # Cached value under the @property.
-        self._axis_limits = None # Cached value under the @property.
+        self._axis_limits = (None, None, None) # Cached value under the @property.
         self.axes_homed = [False]*4 # We have at least X/Y/Z/U axes to home. Additional axes handled below in connect()
         self.deck = None
-        self.tools = {}
+        #TODO: this is confusingly named
+        self.tools = {} #this is the list of available tools
+        self.tool = None #this is the current active tool
         self.current_well = None
 
         if deck_config is not None:
@@ -153,6 +155,7 @@ class Machine():
         #    print(f"Connecting to {self.address} ...")
         try:
             # "Ping" the machine by updating the only cacheable information we care about.
+            #TODO: This should handle a response from self.gcode of 'None' gracefully. 
             max_tries = 50
             for i in range(max_tries):
                 response = json.loads(self.gcode("M409 K\"move.axes[].homed\""))["result"][:4]
@@ -355,59 +358,39 @@ class Machine():
         self.deck = deck
         return deck    
     
-    #def gcode(self, cmd: str = "", response_wait: float = 10):
-    ##    """Send a GCode cmd; return the response"""
-    #    #TODO: Add serial option for gcode commands from MA
-    #    #if self.debug or self.simulated:
-    #    #    print(f"sending: {cmd}")
-    #    if self.simulated:
-    ##        return None
-    #    # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
-    #    # we need to watch the 'reply count' and request the new response when it increments
-    #    old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
-    #    buffer_response = requests.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
-    #    # wait for a response code to be appended
-    #    #TODO: This is either causing or not fixing a "ConnectionError: HTTPConnectionPool(host='192.168.1.2', port=80): Max retries exceeded with url:" Error
-    #    tic = time.time()
-    #    while True:
-    #        new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
-    #        if new_reply_count != old_reply_count:
-    #            response = requests.get(f'http://192.168.1.2/rr_reply').text
-    #            break
-    #        elif time.time() - tic > response_wait:
-    #            response = None
-    #            break
-    #        time.sleep(0.02)#
-
-        #if self.debug:
-        #    print(f"received: {response}")
-            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
-      #  return response
-
-    #New gcode function causing major issue, patching in known one from original jub BO demo
-    #actually this does not give a response so doesn't work with current code. 
-    #TODO: Fix hard coded address here
-    def gcode(self, cmd: str = "", timeout: float = None, response_wait: float = 10):
-        """Send a GCode cmd; return the response"""
+    def gcode(self, cmd: str = "", response_wait: float = 30):
+    #    """Send a GCode cmd; return the response"""
+        #TODO: Add serial option for gcode commands from MA
         #if self.debug or self.simulated:
-        #    print(f"sending: {cmd}")
-        #if self.simulated:
-        #    return None
+            #print(f"sending: {cmd}")
+
+        if self.simulated:
+            return None
         # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
         # we need to watch the 'reply count' and request the new response when it increments
         old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
         buffer_response = requests.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
         # wait for a response code to be appended
+        #TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds. 
         tic = time.time()
         while True:
-            new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+            try:
+                new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+            except Exception as e:
+                #print('Connection error, sleeping 1 second')
+                time.sleep(1)
             if new_reply_count != old_reply_count:
                 response = requests.get(f'http://192.168.1.2/rr_reply').text
                 break
             elif time.time() - tic > response_wait:
                 response = None
                 break
-            time.sleep(0.02)
+            time.sleep(0.02)#
+        #TODO: handle this with logging. Also fix so all output goes to logs
+        #if self.debug:
+        #    print(f"received: {response}")
+            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
+        return response
     
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""
@@ -610,8 +593,8 @@ class Machine():
         
         self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param=param, wait=wait)
 
-    def move(self, dx: float = None, dy: float = None, dz: float = None, de: float = None,
-              dv: float = None, s: float = 6000,  param: str =None, wait: bool = False):
+    def move(self, dx: float = 0, dy: float = 0, dz: float = 0, de: float = 0,
+              dv: float = 0, s: float = 6000,  param: str =None, wait: bool = False):
         """Move relative to the current position
 
         Parameters
@@ -631,14 +614,14 @@ class Machine():
         """
         # Check that the relative move doesn't exceed user-defined limit
         # By default, ensure that it won't crash into the parked tools
-        if any(axis_limits):
-            x_limit, y_limit, z_limit = axis_limits
+        if any(self._axis_limits):
+            x_limit, y_limit, z_limit = self._axis_limits[0:3]
             pos = self.get_position()
-            if x_limit and float(pos['X']) + dx > x_limit: 
+            if x_limit and dx != 0 and ((float(pos['X']) + dx > x_limit[1]) or (float(pos['X']) + dx < x_limit[0])): 
                 raise MachineStateError("Error: Relative move exceeds X axis limit!")
-            if y_limit and dy and float(pos['Y']) + dy > y_limit: 
+            if y_limit and dy != 0 and ((float(pos['Y']) + dy > y_limit[1]) or (float(pos['Y']) + dy < y_limit[0])): 
                 raise MachineStateError("Error: Relative move exceeds Y axis limit!")
-            if z_limit and float(pos['Z']) + dz > z_limit: 
+            if z_limit and dz != 0 and ((float(pos['Z']) + dz > z_limit[1]) or (float(pos['Z']) + dz < z_limit[0])):
                 raise MachineStateError("Error: Relative move exceeds Z axis limit!")
         self._set_relative_positioning()
         # if force:
@@ -692,6 +675,7 @@ class Machine():
 
     def load_tool(self, tool: Tool = None):
         """Add a new tool for use on the machine."""
+        #TODO: Fix this so if you reload you don't break everything
         name = tool.name
         idx = tool.index
 
@@ -711,6 +695,7 @@ class Machine():
         name = tool.name
         idx = tool.index
 
+
         # Ensure that the provided tool index and name are unique.
         if idx not in self.tools:
             raise MachineConfigurationError(f"Error: No tool with index {idx} to update.")
@@ -721,9 +706,12 @@ class Machine():
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
 
+    #TODO: Unload tool method
+
     @requires_safe_z
     def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
         """Pick up the tool specified by tool id."""
+        #TODO: Make sure axis limits are checked and not exceeded when picking up pipette
         if isinstance(
             tool_id, int
         ):  # Accept either tool index, tool name, or reference to the tool itself
@@ -795,6 +783,7 @@ class Machine():
     
 
     def load_labware(self, labware_filename : str, slot: int, path : str = None ):
+        #TODO: User input before overriding existing labware
 
         if path is not None:
             labware = self.deck.load_labware(labware_filename, slot, path = path)

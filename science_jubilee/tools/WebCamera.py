@@ -68,6 +68,7 @@ class Camera(Tool):
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
+        self._machine.move_to(z = 0, wait = True)
         image = self._capture_image()
         return image
 
@@ -77,7 +78,8 @@ class Camera(Tool):
     def decode_image(self, image_bin):
         image_arr = np.frombuffer(image_bin, np.uint8)
         image = cv2.imdecode(image_arr, cv2.IMREAD_COLOR)
-        return image
+        image_rgb = image[:,:,[2,1,0]]
+        return image_rgb
 
     def process_image(self, image_bin, radius= 50):
         """
@@ -126,4 +128,4 @@ class Camera(Tool):
         plt.setp(plt.gca(), autoscale_on=True)
         ax.imshow(image)
 
-        return fig # need to test this return statement
+        #return fig # need to test this return statement

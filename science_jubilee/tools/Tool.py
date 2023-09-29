@@ -23,4 +23,8 @@ class Tool:
         """Run any code after tool has been associated with the machine."""
         pass
 
+    #TODO:
+    #add a park tool method that every tool config can define to do things that need to be done pre or post parking
+    #ex: make sure pipette has dropped tips before parking
+
     

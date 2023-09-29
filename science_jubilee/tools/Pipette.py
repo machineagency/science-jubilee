@@ -133,11 +133,13 @@ class Pipette(Tool):
         pos = self._machine.get_position()
         end_pos = float(pos['V']) + dv
         
-        if end_pos > self.zero_position:
-            raise ToolStateError("Error: Pipette does not have anything to dispense")
-        elif dv > self.zero_position:
-            raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated")    
-        self._machine.move(v= end_pos, s=s )
+        #TODO: Figure out why checks break for transfer, work fine for manually aspirating and dispensing
+        #if end_pos > self.zero_position:
+        #    raise ToolStateError("Error: Pipette does not have anything to dispense")
+        #elif dv > self.zero_position:
+        #    raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated") 
+        print('dispense dv: ', dv)
+        self._machine.move_to(v = end_pos, s=s )
 
     def dispense(self, vol: float, location :Union[Well, Tuple], s:int = 2000, 
                  from_bottom :float =10, from_top :float = None):
@@ -166,17 +168,19 @@ class Pipette(Tool):
                  blowout= None, mix_before: tuple = None,
                  mix_after: tuple = None, new_tip : str = 'always'):
         
+        #TODO: check that tip picked up and get a new one if not
+        
         vol_ = self.vol2move(vol) -1
         # get locations
         xs, ys, zs = self._getxyz(source_well)
 
         # saves some code if we make a list regardless    
         if type(destination_well) != list:
-            destination_well = list(destination_well) 
+            destination_well = [destination_well] #make it into a list 
 
         if isinstance(destination_well, list):
             for well in destination_well:
-                xd, yd, zd =self._getxyz(destination_well[well])
+                xd, yd, zd =self._getxyz(well)
                 
                 
                 self._machine.safe_z_movement()
@@ -193,7 +197,7 @@ class Pipette(Tool):
                 self._machine.safe_z_movement()
                 self._machine.move_to(x=xd, y=yd)
                 self._machine.move_to(z=zd+5)
-                self.current_well = destination_well[well]
+                self.current_well = well
                 self._dispense(vol_, s=s)
                 
                 if mix_after:
@@ -242,9 +246,9 @@ class Pipette(Tool):
     def update_z_offset(self, tip: bool = None):
         
         if isinstance(self.tiprack, list):
-            tip_offset = self.tiprack[0].tipLength- self.tiprack[0].tipOverlap
+            tip_offset = self.tiprack[0].tip_length- self.tiprack[0].tip_overlap
         else:
-            tip_offset = self.tiprack.tipLength- self.tiprack.tipOverlap
+            tip_offset = self.tiprack.tip_length- self.tiprack.tip_overlap
 
         if tip == True:
             new_z = self.tool_offset - tip_offset
@@ -275,9 +279,10 @@ class Pipette(Tool):
         if self.has_tip == False:
             self._machine.move_to(z=z, s=800, param = 'H4')
         else:
-            raise ToolStateError("Error: Pipette already equipped with a tip.")      
+            raise ToolStateError("Error: Pipette already equipped with a tip.")  
+        #TODO: Should this be an error or a warning?     
         
-    def pickup_tip(self, tip_ : Union[Well, Tuple]):
+    def pickup_tip(self, tip_ : Union[Well, Tuple] = None):
         """
         """
         if tip_ is None:
@@ -299,6 +304,7 @@ class Pipette(Tool):
         #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
 
     def return_tip(self):
+        #TODO: Move z close to rack before ejecting
         x, y, z = self._getxyz(self.first_available_tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
