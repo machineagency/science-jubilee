@@ -1,0 +1,1066 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>science_jubilee.Machine &#8212; science_jubilee 0.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=ac02cc09edc035673794" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=eafc0fe6" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=ac02cc09edc035673794"></script>
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=f485fb33"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/science_jubilee/Machine';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__primary"
+          id="__primary"/>
+  <label class="overlay overlay-primary" for="__primary"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          name="__secondary"
+          id="__secondary"/>
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+  
+    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
+<div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+    <span class="fa-solid fa-bars"></span>
+  </label>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    <p class="title logo__title">science_jubilee 0.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../autoapi/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+</div>
+
+    </nav>
+  
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          <div class="navbar-item"><nav class="navbar-nav">
+  <p class="sidebar-header-items__title"
+     role="heading"
+     aria-level="1"
+     aria-label="Site Navigation">
+    Site Navigation
+  </p>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../autoapi/index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+  </ul>
+</nav></div>
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
+  </button>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">science_jubi...</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article" role="main">
+                  
+  <h1>Source code for science_jubilee.Machine</h1><div class="highlight"><pre>
+<span></span><span class="ch">#!/usr/bin/env python</span>
+<span class="c1"># coding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">serial</span>
+<span class="kn">from</span> <span class="nn">serial.tools</span> <span class="kn">import</span> <span class="n">list_ports</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+
+
+<span class="kn">from</span> <span class="nn">science_jubilee.tools.Tool</span> <span class="kn">import</span> <span class="n">Tool</span>
+<span class="kn">from</span> <span class="nn">science_jubilee.decks.Deck</span> <span class="kn">import</span> <span class="n">Deck</span>
+
+
+<div class="viewcode-block" id="get_root_dir"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.get_root_dir">[docs]</a><span class="k">def</span> <span class="nf">get_root_dir</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return the path to the duckbot directory.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span></div>
+
+
+<span class="c1">##########################################</span>
+<span class="c1">#               ERRORS</span>
+<span class="c1">##########################################</span>
+<div class="viewcode-block" id="MachineConfigurationError"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.MachineConfigurationError">[docs]</a><span class="k">class</span> <span class="nc">MachineConfigurationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise this error if there is something wrong with how the machine is configured&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="MachineStateError"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.MachineStateError">[docs]</a><span class="k">class</span> <span class="nc">MachineStateError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Raise this error if the machine is in the wrong state to perform the requested action.&quot;&quot;&quot;</span>
+
+    <span class="k">pass</span></div>
+
+
+<span class="c1">##########################################</span>
+<span class="c1">#               DECORATORS</span>
+<span class="c1">##########################################</span>
+<div class="viewcode-block" id="machine_homed"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.machine_homed">[docs]</a><span class="k">def</span> <span class="nf">machine_homed</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if the machine is homed before performing certain actions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">homing_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="c1"># Check the cached value if one exists.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+        <span class="c1"># Request homing status from the object model if not known.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;move.axes[].homed&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span><span class="s2">&quot;Error: machine must first be homed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">homing_check</span></div>
+
+
+<div class="viewcode-block" id="requires_deck"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.requires_deck">[docs]</a><span class="k">def</span> <span class="nf">requires_deck</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a deck has been configured before performing certain actions.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">deck_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span><span class="s2">&quot;Error: No deck is set up&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">deck_check</span></div>
+
+<div class="viewcode-block" id="requires_safe_z"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.requires_safe_z">[docs]</a><span class="k">def</span> <span class="nf">requires_safe_z</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Ensure deck is at a safe height before performing certain actions.&quot;&quot;&quot;</span>
+    
+    <span class="k">def</span> <span class="nf">z_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">):</span>
+        <span class="n">current_z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_position</span><span class="p">()[</span><span class="s2">&quot;Z&quot;</span><span class="p">])</span>
+        <span class="n">safe_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">safe_z</span>
+        <span class="k">if</span> <span class="n">current_z</span> <span class="o">&lt;</span> <span class="n">safe_z</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">safe_z</span> <span class="o">+</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">z_check</span></div>
+        
+
+<span class="c1">##########################################</span>
+<span class="c1">#             MACHINE CLASS</span>
+<span class="c1">##########################################</span>
+<div class="viewcode-block" id="Machine"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine">[docs]</a><span class="k">class</span> <span class="nc">Machine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Connect and send commands to the machine&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">port</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">baudrate</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">115200</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">deck_config</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">simulated</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set default values and connect to the machine.&quot;&quot;&quot;</span>
+        
+        <span class="c1"># We can connect via http or serial. Defaults to serial.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+            
+        <span class="c1"># Serial Info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="n">port</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span> <span class="o">=</span> <span class="n">baudrate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lineEnding</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Machine Info</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span> <span class="o">=</span> <span class="n">simulated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_positioning</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># Absolute positioning by default</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_extrusion</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="kc">True</span>  <span class="c1"># Extrusion positioning is set separately from other axes</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Cached value under the @property.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Cached value under the @property.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Cached value under the @property.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="kc">False</span>
+        <span class="p">]</span> <span class="o">*</span> <span class="mi">4</span>  <span class="c1"># We have at least XYZU axes to home. Additional axes handled in connect().</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deck</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Camera Info</span>
+        <span class="c1"># TODO: separate this out to the Camera tool module</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transform</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">img_size</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Machine.connect"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Connect to the machine over serial or http.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="p">:</span>
+            <span class="c1"># Sample simulated tools for my machine.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="mi">0</span><span class="p">:</span> <span class="s2">&quot;Inoculation Loop&quot;</span><span class="p">,</span>
+                <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;BrokenTrons&quot;</span><span class="p">,</span>
+                <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;Side Camera&quot;</span><span class="p">,</span>
+                <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;Top-Down Camera&quot;</span><span class="p">,</span>
+                <span class="mi">4</span><span class="p">:</span> <span class="s2">&quot;10cc Syringe&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+            <span class="k">return</span>
+        
+        <span class="c1"># Connect over http if address is provided</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">==</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># Autoconnect to ttyACM* if it exists &amp; is unique</span>
+                <span class="n">ports</span> <span class="o">=</span> <span class="p">[</span>
+                    <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()</span> <span class="k">if</span> <span class="s2">&quot;ttyACM&quot;</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span>
+                        <span class="s2">&quot;More than one possible serial device found. Please connect to an explicit port.&quot;</span>
+                    <span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;/dev/</span><span class="si">{</span><span class="n">ports</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ser</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">baudrate</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M450&quot;</span><span class="p">)</span>  <span class="c1"># Sample command to initialize serial connection</span>
+
+        <span class="c1"># Update machine state with info from the object model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes_homed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;move.axes[].homed&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+
+        <span class="c1"># Clear all previous values and reset</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">configured_axes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">configured_tools</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tool_z_offsets</span>
+        <span class="c1">#         self.axis_limits</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_absolute_positioning</span><span class="p">()</span></div>
+
+    <span class="c1">##########################################</span>
+    <span class="c1">#             PROPERTIES</span>
+    <span class="c1">##########################################</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">configured_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the configured axes of the machine.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Starting from a fresh connection</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;move.axes[]&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axis</span><span class="p">[</span><span class="s2">&quot;letter&quot;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred trying to read axis limits on each axis!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="c1"># Return the cached value.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured_axes</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">configured_tools</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the configured tools.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Starting from a fresh connection</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;tools[]&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span> <span class="o">=</span> <span class="p">{}</span>
+                <span class="k">for</span> <span class="n">tool</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span><span class="p">[</span><span class="n">tool</span><span class="p">[</span><span class="s2">&quot;number&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">tool</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred trying to read axis limits on each axis!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+
+        <span class="c1"># Return the cached value.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_configured_tools</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">active_tool_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the index of the current tool.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Starting from a fresh connection.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+                <span class="c1"># We get a string instead of -1 when there are no tools.</span>
+                <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;No tool&quot;</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="c1"># We get a string instead of the tool index.</span>
+                <span class="k">elif</span> <span class="n">response</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Tool&quot;</span><span class="p">):</span>
+                    <span class="c1"># Recover from the string: &#39;Tool X is selected.&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span> 
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred trying to read current tool!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="c1"># Return the cached value.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span>
+
+    <span class="nd">@active_tool_index</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">active_tool_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the current tool, and toggle the old tool off.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">is_active_tool</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="n">tool_index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_active_tool_index</span> <span class="o">=</span> <span class="n">tool_index</span>
+            <span class="k">if</span> <span class="n">tool_index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Connection initiated with tool equipped. Use reload_tool() after instantiate this tool.&quot;</span><span class="p">)</span>
+                <span class="n">temp_tool</span> <span class="o">=</span> <span class="n">Tool</span><span class="p">(</span><span class="n">tool_index</span><span class="p">,</span> <span class="s2">&quot;temp_tool&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">load_tool</span><span class="p">(</span><span class="n">temp_tool</span><span class="p">)</span>
+            <span class="n">tool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">tool_index</span><span class="p">][</span><span class="s2">&quot;tool&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tool</span> <span class="o">=</span> <span class="n">tool</span>
+            <span class="n">tool</span><span class="o">.</span><span class="n">is_active_tool</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tool_z_offsets</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (in tool order) a list of tool&#39;s z offsets&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Starting from a fresh connection.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;tools&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Create a fresh list.</span>
+                <span class="k">for</span> <span class="n">tool_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="n">tool_z_offset</span> <span class="o">=</span> <span class="n">tool_data</span><span class="p">[</span><span class="s2">&quot;offsets&quot;</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>  <span class="c1"># Pull Z axis</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tool_z_offset</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred trying to read z offsets of all tools!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="c1"># Return the cached value.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tool_z_offsets</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">axis_limits</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return (in XYZU order) a list of tuples specifying (min, max) axis limit&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># Starting from a fresh connection.</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">response</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s1">&#39;M409 K&quot;move.axes&quot;&#39;</span><span class="p">))[</span><span class="s2">&quot;result&quot;</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Create a fresh list.</span>
+                <span class="k">for</span> <span class="n">axis_data</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
+                    <span class="n">axis_min</span> <span class="o">=</span> <span class="n">axis_data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">]</span>
+                    <span class="n">axis_max</span> <span class="o">=</span> <span class="n">axis_data</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">]</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">axis_min</span><span class="p">,</span> <span class="n">axis_max</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Error occurred trying to read axis limits on each axis!&quot;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="c1"># Return the cached value.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_axis_limits</span>
+
+    <span class="c1">##########################################</span>
+    <span class="c1">#                BED PLATE</span>
+    <span class="c1">##########################################</span>
+<div class="viewcode-block" id="Machine.load_deck"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.load_deck">[docs]</a>    <span class="k">def</span> <span class="nf">load_deck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deck_filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span>
+            <span class="s2">&quot;decks&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;configs&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">deck_filename</span><span class="si">}</span><span class="s2">.json&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">deck_config</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">deck</span> <span class="o">=</span> <span class="n">Deck</span><span class="p">(</span><span class="n">deck_config</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deck</span> <span class="o">=</span> <span class="n">deck</span>
+        <span class="k">return</span> <span class="n">deck</span></div>
+
+    <span class="c1">##########################################</span>
+    <span class="c1">#                GCODE</span>
+    <span class="c1">##########################################</span>
+<div class="viewcode-block" id="Machine.send"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cmd</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Send GCode over serial/http&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">:</span>
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">lineEnding</span>
+            <span class="n">bcmd</span> <span class="o">=</span> <span class="n">cmd</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bcmd</span><span class="p">)</span>
+
+            <span class="c1"># Read response</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">reset_input_buffer</span><span class="p">()</span>  <span class="c1"># flush the buffer</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ser</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;UTF-8&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+            <span class="c1"># RRF3 Only</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;http://</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2">/machine/code&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">cmd</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        
+        <span class="k">return</span> <span class="n">response</span></div>
+
+<div class="viewcode-block" id="Machine._set_absolute_positioning"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine._set_absolute_positioning">[docs]</a>    <span class="k">def</span> <span class="nf">_set_absolute_positioning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set absolute positioning for all axes except extrusion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;G90&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_positioning</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Machine._set_relative_positioning"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine._set_relative_positioning">[docs]</a>    <span class="k">def</span> <span class="nf">_set_relative_positioning</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set relative positioning for all axes except extrusion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;G91&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_positioning</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Machine._set_absolute_extrusion"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine._set_absolute_extrusion">[docs]</a>    <span class="k">def</span> <span class="nf">_set_absolute_extrusion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set absolute positioning for extrusion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M82&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_absolute_extrusion</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Machine._set_relative_extrusion"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine._set_relative_extrusion">[docs]</a>    <span class="k">def</span> <span class="nf">_set_relative_extrusion</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set relative positioning for extrusion&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M83&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">absolute_extrusion</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Machine.push_machine_state"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.push_machine_state">[docs]</a>    <span class="k">def</span> <span class="nf">push_machine_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Push machine state onto a stack&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M120&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.pop_machine_state"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.pop_machine_state">[docs]</a>    <span class="k">def</span> <span class="nf">pop_machine_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Recover previous machine state&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M121&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_x"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_x">[docs]</a>    <span class="k">def</span> <span class="nf">home_x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home the X axis&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28 X&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_y"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_y">[docs]</a>    <span class="k">def</span> <span class="nf">home_y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home the Y axis&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28 Y&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_z"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_z">[docs]</a>    <span class="k">def</span> <span class="nf">home_z</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home the Z axis&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28 Z&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_u"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_u">[docs]</a>    <span class="k">def</span> <span class="nf">home_u</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home the U (tool) axis&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28 U&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_v"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_v">[docs]</a>    <span class="k">def</span> <span class="nf">home_v</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home the V axis&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28 V&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.home_all"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.home_all">[docs]</a>    <span class="k">def</span> <span class="nf">home_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Home all axes. This will look for the homeall.g macro-- ensure that this file homes any added axes (e.g. V)&quot;&quot;&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;G28&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine._move_xyzev"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine._move_xyzev">[docs]</a>    <span class="nd">@machine_homed</span>
+    <span class="k">def</span> <span class="nf">_move_xyzev</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">v</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">6000</span><span class="p">,</span>
+        <span class="n">param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move X/Y/Z/E/V axes. Set absolute/relative mode externally.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: x position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        y: y position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        z: z position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        e: extruder position, in whatever units have been set (default mm)</span>
+<span class="sd">        v: v axis position, in whatever units have been set (default mm)</span>
+<span class="sd">        s: speed at which to move (default 6000 mm/min)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">e</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0:.2f}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">x_cmd</span> <span class="o">=</span> <span class="n">y_cmd</span> <span class="o">=</span> <span class="n">z_cmd</span> <span class="o">=</span> <span class="n">e_cmd</span> <span class="o">=</span> <span class="n">v_cmd</span> <span class="o">=</span> <span class="n">f_cmd</span> <span class="o">=</span> <span class="n">param_cmd</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">x_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;X</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">y_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Y</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">z</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">z_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Z</span><span class="si">{</span><span class="n">z</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">e</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">e_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;E</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">v_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;V</span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">f_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;F</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">param</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">param_cmd</span> <span class="o">=</span> <span class="n">param</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;G0 </span><span class="si">{</span><span class="n">x_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">y_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">z_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">e_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">v_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">f_cmd</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">param_cmd</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;M400&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.move_to"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.move_to">[docs]</a>    <span class="k">def</span> <span class="nf">move_to</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">z</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">e</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">v</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">6000</span><span class="p">,</span>
+        <span class="n">force_extrusion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move to an absolute X/Y/Z/E/V position.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        x: x position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        y: y position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        z: z position on the bed, in whatever units have been set (default mm)</span>
+<span class="sd">        e: extruder position, in whatever units have been set (default mm)</span>
+<span class="sd">        v: v axis position, in whatever units have been set (default mm)</span>
+<span class="sd">        s: speed at which to move (default 6000 mm/min)</span>
+<span class="sd">        force_extrusion: whether to force extrusion to also be absolute positioning (default True)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_absolute_positioning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">force_extrusion</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_absolute_extrusion</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_xyzev</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">z</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.move"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">dx</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dy</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dz</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">de</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dv</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">s</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">6000</span><span class="p">,</span>
+        <span class="n">force_extrusion</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">param</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">wait</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">axis_limits</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Move relative to the current position</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        dx: change in x position, in whatever units have been set (default mm)</span>
+<span class="sd">        dy: change in y position, in whatever units have been set (default mm)</span>
+<span class="sd">        dz: change in z position, in whatever units have been set (default mm)</span>
+<span class="sd">        de: change in e position, in whatever units have been set (default mm)</span>
+<span class="sd">        dv: change in v position, in whatever units have been set (default mm)</span>
+<span class="sd">        s:  speed at which to move (default 6000 mm/min)</span>
+<span class="sd">        force_extrusion: whether to force extrusion to also be relative positioning (default True)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check that the relative move doesn&#39;t exceed user-defined limit</span>
+        <span class="c1"># By default, ensure that it won&#39;t crash into the parked tools</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">axis_limits</span><span class="p">):</span>
+            <span class="n">x_limit</span><span class="p">,</span> <span class="n">y_limit</span><span class="p">,</span> <span class="n">z_limit</span> <span class="o">=</span> <span class="n">axis_limits</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_position</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">x_limit</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">dx</span> <span class="o">&gt;</span> <span class="n">x_limit</span><span class="p">:</span> 
+                <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span><span class="s2">&quot;Error: Relative move exceeds X axis limit!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">y_limit</span> <span class="ow">and</span> <span class="n">dy</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">dy</span> <span class="o">&gt;</span> <span class="n">y_limit</span><span class="p">:</span> 
+                <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span><span class="s2">&quot;Error: Relative move exceeds Y axis limit!&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">z_limit</span> <span class="ow">and</span> <span class="nb">float</span><span class="p">(</span><span class="n">pos</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="n">dz</span> <span class="o">&gt;</span> <span class="n">z_limit</span><span class="p">:</span> 
+                <span class="k">raise</span> <span class="n">MachineStateError</span><span class="p">(</span><span class="s2">&quot;Error: Relative move exceeds Z axis limit!&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_relative_positioning</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">force_extrusion</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_relative_extrusion</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_xyzev</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">dx</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">dy</span><span class="p">,</span> <span class="n">z</span><span class="o">=</span><span class="n">dz</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="n">de</span><span class="p">,</span> <span class="n">v</span><span class="o">=</span><span class="n">dv</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">param</span><span class="o">=</span><span class="n">param</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="n">wait</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.dwell"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.dwell">[docs]</a>    <span class="k">def</span> <span class="nf">dwell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">millis</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pause the machine for a period of time.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        t: time to pause, in milliseconds by default</span>
+<span class="sd">        millis (optional): boolean, set to false to use seconds. default unit is milliseconds.</span>
+<span class="sd">        dz: change in z position, in whatever units have been set (default mm)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Nothing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">param</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span> <span class="k">if</span> <span class="n">millis</span> <span class="k">else</span> <span class="s2">&quot;S&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;G4 </span><span class="si">{</span><span class="n">param</span><span class="si">}{</span><span class="n">t</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.safe_z_movement"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.safe_z_movement">[docs]</a>    <span class="k">def</span> <span class="nf">safe_z_movement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">current_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_position</span><span class="p">()[</span><span class="s2">&quot;Z&quot;</span><span class="p">]</span>
+        <span class="n">safe_z</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">deck</span><span class="o">.</span><span class="n">safe_z</span>
+        <span class="k">if</span> <span class="nb">float</span><span class="p">(</span><span class="n">current_z</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">safe_z</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_to</span><span class="p">(</span><span class="n">z</span><span class="o">=</span><span class="n">safe_z</span> <span class="o">+</span> <span class="mi">20</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Machine.load_tool"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.load_tool">[docs]</a>    <span class="k">def</span> <span class="nf">load_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">Tool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Add a new tool for use on the machine.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="c1"># Ensure that the provided tool index and name are unique.</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span><span class="s2">&quot;Error: Tool index already in use.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">loaded_tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">loaded_tool</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span><span class="s2">&quot;Error: Tool name already in use.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;tool&quot;</span><span class="p">:</span> <span class="n">tool</span><span class="p">}</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">_machine</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">post_load</span><span class="p">()</span></div>
+        
+<div class="viewcode-block" id="Machine.reload_tool"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.reload_tool">[docs]</a>    <span class="k">def</span> <span class="nf">reload_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool</span><span class="p">:</span> <span class="n">Tool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update a tool which has already been loaded.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">tool</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="c1"># Ensure that the provided tool index and name are unique.</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error: No tool with index </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2"> to update.&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">loaded_tool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">loaded_tool</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span><span class="s2">&quot;Error: Tool name already in use.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;tool&quot;</span><span class="p">:</span> <span class="n">tool</span><span class="p">}</span>
+        <span class="n">tool</span><span class="o">.</span><span class="n">_machine</span> <span class="o">=</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Machine.pickup_tool"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.pickup_tool">[docs]</a>    <span class="nd">@requires_safe_z</span>
+    <span class="k">def</span> <span class="nf">pickup_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tool_id</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">Tool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pick up the tool specified by tool id.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span>
+            <span class="n">tool_id</span><span class="p">,</span> <span class="nb">int</span>
+        <span class="p">):</span>  <span class="c1"># Accept either tool index, tool name, or reference to the tool itself</span>
+            <span class="k">if</span> <span class="n">tool_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+                <span class="n">tool_index</span> <span class="o">=</span> <span class="n">tool_id</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error: No tool with index </span><span class="si">{</span><span class="n">tool_id</span><span class="si">}</span><span class="s2"> is currently loaded.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tool_id</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">tool_index</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">loaded_tool_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">loaded_tool_index</span><span class="p">][</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">tool_id</span><span class="p">:</span>
+                    <span class="n">tool_index</span> <span class="o">=</span> <span class="n">loaded_tool_index</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">tool_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error: No tool with name </span><span class="si">{</span><span class="n">tool_id</span><span class="si">}</span><span class="s2"> is currently loaded.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tool_id</span><span class="p">,</span> <span class="n">Tool</span><span class="p">):</span>
+            <span class="n">tool_index</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">for</span> <span class="n">loaded_tool_index</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tools</span><span class="p">[</span><span class="n">loaded_tool_index</span><span class="p">][</span><span class="s2">&quot;tool&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="n">tool_id</span><span class="p">:</span>
+                    <span class="n">tool_index</span> <span class="o">=</span> <span class="n">loaded_tool_index</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">tool_index</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">MachineConfigurationError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Error: No tool of type </span><span class="si">{</span><span class="n">tool_id</span><span class="si">}</span><span class="s2"> is currently loaded.&quot;</span>
+                <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown tool format </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tool_id</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="c1">#         self.safe_z_movement()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;T</span><span class="si">{</span><span class="n">tool_index</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span> <span class="o">=</span> <span class="n">tool_index</span></div>
+
+    <span class="c1"># def tool_change(self, tool_id: int):</span>
+    <span class="c1">#     # This is my old tool change function</span>
+    <span class="c1">#     # TODO: i think i&#39;d like to change pickup_tool above to tool_change</span>
+    <span class="c1">#     &quot;&quot;&quot;Change to specified tool.&quot;&quot;&quot;</span>
+    <span class="c1">#     if isinstance(tool_id, str): # Accept either tool number or tool name</span>
+    <span class="c1">#         # Get the tool index from the configured tools list</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             tool_idx = list(self._configured_tools.keys())[list(self._configured_tools.values()).index(tool_id)]</span>
+    <span class="c1">#             tool_name = tool_id # The tool name was passed</span>
+    <span class="c1">#         except:</span>
+    <span class="c1">#             raise MachineConfigurationError(f&#39;Error: no tool named {tool_id} found in current configuration!&#39;)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         try:</span>
+    <span class="c1">#             tool_idx = tool_id # the tool id was passed</span>
+    <span class="c1">#         except:</span>
+    <span class="c1">#             raise MachineConfigurationError(f&#39;Erro: no tool with index {tool_id} found in current configuration!&#39;)</span>
+
+    <span class="c1">#     cmd = f&#39;T{tool_idx}&#39;</span>
+    <span class="c1">#     self.send(cmd)</span>
+
+    <span class="c1">#     self.active_tool_index = tool_idx</span>
+
+<div class="viewcode-block" id="Machine.park_tool"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.park_tool">[docs]</a>    <span class="nd">@requires_safe_z</span>
+    <span class="k">def</span> <span class="nf">park_tool</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deselect tool&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;T-1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">active_tool_index</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Machine.get_position"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.get_position">[docs]</a>    <span class="k">def</span> <span class="nf">get_position</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current position, returns a dictionary with X/Y/Z/U/E/V keys&quot;&quot;&quot;</span>
+        
+        <span class="c1"># Sometimes we just get &#39;ok&#39; back; need to query until we get the position</span>
+        <span class="n">max_tries</span> <span class="o">=</span> <span class="mi">25</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">max_tries</span><span class="p">):</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;M114&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;Count&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+            
+        <span class="n">positions</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">keyword</span> <span class="o">=</span> <span class="s2">&quot; Count &quot;</span> <span class="c1"># this is the keyword hosts like e.g. pronterface search for to track position</span>
+        <span class="n">keyword_idx</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">keyword</span><span class="p">)</span>
+        
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">keyword_idx</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[:</span><span class="n">keyword_idx</span><span class="p">]</span>
+            <span class="n">position_elements</span> <span class="o">=</span> <span class="n">resp</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">position_elements</span><span class="p">:</span>
+                <span class="n">axis</span><span class="p">,</span> <span class="n">pos</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="n">positions</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">pos</span>          
+
+        <span class="k">return</span> <span class="n">positions</span></div>
+
+    <span class="c1"># ToDo: Move this to camera class and configuration</span>
+<div class="viewcode-block" id="Machine.px_to_real"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.px_to_real">[docs]</a>    <span class="k">def</span> <span class="nf">px_to_real</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Convert pixel location to bed location. Requires camera-machine calibration&quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_size</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.5</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">img_size</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.5</span>
+        <span class="n">rel</span> <span class="o">=</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">relative</span> <span class="k">else</span> <span class="mi">0</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">**</span><span class="mi">2</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">rel</span><span class="p">])</span></div>
+
+    <span class="c1">##########################################</span>
+    <span class="c1">#                MACROS</span>
+    <span class="c1">##########################################</span>
+    <span class="c1"># ToDo: Check if the macro exists before running?</span>
+<div class="viewcode-block" id="Machine.tool_lock"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.tool_lock">[docs]</a>    <span class="k">def</span> <span class="nf">tool_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists.&quot;&quot;&quot;</span>
+        <span class="n">macro_file</span> <span class="o">=</span> <span class="s2">&quot;0:/macros/tool_lock.g&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;M98 P</span><span class="si">{</span><span class="n">macro_file</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Machine.tool_unlock"><a class="viewcode-back" href="../../autoapi/science_jubilee/Machine/index.html#science_jubilee.Machine.Machine.tool_unlock">[docs]</a>    <span class="k">def</span> <span class="nf">tool_unlock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Runs Jubilee tool unlock macro. Assumes tool_unlock.g macro exists.&quot;&quot;&quot;</span>
+        <span class="n">macro_file</span> <span class="o">=</span> <span class="s2">&quot;0:/macros/tool_unlock.g&quot;</span>
+        <span class="n">cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;M98 P</span><span class="si">{</span><span class="n">macro_file</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span></div></div>
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=ac02cc09edc035673794"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=ac02cc09edc035673794"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+  <p class="copyright">
+    
+      © Copyright 2023, Machine Agency.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

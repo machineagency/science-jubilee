@@ -1,0 +1,116 @@
+:py:mod:`science_jubilee.tools.Pipette_MP`
+==========================================
+
+.. py:module:: science_jubilee.tools.Pipette_MP
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.tools.Pipette_MP.Pipette
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.tools.Pipette_MP.logger
+
+
+.. py:data:: logger
+
+   
+
+.. py:class:: Pipette(index, name, tip_rack, config)
+
+
+   Bases: :py:obj:`science_jubilee.tools.Tool.Tool`
+
+   .. py:method:: check_bounds(pos)
+
+      Disallow commands outside of the pipette's configured range.
+
+
+   .. py:method:: ul_to_mm(vol)
+
+      Convert microliter volume to step value for the Pipette.
+
+
+   .. py:method:: prime()
+
+      Moves to the lowest point on the V axis without engaging tip ejector.
+
+
+   .. py:method:: _aspirate(vol: float, s: int = 2000)
+
+      Aspirate a given volume of liquid.
+
+
+   .. py:method:: aspirate(vol: float, s: int = 2000, well: science_jubilee.labware.Labware.Well = None, from_bottom: float = 10, from_top: float = None, location: Tuple[float] = None)
+
+      Aspirate a given volum of liquid from a given well.
+
+
+   .. py:method:: _dispense(vol: float, s: int = 2000)
+
+      Dispense a given amount of liquid.
+
+
+   .. py:method:: dispense(vol: float, s: int = 2000, well: science_jubilee.labware.Labware.Well = None, from_bottom: float = 10, from_top: float = None, location: Tuple[float] = None)
+
+      Dispense a given volum of liquid from a given well.
+
+
+   .. py:method:: transfer(vol: float, s: int = 2000, source_well: science_jubilee.labware.Labware.Well = None, destination_well: science_jubilee.labware.Labware.Well = None, blowout=None, mix_before: tuple = None, mix_after: tuple = None, new_tip: str = 'always')
+
+
+   .. py:method:: blowout(s: int = 2000)
+
+
+   .. py:method:: air_gap(vol)
+
+
+   .. py:method:: _pickup_tip(z)
+
+
+   .. py:method:: _get_xyz(well: science_jubilee.labware.Labware.Well = None, location: Tuple[float] = None)
+      :staticmethod:
+
+
+   .. py:method:: _get_top_bottom(well: science_jubilee.labware.Labware.Well = None)
+      :staticmethod:
+
+
+   .. py:method:: update_z_offset(tip: bool = None)
+
+
+   .. py:method:: add_tiprack(tiprack: Union[science_jubilee.labware.Labware.Labware, list])
+
+
+   .. py:method:: pickup_tip(tip_: science_jubilee.labware.Labware.Well = None)
+
+
+   .. py:method:: _drop_tip()
+
+      Moves the plunger to eject the pipette tip
+
+
+
+   .. py:method:: return_tip()
+
+
+   .. py:method:: drop_tip(well: science_jubilee.labware.Labware.Well = None, location: Tuple[float] = None)
+
+
+   .. py:method:: mix(vol: float, n: int, s: int = 2000)
+
+
+

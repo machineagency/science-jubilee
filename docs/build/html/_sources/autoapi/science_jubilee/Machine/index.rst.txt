@@ -1,0 +1,286 @@
+:py:mod:`science_jubilee.Machine`
+=================================
+
+.. py:module:: science_jubilee.Machine
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.Machine.Machine
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.Machine.get_root_dir
+   science_jubilee.Machine.machine_homed
+   science_jubilee.Machine.requires_deck
+   science_jubilee.Machine.requires_safe_z
+
+
+
+.. py:function:: get_root_dir()
+
+   Return the path to the duckbot directory.
+
+
+.. py:exception:: MachineConfigurationError
+
+
+   Bases: :py:obj:`Exception`
+
+   Raise this error if there is something wrong with how the machine is configured
+
+
+.. py:exception:: MachineStateError
+
+
+   Bases: :py:obj:`Exception`
+
+   Raise this error if the machine is in the wrong state to perform the requested action.
+
+
+.. py:function:: machine_homed(func)
+
+   Check if the machine is homed before performing certain actions.
+
+
+.. py:function:: requires_deck(func)
+
+   Check if a deck has been configured before performing certain actions.
+
+
+.. py:function:: requires_safe_z(func)
+
+   Ensure deck is at a safe height before performing certain actions.
+
+
+.. py:class:: Machine(port: str = None, baudrate: int = 115200, address: str = None, deck_config: str = None, simulated: bool = False)
+
+
+   Connect and send commands to the machine
+
+   .. py:property:: configured_axes
+
+      Return the configured axes of the machine.
+
+   .. py:property:: configured_tools
+
+      Return the configured tools.
+
+   .. py:property:: active_tool_index
+
+      Return the index of the current tool.
+
+   .. py:property:: tool_z_offsets
+
+      Return (in tool order) a list of tool's z offsets
+
+   .. py:property:: axis_limits
+
+      Return (in XYZU order) a list of tuples specifying (min, max) axis limit
+
+   .. py:method:: connect()
+
+      Connect to the machine over serial or http.
+
+
+   .. py:method:: load_deck(deck_filename: str)
+
+
+   .. py:method:: send(cmd: str = '', timeout: float = None)
+
+      Send GCode over serial/http
+
+
+   .. py:method:: _set_absolute_positioning()
+
+      Set absolute positioning for all axes except extrusion
+
+
+   .. py:method:: _set_relative_positioning()
+
+      Set relative positioning for all axes except extrusion
+
+
+   .. py:method:: _set_absolute_extrusion()
+
+      Set absolute positioning for extrusion
+
+
+   .. py:method:: _set_relative_extrusion()
+
+      Set relative positioning for extrusion
+
+
+   .. py:method:: push_machine_state()
+
+      Push machine state onto a stack
+
+
+   .. py:method:: pop_machine_state()
+
+      Recover previous machine state
+
+
+   .. py:method:: home_x()
+
+      Home the X axis
+
+
+   .. py:method:: home_y()
+
+      Home the Y axis
+
+
+   .. py:method:: home_z()
+
+      Home the Z axis
+
+
+   .. py:method:: home_u()
+
+      Home the U (tool) axis
+
+
+   .. py:method:: home_v()
+
+      Home the V axis
+
+
+   .. py:method:: home_all()
+
+      Home all axes. This will look for the homeall.g macro-- ensure that this file homes any added axes (e.g. V)
+
+
+   .. py:method:: _move_xyzev(x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, param: str = None, wait: bool = False)
+
+      Move X/Y/Z/E/V axes. Set absolute/relative mode externally.
+
+      :param x:
+      :type x: x position on the bed, in whatever units have been set (default mm)
+      :param y:
+      :type y: y position on the bed, in whatever units have been set (default mm)
+      :param z:
+      :type z: z position on the bed, in whatever units have been set (default mm)
+      :param e:
+      :type e: extruder position, in whatever units have been set (default mm)
+      :param v:
+      :type v: v axis position, in whatever units have been set (default mm)
+      :param s:
+      :type s: speed at which to move (default 6000 mm/min)
+
+      :rtype: Nothing
+
+
+   .. py:method:: move_to(x: float = None, y: float = None, z: float = None, e: float = None, v: float = None, s: float = 6000, force_extrusion: bool = True, param: str = None, wait: bool = False)
+
+      Move to an absolute X/Y/Z/E/V position.
+
+      :param x:
+      :type x: x position on the bed, in whatever units have been set (default mm)
+      :param y:
+      :type y: y position on the bed, in whatever units have been set (default mm)
+      :param z:
+      :type z: z position on the bed, in whatever units have been set (default mm)
+      :param e:
+      :type e: extruder position, in whatever units have been set (default mm)
+      :param v:
+      :type v: v axis position, in whatever units have been set (default mm)
+      :param s:
+      :type s: speed at which to move (default 6000 mm/min)
+      :param force_extrusion:
+      :type force_extrusion: whether to force extrusion to also be absolute positioning (default True)
+
+      :rtype: Nothing
+
+
+   .. py:method:: move(dx: float = None, dy: float = None, dz: float = None, de: float = None, dv: float = None, s: float = 6000, force_extrusion: bool = True, param: str = None, wait: bool = False, axis_limits: tuple = (None, 300, None))
+
+      Move relative to the current position
+
+      :param dx:
+      :type dx: change in x position, in whatever units have been set (default mm)
+      :param dy:
+      :type dy: change in y position, in whatever units have been set (default mm)
+      :param dz:
+      :type dz: change in z position, in whatever units have been set (default mm)
+      :param de:
+      :type de: change in e position, in whatever units have been set (default mm)
+      :param dv:
+      :type dv: change in v position, in whatever units have been set (default mm)
+      :param s:
+      :type s: speed at which to move (default 6000 mm/min)
+      :param force_extrusion:
+      :type force_extrusion: whether to force extrusion to also be relative positioning (default True)
+
+      :rtype: Nothing
+
+
+   .. py:method:: dwell(t: float, millis: bool = True)
+
+      Pause the machine for a period of time.
+
+      :param t:
+      :type t: time to pause, in milliseconds by default
+      :param millis (optional):
+      :type millis (optional): boolean, set to false to use seconds. default unit is milliseconds.
+      :param dz:
+      :type dz: change in z position, in whatever units have been set (default mm)
+
+      :rtype: Nothing
+
+
+   .. py:method:: safe_z_movement()
+
+
+   .. py:method:: load_tool(tool: science_jubilee.tools.Tool.Tool = None)
+
+      Add a new tool for use on the machine.
+
+
+   .. py:method:: reload_tool(tool: science_jubilee.tools.Tool.Tool = None)
+
+      Update a tool which has already been loaded.
+
+
+   .. py:method:: pickup_tool(tool_id: Union[int, str, science_jubilee.tools.Tool.Tool] = None)
+
+      Pick up the tool specified by tool id.
+
+
+   .. py:method:: park_tool()
+
+      Deselect tool
+
+
+   .. py:method:: get_position()
+
+      Get the current position, returns a dictionary with X/Y/Z/U/E/V keys
+
+
+   .. py:method:: px_to_real(x, y, relative=False)
+
+      Convert pixel location to bed location. Requires camera-machine calibration
+
+
+   .. py:method:: tool_lock()
+
+      Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists.
+
+
+   .. py:method:: tool_unlock()
+
+      Runs Jubilee tool unlock macro. Assumes tool_unlock.g macro exists.
+
+
+

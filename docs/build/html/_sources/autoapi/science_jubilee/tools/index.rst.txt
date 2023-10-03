@@ -1,0 +1,20 @@
+:py:mod:`science_jubilee.tools`
+===============================
+
+.. py:module:: science_jubilee.tools
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   Camera/index.rst
+   Loop/index.rst
+   Pipette/index.rst
+   Pipette_MP/index.rst
+   Syringe/index.rst
+   Tool/index.rst
+
+

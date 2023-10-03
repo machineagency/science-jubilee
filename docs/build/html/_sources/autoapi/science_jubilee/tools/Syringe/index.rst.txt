@@ -1,0 +1,71 @@
+:py:mod:`science_jubilee.tools.Syringe`
+=======================================
+
+.. py:module:: science_jubilee.tools.Syringe
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.tools.Syringe.Syringe
+
+
+
+
+.. py:class:: Syringe(index, name, config)
+
+
+   Bases: :py:obj:`science_jubilee.tools.Tool.Tool`
+
+   .. py:method:: load_config(config)
+
+      Load the relevant configuration file for this pipette.
+
+
+   .. py:method:: post_load()
+
+      Find extruder drive for this tool.
+
+
+   .. py:method:: check_bounds(pos)
+
+      Disallow commands outside of the syringe's configured range
+
+
+   .. py:method:: _aspirate(vol: float, s: int = 2000)
+
+      Aspirate a certain number of milliliters.
+
+
+   .. py:method:: _dispense(vol, s: int = 2000)
+
+      Dispense a certain number of milliliters.
+
+
+   .. py:method:: aspirate(vol: float, s: int = 2000, well: science_jubilee.labware.Labware.Well = None, from_bottom: float = 5, from_top: float = None, location: Tuple[float] = None)
+
+      Aspirate a given volume of liquid from a given well.
+
+
+   .. py:method:: dispense(vol: float, s: int = 2000, well: science_jubilee.labware.Labware.Well = None, from_bottom: float = None, from_top: float = 2, location: Tuple[float] = None)
+
+      Dispense a given volum of liquid from a given well.
+
+
+   .. py:method:: transfer(vol: float, s: int = 2000, source: science_jubilee.labware.Labware.Well = None, destination: science_jubilee.labware.Labware.Well = None, mix_before: tuple = None, mix_after: tuple = None)
+
+
+   .. py:method:: _get_xyz(well: science_jubilee.labware.Labware.Well = None, location: Tuple[float] = None)
+      :staticmethod:
+
+
+   .. py:method:: _get_top_bottom(well: science_jubilee.labware.Labware.Well = None)
+      :staticmethod:
+
+
+

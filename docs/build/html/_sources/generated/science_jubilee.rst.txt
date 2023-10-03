@@ -1,0 +1,23 @@
+﻿science\_jubilee
+================
+
+.. automodule:: science_jubilee
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

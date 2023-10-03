@@ -1,0 +1,76 @@
+:py:mod:`science_jubilee.tools.Pipette`
+=======================================
+
+.. py:module:: science_jubilee.tools.Pipette
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.tools.Pipette.Pipette
+
+
+
+
+.. py:class:: Pipette(machine, index, name, config)
+
+
+   Bases: :py:obj:`science_jubilee.tools.Tool.Tool`
+
+   Control an OpenTrons Pipette
+
+   .. py:method:: load_config(config)
+
+      Load the relevant configuration file for this pipette.
+
+
+   .. py:method:: check_bounds(pos)
+
+      Disallow commands outside of the pipette's configured range
+
+
+   .. py:method:: pickup_tip(tip_rack, position='A1')
+
+      Pick up a pipette tip.
+
+
+   .. py:method:: eject_tip()
+
+      Eject attached pipette tip.
+
+
+   .. py:method:: aspirate(vol)
+
+      Aspirate a certain number of microliters.
+
+
+   .. py:method:: dispense(vol)
+
+      Dispense a certain number of microliters.
+
+
+   .. py:method:: aspirate_prime()
+
+      Move to the bottom of the pipette's aspiration range.
+
+
+   .. py:method:: transfer(volume, source, destination, mix_after=None)
+
+      Transfer liquid from a source to destination well(s)
+
+
+   .. py:method:: mix(number_of_mixes, volume)
+
+
+   .. py:method:: blowout(volume=30)
+
+
+   .. py:method:: air_gap(volume=20)
+
+
+

@@ -1,0 +1,26 @@
+:py:mod:`science_jubilee.labware.Utils`
+=======================================
+
+.. py:module:: science_jubilee.labware.Utils
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.labware.Utils.json2dict
+   science_jubilee.labware.Utils.dict2json
+
+
+
+.. py:function:: json2dict(f, path=None)
+
+
+.. py:function:: dict2json(filename: str, dict: dict2json.dict, path: str = None)
+
+

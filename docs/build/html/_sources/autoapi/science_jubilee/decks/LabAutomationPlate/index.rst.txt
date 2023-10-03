@@ -1,0 +1,52 @@
+:py:mod:`science_jubilee.decks.LabAutomationPlate`
+==================================================
+
+.. py:module:: science_jubilee.decks.LabAutomationPlate
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.decks.LabAutomationPlate.LabAutomationPlate
+
+
+
+
+.. py:class:: LabAutomationPlate(machine, name, config)
+
+
+   Bases: :py:obj:`science_jubilee.decks.Plate.Plate`
+
+   Setup a lab automation plate with relevant labware.
+
+   .. py:method:: load_labware(slot_index, labware_name)
+
+      Load labware into a slot index.
+
+
+   .. py:method:: get_well_position(slot_index, well_id)
+
+      Return machine coordinates for a well id in a bed plate slot.
+
+
+   .. py:method:: wells(slot_index)
+
+      Return a list of all the wells for this labware.
+
+
+   .. py:method:: row_index_to_letter(row_index)
+
+      Convert a row number (starting at 1) to a letter
+
+
+   .. py:method:: row_letter_to_index(row_letter)
+
+      Convert a row letter (A, B, C...) to a 0-indexed number
+
+
+

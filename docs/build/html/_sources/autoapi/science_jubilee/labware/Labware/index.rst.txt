@@ -1,0 +1,214 @@
+:py:mod:`science_jubilee.labware.Labware`
+=========================================
+
+.. py:module:: science_jubilee.labware.Labware
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   science_jubilee.labware.Labware.Well
+   science_jubilee.labware.Labware.WellSet
+   science_jubilee.labware.Labware.Row
+   science_jubilee.labware.Labware.Column
+   science_jubilee.labware.Labware.Labware
+
+
+
+
+.. py:class:: Well
+
+
+   .. py:property:: x
+
+
+   .. py:property:: y
+
+
+   .. py:property:: z
+
+
+   .. py:property:: top
+
+
+   .. py:property:: bottom
+
+
+   .. py:attribute:: name
+      :type: str
+
+      
+
+   .. py:attribute:: depth
+      :type: float
+
+      
+
+   .. py:attribute:: totalLiquidVolume
+      :type: float
+
+      
+
+   .. py:attribute:: shape
+      :type: str
+
+      
+
+   .. py:attribute:: diameter
+      :type: float
+
+      
+
+   .. py:attribute:: x
+      :type: float
+
+      
+
+   .. py:attribute:: y
+      :type: float
+
+      
+
+   .. py:attribute:: z
+      :type: float
+
+      
+
+   .. py:attribute:: offset
+      :type: Tuple[float]
+
+      
+
+
+.. py:class:: WellSet
+
+
+   .. py:attribute:: wells
+      :type: Dict[str, Well]
+
+      
+
+   .. py:method:: __repr__()
+
+      Return repr(self).
+
+
+   .. py:method:: __getitem__(id_)
+
+
+
+.. py:class:: Row
+
+
+   Bases: :py:obj:`WellSet`
+
+   .. py:attribute:: identifier
+      :type: str
+
+      
+
+
+.. py:class:: Column
+
+
+   Bases: :py:obj:`WellSet`
+
+   .. py:attribute:: identifier
+      :type: int
+
+      
+
+
+.. py:class:: Labware(labware_filename: str, offset: Tuple[float] = None)
+
+
+   Bases: :py:obj:`WellSet`
+
+   .. py:property:: shape
+
+
+   .. py:property:: ordering
+      :type: List[List[str]]
+
+
+   .. py:property:: brand
+      :type: dict
+
+
+   .. py:property:: display_name
+
+
+   .. py:property:: labware_type
+
+
+   .. py:property:: volume_units
+
+
+   .. py:property:: dimensions
+      :type: dict
+
+
+   .. py:property:: groups
+      :type: List[dict]
+
+
+   .. py:property:: is_tip_rack
+
+
+   .. py:property:: load_name
+
+
+   .. py:property:: tip_length
+
+
+   .. py:property:: tip_overlap
+
+
+   .. py:property:: namespace
+      :type: str
+
+
+   .. py:property:: version
+      :type: int
+
+
+   .. py:property:: schemaVersion
+      :type: int
+
+
+   .. py:property:: corner_offset_from_slot
+      :type: dict
+
+
+   .. py:property:: offset
+
+
+   .. py:method:: __repr__()
+
+      Return repr(self).
+
+
+   .. py:method:: _create_rows_and_columns()
+
+
+   .. py:method:: get_row(row_id: str) -> Row
+
+
+   .. py:method:: get_column(col_id: int) -> Column
+
+
+   .. py:method:: metadata() -> dict
+
+
+   .. py:method:: parameters() -> dict
+
+
+   .. py:method:: with_well_order(order='rows') -> list
+
+
+
