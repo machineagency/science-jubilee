@@ -13,7 +13,7 @@ Welcome to Science Jubilee's Documentation!
 What is a Science Jubilee?
 --------------------------
 
-This wiki includes information for lab automation using [Jubilee](https://jubilee3d.com/index.php?title=Main_Page)- which is, in turn, an open-source & extensible multi-tool motion platform. If that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. This repository contains information for outfitting a Jubilee with tools and associated control software for various lab automation applications. 
+This wiki includes information for lab automation using `Jubilee <https://jubilee3d.com/index.php?title=Main_Page>`_- which is, in turn, an open-source & extensible multi-tool motion platform. If that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. This repository contains information for outfitting a Jubilee with tools and associated control software for various lab automation applications. 
 
 Currently, we include tools + software which support broad application areas including liquid handling (using 10cc/50cc syringe and OpenTrons Pipette), imaging (using top-down, side-facing cameras), and sample manipulation (using 10cc syringe, inoculation loop).
 
