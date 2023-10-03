@@ -68,7 +68,7 @@ class Camera(Tool):
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
-        self._machine.move_to(z = 0, wait = True)
+        self._machine.move_to(z = 43.4, wait = True)
         image = self._capture_image()
         return image
 
@@ -120,7 +120,7 @@ class Camera(Tool):
     def view_image(self, image_bin, masked =False, radius =50):
         image = self.decode_image(image_bin)
         if masked is True:
-            image = self._mask_image(image_bin, radius)
+            image = self._mask_image(image, radius)
         else:
             pass
         

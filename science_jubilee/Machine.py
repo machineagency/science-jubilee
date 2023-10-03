@@ -384,11 +384,11 @@ class Machine():
                     response = None
                     break
             except Exception as e:
-                #print('Connection error, sleeping 1 second')
-                time.sleep(1)
+                print('Connection error, sleeping 1 second')
+                time.sleep(2)
                 continue
 
-            time.sleep(0.02)#
+            time.sleep(0.1)#
         #TODO: handle this with logging. Also fix so all output goes to logs
         #if self.debug:
         #    print(f"received: {response}")
@@ -455,6 +455,7 @@ class Machine():
         # Having a tool is only possible if the machine was already homed.
         #TODO: Check if machine is already homed and have a user input to verify clear deck to avoid wasting time by accidentally rerunning and \
         #avoid major deck wrecks 
+        #TODO: Catch errors where tool is already on and forward to user for fix
         if self.active_tool_index != -1:
             self.park_tool()
         self.gcode("G28")
