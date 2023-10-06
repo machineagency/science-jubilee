@@ -22,8 +22,9 @@ We use the *V* axis here; however, if it is already in use on your machine, you 
 This G-code line shuold be placed the `M584` commands for your other axes in your `config.g` file. It has to come before all the other `M codes` we’ll add next.
 
 > **Example**:
-> `M584 V1.2` ; pipette plugged into driver 2 on the expansion board
-> `M584 V0`   ; pipette plugged into driver 0 on the main board
+> 
+>     `M584 V1.2` ; pipette plugged into driver 2 on the expansion board
+>     `M584 V0`   ; pipette plugged into driver 0 on the main board
 
 ## 2. Set Stepper Direction
 
@@ -36,7 +37,8 @@ The **first time** you home the pipette, you should check the direction that the
 During a homing step, it shold move towards the *endstop*. If it is moviong in the wrong direction (i.e., downwards), **manually** engage the endstop (i.e., click it!) and change the `S` parameter on this line from 0 to 1. Try again and make sure the motor moves in the expected direction.   
 
 > **Example**:
-> `M569 P1.2 S0 `
+> 
+>     `M569 P1.2 S0 `
 
 ## 3. Set Motor Current
 
@@ -48,8 +50,9 @@ This commands sets the peak motor current.
 Add this command alongside the othe `M906` for the other moto5rs defined in your configuration file. 
 
 > **Example**:
-> `M906 V350` ; 350mA peak current for gen1 pipette
-> `M906 V500` ; 500mA peak current for gen2 pipette
+> 
+>     `M906 V350` ; 350mA peak current for gen1 pipette
+>     `M906 V500` ; 500mA peak current for gen2 pipette
 
 ## 4. Set Stepper Direction
 
@@ -61,10 +64,12 @@ Set the number of steps/mm and enables *16x* microstepping with interpolation.
 * For *Gen2* Pipettes this should be **200**
 Add these commands alongside the other `M92` and `M350` commands in your `config.g` file. 
 
-> **Example**: 
-> `M92 V48`    ; for a gen1 single channel pipette
-> `M92 V200`   ; for a gen2 single channel pipette
-> `M350 V16 I1` ; set microstepping after M92 command
+> **Example**:
+> 
+>     `M92 V48`    ; for a gen1 single channel pipette
+>     `M92 V200`   ; for a gen2 single channel pipette
+>     `M350 V16 I1` ; set microstepping after M92 command
+> 
 > Note: do not disable microstepping prior to define the `M92` command for the pipette motor to simplify calculations as it will mess with the motor settings (not sure why)
 
 ## 5. Set V Axis Motion Attribute Limits
@@ -84,7 +89,8 @@ Pins are named as `<board_index>.<pin>.in`. The *pin* number can be found on you
 Add this command alongside the other `M574` commands.
 
 > **Example** :
-> `M574 V1 S1 P"^0.io3.in"` ; pipette endstop plugged into io3 on main board
+> 
+>     `M574 V1 S1 P"^0.io3.in"` ; pipette endstop plugged into io3 on main board
 
 ## 7. Define Tool   
     M563 P<tool_number> S”<tool_name>”
@@ -92,7 +98,8 @@ Add this command alongside the other `M574` commands.
 This command actually defines your tool. The tool number should be set based on the other tools you already have defined, and you can name your tool whatever human-readable text you’d like to see it as in Duet Web Control. Note that, because we are using the *V axis*, we do not need to add a `D` field here (as we might for a syringe or extruder tool).
 
 > **Example**:
-> `M563 P1 SP300 Pipette”` ; pipette with tool index 1
+>
+>     `M563 P1 SP300 Pipette”` ; pipette with tool index 1
 
 ## 8. Define Pipette Tip Endstop 
 
@@ -104,7 +111,8 @@ Again, pins are named as follows `<board_index>.<pin>.in`.
 Add this command alongside the other `M574` commands
 
 > **Example**:
-> `M574 Z1 P"^0.io2.in` ; pipette top pick up endstop plugged into io2 on main board
+> 
+>     `M574 Z1 P"^0.io2.in` ; pipette top pick up endstop plugged into io2 on main board
 
 ## 8. Define Homing Macro
 You are now done with updating your `config.g` file!
