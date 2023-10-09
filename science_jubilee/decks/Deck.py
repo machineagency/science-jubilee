@@ -6,30 +6,6 @@ from dataclasses import dataclass
 from labware.Labware import Labware
 from typing import Dict, Tuple
 
-# The Automation Bed Plate and well plates are oriented as follows:                                          
-
-#                          BED PLATE TOP VIEW                          WELL PLATE TOP VIEW                                                                                            
-#         Machine Origin                                     Machine Origin               Slot Calibration                                                                     
-#             (0,0)                                              (0,0)                        Position                                                        
-#                +------------------------------------+               +--------------------+                                                                      
-#                |   +------+   +------+   +------+   |               | Well          Well |                                                                            
-#                |   |      |   |      |   |      |   |               |  i1            A1  |                                                                                                
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |  0   |   |  2   |   |  4   |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   +------+   +------+   +------+   | Tool Rack     |                    |                                                                        
-#                |   +------+   +------+   +------+   |               |                    |                                                                                            
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |  1   |   |  3   |   |  5   |   |               |                    |                                                                                            
-#   Power Supply |   |      |   |      |   |      |   |               |                    |                                                                                             
-#                |   |      |   |      |   |      |   |               | Well          Well |                                                                                            
-#                |   +------+   +------+   +------+   |               |  ij            Aj  |                                                                                            
-#                +------------------------------------+               +--------------------+
-
-
-
 @dataclass
 class Slot:
     slot_index : int
