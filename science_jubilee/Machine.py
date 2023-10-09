@@ -4,6 +4,7 @@
 import json
 import os
 import requests # for issuing commands
+from requests.adapters import HTTPAdapter, Retry
 #import serial
 import time
 import warnings
@@ -91,6 +92,8 @@ def requires_safe_z(func):
 
 class Machine():
     """Driver for sending motion cmds and polling the machine state."""
+    #TODO: Set this up so that a keyboard interrupt leaves the machine in a safe state - ie tool offsets correct. I had an issue 
+    #where I keyboard interrupted during pipette tip pickup - tip was picked up but offset was not applied, crashing machine on next move. This should not be possible. 
 
     LOCALHOST = "192.168.1.2"
 
@@ -136,6 +139,14 @@ class Machine():
         self.tools = {} #this is the list of available tools
         self.tool = None #this is the current active tool
         self.current_well = None
+
+        requests_session = requests.Session()
+        retries = Retry(total=5,
+                backoff_factor=0.1,
+                status_forcelist=[ 500, 502, 503, 504 ])
+
+        requests_session.mount('http://', HTTPAdapter(max_retries=retries))
+        self.session = requests_session
 
         if deck_config is not None:
             self.load_deck(deck_config)
@@ -369,16 +380,16 @@ class Machine():
             return None
         # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
         # we need to watch the 'reply count' and request the new response when it increments
-        old_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
-        buffer_response = requests.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
+        old_reply_count = self.session.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+        buffer_response = self.session.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
         # wait for a response code to be appended
         #TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds. 
         tic = time.time()
         while True:
             try:
-                new_reply_count = requests.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
+                new_reply_count = self.session.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
                 if new_reply_count != old_reply_count:
-                    response = requests.get(f'http://192.168.1.2/rr_reply').text
+                    response = self.session.get(f'http://192.168.1.2/rr_reply').text
                     break
                 elif time.time() - tic > response_wait:
                     response = None
