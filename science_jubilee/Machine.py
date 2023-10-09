@@ -797,15 +797,15 @@ class Machine():
         return positions
     
 
-    def load_labware(self, labware_filename : str, slot: int, path : str = None ):
-        #TODO: User input before overriding existing labware
+    def load_labware(self, labware_filename : str, slot: int, path : str = None,
+                     order: str = 'rows' ):
 
         if path is not None:
-            labware = self.deck.load_labware(labware_filename, slot, path = path)
+            labware = self.deck.load_labware(labware_filename, slot, path = path, order=order)
         else:
-            labware = self.deck.load_labware(labware_filename, slot)         
+            labware = self.deck.load_labware(labware_filename, slot, order = order)         
 
-        return labware  
+        return labware    
         
     # ***************MACROS***************
     def tool_lock(self):
