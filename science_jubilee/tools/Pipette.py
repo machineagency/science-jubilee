@@ -52,6 +52,7 @@ class Pipette(Tool):
         
         return x,y,z
     
+    
     @staticmethod
     def _getTopBottom(location: Well):
         top = location.top
@@ -99,11 +100,6 @@ class Pipette(Tool):
         pos = self._machine.get_position()
         end_pos = float(pos['V']) + dv
 
-        #TODO: Do this before moving to aspirate z location to not blow bubbles. may need to move this check to aspirate and transfer 
-        if self.is_primed == True:
-            pass
-        else:
-            self.prime()
 
         self._machine.move_to(v=end_pos, s=s )
 
@@ -321,7 +317,6 @@ class Pipette(Tool):
         #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
 
     def return_tip(self, location: Well = None):
-        #TODO: Move z close to rack before ejecting
         
         if location is None:
             x, y, z = self._getxyz(self.first_available_tip)
@@ -329,16 +324,14 @@ class Pipette(Tool):
             x, y, z = self._getxyz(location)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
+        # z moves up/down to make sure tip actually makes it into rack 
         self._machine.move(dz = -25)
         self._drop_tip()
         self._machine.move(dz = 25)
         self.prime()
         self.has_tip = False
         self.update_z_offset(tip=False)
-        #TODO: Brenden added this to make pipette logic work for demo. Decide how this should behave. I argue that a tip that has been used is not the 
-        #next generally available tip and should only be picked up if explicitly adressed.      
-        #if location is not None: #assumption is that if 
-        #    self.first_available_tip = self.tipiterator.next()
+
 
 
     def _drop_tip(self):
