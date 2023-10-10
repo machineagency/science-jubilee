@@ -7,8 +7,8 @@ def read(fname):
 setuptools.setup(
     name="science_jubilee",
     version="0.0.1",
-    author="Machine Agency",
-    author_email="b1air@uw.edu",
+    author="Machine Agency, Pozzo Research Group",
+    author_email="b1air@uw.edu, politim@uw.edu, bgpelkie@uw.edu",
     description="Science with Jubilee",
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
