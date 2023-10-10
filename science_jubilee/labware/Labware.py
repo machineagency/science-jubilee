@@ -1,5 +1,6 @@
 import numpy as np
 from dataclasses import dataclass
+from itertools import chain
 from typing import List, Dict, Tuple
 import os
 import json
@@ -12,7 +13,9 @@ class Well:
     depth: float
     totalLiquidVolume: float
     shape: str
-    diameter: float
+    diameter: float = None
+    xDimension: float = None
+    yDimension: float = None
     x: float
     y: float
     z: float
@@ -20,6 +23,7 @@ class Well:
 
     @property
     def x(self):
+        """Offsets the x-position of the each well with respect to the deck-slot coordinates"""
         if self.offset is not None:
             return self._x + self.offset[0]
         else:
@@ -31,6 +35,7 @@ class Well:
 
     @property
     def y(self):
+        """Offsets the y-position of the each well with respect to the deck-slot coordinates"""
         if self.offset is not None:
             return self._y + self.offset[1]
         else:
@@ -42,7 +47,10 @@ class Well:
 
     @property
     def z(self):
-        return self._z
+        if self.offset is not None and len(self.offset) ==3 :
+            return self._z + self.offset[2]
+        else:
+            return self._z
 
     @z.setter
     def z(self, new_z):
@@ -50,10 +58,12 @@ class Well:
 
     @property
     def top(self):
+        """Defines the top-most point of the well"""
         return self.z + self.depth
 
     @property
     def bottom(self):
+        """Defines the bottom-most point of the well"""
         return self.z
 
 
@@ -62,7 +72,8 @@ class WellSet:
     wells: Dict[str, Well]
 
     def __repr__(self):
-        return str(list(self.wells.keys()))
+        """Displays the wellset as the list of wells and the deck-slot nunmber"""
+        return str(f'{list(self.wells.keys())}')
 
     def __getitem__(self, id_):
         try:
@@ -85,44 +96,57 @@ class WellSet:
 
 @dataclass(repr=False)
 class Row(WellSet):
-    identifier: str  # For example, "A", "B", etc.
+    # For example, "A", "B", etc.
+    identifier: str  
 
 
 @dataclass(repr=False)
 class Column(WellSet):
-    identifier: int  # For example, 1, 2, etc.
+    # For example, 1, 2, etc.
+    identifier: int  
 
 
 class Labware(WellSet):
-    def __init__(self, labware_filename: str, offset: Tuple[float] = None):
-        # load in the labware definition
-        labware_dir = Path(__file__).parent
+    def __init__(self, labware_filename: str, offset: Tuple[float] = None, order : str = 'rows',
+                 path :str = os.path.join(os.path.dirname(__file__), 'labware_definition')):
+       
+        # load in the labware configuration file
+        if labware_filename[-4] != 'json':
+            labware_filename = labware_filename + '.json'
+
         config_path = os.path.join(
-            labware_dir, "labware_definitions", f"{labware_filename}.json"
-        )
+            path, f"{labware_filename}" )
+
         with open(config_path, "r") as f:
-            labware_config = json.load(f)
-        self.data = labware_config
+            self.data = json.load(f)
+
         self.wells_data = self.data.get("wells", {})
         self.data["ordering"] = np.array(self.data["ordering"]).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
+        
+        order_options = ['rows', 'row', 'Rows', 'Row', 'R', 'cols', 'col' ,'C', 'columns', 'Columns']
+        assert order in order_options, "Order must be one of {}".format(order_options)
+        self.withWellOrder(order)
         self.offset = offset
+        self.slot= None 
 
     def __repr__(self):
-        return "Labware: " + self.metadata()["displayName"]
+
+        display = self.metadata()['displayCategory'] + ': ' + self.parameters()['loadName'] 
+        if self.slot is not None:
+            display = display + ' ' + f" on {self.slot}"
+        return display
 
     def _create_rows_and_columns(self):
         rows = {}
         columns = {}
         wells = {}
 
-        for row_order, column_data in enumerate(self.data.get("ordering", [])):
-            row_id = column_data[0][
-                0
-            ]  # Assumes the first char is the row identifier, e.g., "A" in "A1"
-            col_ids = [
-                int(well[1:]) for well in column_data
-            ]  # Extracts column number, e.g., "1" in "A1"
+        for row_order, column_data in enumerate(self.data.get('ordering', [])):
+            # Assumes the first char is the row identifier, e.g., "A" in "A1"
+            row_id = column_data[0][0]  
+            # Extracts column number, e.g., "1" in "A1"
+            col_ids = [int(well[1:]) for well in column_data]  
 
             if row_id not in rows:
                 rows[row_id] = {}
@@ -236,15 +260,21 @@ class Labware(WellSet):
         if new_offset is not None:
             for w in self:
                 w.offset = new_offset
-
-    def with_well_order(self, order="rows") -> list:
-        if order in ["rows", "row", "Rows", "Row", "R"]:
-            for row in self.row_data.values():
-                for well in row:
-                    yield well
-        elif order in ["cols", "C", "columns", "Columns"]:
-            for col in self.column_data.values():
-                for well in col:
-                    yield well
+    
+    def add_slot(self, slot_):
+        """Add name of deck slot after labware has been loaded"""
+        self.slot = slot_
+    
+    def withWellOrder(self, order) -> list:
+        """Reorders the wells by rows or by columns. Automatically updates"""
+        ordered_wells = {}
+        if order in ['rows', 'row', 'Rows', 'Row', 'R']:
+            for well in list(chain(*self.row_data.values())):
+                ordered_wells[well.name] = well
+        elif order in ['cols', 'col' ,'C', 'columns', 'Columns']:
+            for well in list(chain(*self.column_data.values())):
+                ordered_wells[well.name] = well
         else:
-            print("Order needs to be either rows or columns")
+            print('Order needs to be either rows or columns')
+        
+        self.wells = ordered_wells
