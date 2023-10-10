@@ -19,9 +19,10 @@ class Camera(Tool):
     """
     def __init__(self, machine, index, name, ip_address, port,
                  video_endpoint, still_endpoint, image_folder):
-        super().__init__(machine, index, name, ip_address = ip_address,
+        super().__init__(index, name, ip_address = ip_address,
                          port = port, video_endpoint = video_endpoint,
                          still_endpoint = still_endpoint,image_folder= image_folder)
+        self._machine = machine
         self.still_url = f'http://{self.ip_address}:{self.port}/{self.still_endpoint}'
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
         self.tool_offset = self._machine.tool_z_offsets[self.index] 
@@ -32,7 +33,8 @@ class Camera(Tool):
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         config = os.path.join(path,config_file)
-        kwargs = json.load(config)
+        with open(config, 'rt') as f:
+            kwargs = json.load(f)
         return cls(machine=machine, index=index, name=name,**kwargs)
     
     @staticmethod
@@ -66,6 +68,7 @@ class Camera(Tool):
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
+        self._machine.move_to(z = 43.4, wait = True)
         image = self._capture_image()
         return image
 
@@ -75,7 +78,8 @@ class Camera(Tool):
     def decode_image(self, image_bin):
         image_arr = np.frombuffer(image_bin, np.uint8)
         image = cv2.imdecode(image_arr, cv2.IMREAD_COLOR)
-        return image
+        image_rgb = image[:,:,[2,1,0]]
+        return image_rgb
 
     def process_image(self, image_bin, radius= 50):
         """
@@ -116,7 +120,7 @@ class Camera(Tool):
     def view_image(self, image_bin, masked =False, radius =50):
         image = self.decode_image(image_bin)
         if masked is True:
-            image = self._mask_image(image_bin, radius)
+            image = self._mask_image(image, radius)
         else:
             pass
         
@@ -124,4 +128,4 @@ class Camera(Tool):
         plt.setp(plt.gca(), autoscale_on=True)
         ax.imshow(image)
 
-        return fig # need to test this return statement
+        #return fig # need to test this return statement

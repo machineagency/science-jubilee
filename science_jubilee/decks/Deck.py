@@ -6,30 +6,6 @@ from dataclasses import dataclass
 from labware.Labware import Labware
 from typing import Dict, Tuple
 
-# The Automation Bed Plate and well plates are oriented as follows:                                          
-
-#                          BED PLATE TOP VIEW                          WELL PLATE TOP VIEW                                                                                            
-#         Machine Origin                                     Machine Origin               Slot Calibration                                                                     
-#             (0,0)                                              (0,0)                        Position                                                        
-#                +------------------------------------+               +--------------------+                                                                      
-#                |   +------+   +------+   +------+   |               | Well          Well |                                                                            
-#                |   |      |   |      |   |      |   |               |  i1            A1  |                                                                                                
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |  0   |   |  1   |   |  2   |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   +------+   +------+   +------+   | Tool Rack     |                    |                                                                        
-#                |   +------+   +------+   +------+   |               |                    |                                                                                            
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |      |   |      |   |      |   |               |                    |                                                                        
-#                |   |  5   |   |  4   |   |  3   |   |               |                    |                                                                                            
-#   Power Supply |   |      |   |      |   |      |   |               |                    |                                                                                             
-#                |   |      |   |      |   |      |   |               | Well          Well |                                                                                            
-#                |   +------+   +------+   +------+   |               |  ij            Aj  |                                                                                            
-#                +------------------------------------+               +--------------------+
-
-
-
 @dataclass
 class Slot:
     slot_index : int
@@ -51,8 +27,18 @@ class SlotSet:
 
 
 class Deck(SlotSet):
-    def __init__(self, config):
-        self.deck_config = config
+    def __init__(self, deck_filename, path :str = os.path.join(os.path.dirname(__file__), 'deck_definition')):
+        
+        # load in the deck configuration file
+        if deck_filename[-4] != 'json':
+            deck_filename = deck_filename + '.json'
+        
+        config_path = os.path.join(path, f"{deck_filename}" )
+
+        with open(config_path, "r") as f:
+            deck_config = json.load(f)
+
+        self.deck_config = deck_config
         self.slots_data = self.deck_config.get('slots', {})
         self.slots = self._get_slots()
         self._safe_z = None
@@ -103,18 +89,13 @@ class Deck(SlotSet):
         else:
             pass
         
-    def load_labware(self, labware_filename, slot, path = os.path.join(os.path.dirname(__file__),'..', 'labware', 'labware_definition')):
+    def load_labware(self, labware_filename: str, slot: int,
+                     path = os.path.join(os.path.dirname(__file__),'..', 'labware', 'labware_definition'),
+                     order : str = 'rows'):
         """Function that loads a labware and associates it with a specific slot on the deck.
          The slot offset is also applied to the labware asocaite with it."""
 
-        if labware_filename[-4] != 'json':
-            labware_filename = labware_filename + '.json'
-
-        config_path = os.path.join(path, labware_filename)
-        with open(config_path, "r") as f:
-            labware_config = json.load(f)
-
-        labware  = Labware(labware_config)
+        labware  = Labware(labware_filename, order= order)
         labware.add_slot(slot)
         offset = self.slots[str(slot)].offset 
         

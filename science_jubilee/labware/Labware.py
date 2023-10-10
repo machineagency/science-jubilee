@@ -47,7 +47,10 @@ class Well:
 
     @property
     def z(self):
-        return self._z
+        if self.offset is not None and len(self.offset) ==3 :
+            return self._z + self.offset[2]
+        else:
+            return self._z
 
     @z.setter
     def z(self, new_z):
@@ -104,18 +107,26 @@ class Column(WellSet):
 
 
 class Labware(WellSet):
-    def __init__(self, labware_filename: str, offset: Tuple[float] = None):
-        # load in the labware definition
-        labware_dir = Path(__file__).parent
+    def __init__(self, labware_filename: str, offset: Tuple[float] = None, order : str = 'rows',
+                 path :str = os.path.join(os.path.dirname(__file__), 'labware_definition')):
+       
+        # load in the labware configuration file
+        if labware_filename[-4] != 'json':
+            labware_filename = labware_filename + '.json'
+
         config_path = os.path.join(
-            labware_dir, "labware_definitions", f"{labware_filename}.json"
-        )
+            path, f"{labware_filename}" )
+
         with open(config_path, "r") as f:
-            labware_config = json.load(f)
-        self.data = labware_config
+            self.data = json.load(f)
+
         self.wells_data = self.data.get("wells", {})
         self.data["ordering"] = np.array(self.data["ordering"]).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
+        
+        order_options = ['rows', 'row', 'Rows', 'Row', 'R', 'cols', 'col' ,'C', 'columns', 'Columns']
+        assert order in order_options, "Order must be one of {}".format(order_options)
+        self.withWellOrder(order)
         self.offset = offset
         self.slot= None 
 
