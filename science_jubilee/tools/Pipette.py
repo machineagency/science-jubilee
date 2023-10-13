@@ -24,7 +24,7 @@ class Pipette(Tool):
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self._machine = machine
         self.has_tip = False
-        self.is_active_tool = False
+        self.is_active_tool = False # TODO: add a way to change this to True/False and check before performing action with tool
         self.first_available_tip = None
         self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
@@ -38,9 +38,9 @@ class Pipette(Tool):
         with open(config) as f:
             kwargs = json.load(f)
 
-        kwargs['tiprack'] = tiprack
         #return cls(machine=machine, index=index, name=name, **kwargs)
         return cls(machine, index, name, **kwargs)
+    
     @staticmethod
     def _getxyz(location: Union[Well, Tuple, Location]):
         if type(location) == Well:
@@ -261,17 +261,24 @@ class Pipette(Tool):
             #self._machine.move_to(v=v, s=s)
             self.prime(s=s)   
 
-## In progress (2023-10-12)
-    # def stir(self, n: int = 1, height: float= None):
+## In progress (2023-10-12) To test
+    def stir(self, n_times: int = 1, height: float= None):
 
-    #     center= (self.current_well.x,self.current_well.y)
-    #     z= self.current_well.z +1  # place pieptte tip close to the bottom
-    #     radius = self.current_well.diameter/2 -1 # adjusted so that it does not hit the walls fo the well 
-    #     lateral_move = radius/3
+        center= (self.current_well.x,self.current_well.y)
+        z= self.current_well.z +1  # place pieptte tip close to the bottom
+        
+        radius = self.current_well.diameter/2 -1 # adjusted so that it does not hit the walls fo the well 
+        lateral_move = radius/3
 
-    #     for i in range(3):
-    #         x_sp = self.current_well.x+radius
-    #         y_sp = self.current_well.y
+        for n in range(n_times):
+            for i in range(3):
+                x_sp = self.current_well.x+ (lateral_move*(3-i))
+                y_sp = self.current_well.y
+                I = -(lateral_move*(3-i))
+                J = 0 # keeping same y so relative y difference is 0
+                self._machine.gcode(f'G2 X{x_sp} Y{y_sp} I{I} J{J}')
+
+
 
 
     def update_z_offset(self, tip: bool = None):
