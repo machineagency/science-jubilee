@@ -359,13 +359,7 @@ class Machine():
     def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition')):
         # do thing
         #make sure filename has json 
-        if deck_filename[-4:] != 'json':
-            deck_filename = deck_filename + '.json'
-
-        config_path = os.path.join(path, deck_filename)
-        with open(config_path, "r") as f:
-            deck_config = json.load(f)
-        deck = Deck(deck_config)
+        deck = Deck(deck_filename, path=path)
         self.deck = deck
         return deck    
     
