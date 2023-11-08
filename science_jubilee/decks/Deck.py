@@ -3,7 +3,7 @@ import json
 import numpy as np
 
 from dataclasses import dataclass
-from labware.Labware import Labware
+from science_jubilee.labware.Labware import Labware
 from typing import Dict, Tuple
 
 @dataclass
