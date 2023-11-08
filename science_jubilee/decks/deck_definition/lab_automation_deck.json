@@ -7,8 +7,8 @@
     "slots": {
         "0": {
             "offset": [
-                17.4,
-                6
+                14.9,
+                4.4
             ],
             "has_labware": false,
             "labware": null
@@ -23,16 +23,16 @@
         },
         "2": {
             "offset": [
-                17.7,
-                103.5
+                14.3,
+                100.8
             ],
             "has_labware": false,
             "labware": null
         },
         "3": {
             "offset": [
-                157.0,
-                103.1
+                154.9,
+                98.3
             ],
             "has_labware": false,
             "labware": null
