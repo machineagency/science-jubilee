@@ -14,11 +14,11 @@ logger = logging.getLogger(__name__)
 
 class Pipette(Tool):
 
-    def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
+    def __init__(self, machine, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         #TODO:Removed machine from init, check if this should be asigned here or is added later
-        super().__init__(index, name, tiprack = tiprack, brand = brand, 
+        super().__init__(index, name, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
@@ -32,8 +32,7 @@ class Pipette(Tool):
 
     @classmethod
     def from_config(cls, machine, index, name, config_file: str,
-                    path :str = os.path.join(os.path.dirname(__file__), 'configs'),
-                    tiprack: Labware = None):
+                    path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         config = os.path.join(path,config_file)
         with open(config) as f:
             kwargs = json.load(f)
@@ -48,7 +47,7 @@ class Pipette(Tool):
         elif type(location) == Tuple:
             x, y, z = location
         elif type(location)==Location:
-            x,y,z= location[0]
+            x,y,z= location._point
         else:
             raise ValueError("Location should be of type Well or Tuple")
         
@@ -112,7 +111,7 @@ class Pipette(Tool):
             if z == location.z:
                 z= z+10
         elif type(location) == Location:
-            self.current_well = location[1]
+            self.current_well = location._labware
         else:
             pass
     
@@ -147,7 +146,7 @@ class Pipette(Tool):
             else:
                 pass
         elif type(location) == Location:
-            self.current_well = location[1]
+            self.current_well = location._labware
         else:
             pass
         
@@ -197,7 +196,7 @@ class Pipette(Tool):
                 if type(source_well)== Well:
                     self.current_well = source_well
                 elif type(source_well)==Location:
-                    self.current_well = source_well[1]
+                    self.current_well = source_well._labware
                 self._aspirate(vol_, s=s)
                 
                 if mix_before:
@@ -211,7 +210,7 @@ class Pipette(Tool):
                 if type(well)==Well:
                     self.current_well = well
                 elif type(well)==Location:
-                    self.current_well = well[1]
+                    self.current_well = well._labware
                 self._dispense(vol_, s=s)
                 
                 if mix_after:
@@ -255,7 +254,7 @@ class Pipette(Tool):
         # self._machine.move(dz = -17)
         
         # TODO: figure out a better way to indicate mixing height position that si tnot hardcoded
-        self._machine.move_to(z= self.current_well.z+1) 
+        self._machine.move_to(z= self.current_well.z) 
         for i in range(0,n):
             self._aspirate(vol, s=s)
             #self._machine.move_to(v=v, s=s)
@@ -263,21 +262,34 @@ class Pipette(Tool):
 
 ## In progress (2023-10-12) To test
     def stir(self, n_times: int = 1, height: float= None):
+                
+        z= self.current_well.z + 0.5  # place pieptte tip close to the bottom
+        pos =  self._machine.get_position()
+        x_ = float(pos['X']) 
+        y_ = float(pos['Y'])
+        z_ = float(pos['Z'])  
 
-        center= (self.current_well.x,self.current_well.y)
-        z= self.current_well.z +1  # place pieptte tip close to the bottom
-        
-        radius = self.current_well.diameter/2 -1 # adjusted so that it does not hit the walls fo the well 
-        lateral_move = radius/3
+        # check position first
+        if x_ != round(self.current_well.x) and y_ != round(self.current_well.y, 2):
+            raise ToolStateError("Error: Pipette shuold be in a well before it can stir")  
+        elif z_ != round(z,2):
+            self._machine.move_to(z=z)
+
+        radius = self.current_well.diameter/2 -(self.current_well.diameter/6) # adjusted so that it does not hit the walls fo the well 
 
         for n in range(n_times):
-            for i in range(3):
-                x_sp = self.current_well.x+ (lateral_move*(3-i))
-                y_sp = self.current_well.y
-                I = -(lateral_move*(3-i))
-                J = 0 # keeping same y so relative y difference is 0
+            x_sp = self.current_well.x
+            y_sp = self.current_well.y
+            I = -1*radius
+            J = 0 # keeping same y so relative y difference is 0
+            if height:
+                Z = z + height
+                self._machine.gcode(f'G2 X{x_sp} Y{y_sp} Z{Z} I{I} J{J}')
+                self._machine.gcode(f'M400') # wait until movement is completed
+                self._machine.move_to(z=z) 
+            else:
                 self._machine.gcode(f'G2 X{x_sp} Y{y_sp} I{I} J{J}')
-
+                self._machine.gcode(f'M400') # wait until movement is completed
 
 
 
