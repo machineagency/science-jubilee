@@ -23,5 +23,5 @@ setuptools.setup(
         "Operating System :: POSIX :: Linux",
     ],
     python_requires='>=3.6',
-    install_requires=['pyserial==3.5', 'ipykernel', 'numpy', 'opencv_contrib_python==4.5.3.56', 'matplotlib', "Jinja2", "picamera;platform_system=='Linux'"]
+    install_requires=['pyserial==3.5', 'requests', 'ipykernel', 'numpy', 'opencv_contrib_python==4.5.3.56', 'matplotlib', "Jinja2", "picamera;platform_system=='Linux'"]
 )

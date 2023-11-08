@@ -12,11 +12,11 @@ import warnings
 # import pprint
 #from inpromptu import Inpromptu, cli_method
 
-from decks.Deck import Deck
+from science_jubilee.decks.Deck import Deck
 from pathlib import Path
 from functools import wraps
 #from serial.tools import list_ports
-from tools.Tool import Tool
+from science_jubilee.tools.Tool import Tool
 from typing import Union
 
 
