@@ -8,7 +8,7 @@ import webbrowser
 import matplotlib.pyplot as plt
 import numpy as np
 
-from labware.Labware import Well
+from labware.Labware import Well, Location
 from typing import Tuple, Union
 from .Tool import Tool
 
@@ -38,11 +38,13 @@ class Camera(Tool):
         return cls(machine=machine, index=index, name=name,**kwargs)
     
     @staticmethod
-    def _getxyz(location: Union[Well, Tuple]):
+    def _getxyz(location: Union[Well, Tuple, Location]):
         if type(location) == Well:
             x, y, z = location.x, location.y, location.z
         elif type(location) == Tuple:
             x, y, z = location
+        elif type(location)== Location:
+            x,y,z= location._point
         else:
             raise ValueError("Location should be of type Well or Tuple")
         

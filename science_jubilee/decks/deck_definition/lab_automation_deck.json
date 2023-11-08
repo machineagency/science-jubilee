@@ -7,48 +7,48 @@
     "slots": {
         "0": {
             "offset": [
-                15.3,
-                7.7
+                14.9,
+                4.4
             ],
             "has_labware": false,
             "labware": null
         },
         "1": {
             "offset": [
-                155.8,
-                7.9
+                157.0,
+                5.8
             ],
             "has_labware": false,
             "labware": null
         },
         "2": {
             "offset": [
-                15.0,
-                104.6
+                14.3,
+                100.8
             ],
             "has_labware": false,
             "labware": null
         },
         "3": {
             "offset": [
-                155.6,
-                104.7
+                154.9,
+                98.3
             ],
             "has_labware": false,
             "labware": null
         },
         "4": {
             "offset": [
-                15.1,
-                201.3
+                17.1,
+                201.1
             ],
             "has_labware": false,
             "labware": null
         },
         "5": {
             "offset": [
-                155.3,
-                201.4
+                157.0,
+                201.9
             ],
             "has_labware": false,
             "labware": null

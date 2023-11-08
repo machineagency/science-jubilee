@@ -30,7 +30,7 @@ class Deck(SlotSet):
     def __init__(self, deck_filename, path :str = os.path.join(os.path.dirname(__file__), 'deck_definition')):
         
         # load in the deck configuration file
-        if deck_filename[-4] != 'json':
+        if deck_filename[-4:] != 'json':
             deck_filename = deck_filename + '.json'
         
         config_path = os.path.join(path, f"{deck_filename}" )

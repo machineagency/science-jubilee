@@ -1,7 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 from itertools import chain
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Union, Iterable, NamedTuple
 import os
 import json
 from pathlib import Path
@@ -57,14 +57,26 @@ class Well:
         self._z = new_z
 
     @property
-    def top(self):
+    def top_(self):
         """Defines the top-most point of the well"""
         return self.z + self.depth
 
     @property
-    def bottom(self):
+    def bottom_(self):
         """Defines the bottom-most point of the well"""
         return self.z
+    
+    def bottom(self, z: float = 0.0):
+        from_bottom_z = self.bottom_ +z
+        coord = (self.x, self.y, from_bottom_z)
+
+        return Location(coord, self)
+  
+    def top(self, z: float = 0.0 ):
+        from_top_z = self.top_ +z
+        coord = (self.x, self.y, from_top_z)
+
+        return Location(coord, self)
 
 
 @dataclass(repr=False)
@@ -111,7 +123,7 @@ class Labware(WellSet):
                  path :str = os.path.join(os.path.dirname(__file__), 'labware_definition')):
        
         # load in the labware configuration file
-        if labware_filename[-4] != 'json':
+        if labware_filename[-4:] != 'json':
             labware_filename = labware_filename + '.json'
 
         config_path = os.path.join(
@@ -278,3 +290,68 @@ class Labware(WellSet):
             print('Order needs to be either rows or columns')
         
         self.wells = ordered_wells
+
+## Adapted from Opentrons API  opentrons.types##        
+class Point(NamedTuple):
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+
+    def add(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return Point(self.x + other.x, self.y + other.y, self.z + other.z)
+
+    def substract(self, other):
+        if not isinstance(other, Point):
+            return NotImplemented
+        return Point(self.x - other.x, self.y - other.y, self.z - other.z)
+
+    def multiply(self, other: Union[int, float]):
+        if not isinstance(other, (float, int)):
+            return NotImplemented
+        return Point(self.x * other, self.y * other, self.z * other)
+
+    def absolute(self):
+        return Point(abs(self.x), abs(self.y), abs(self.z))
+
+    def __repr__(self) -> str:
+        display= "x:{}, y: {}, z:{}".format(self.x, self.y, self.z)
+        return display
+
+
+class Location:
+    """A location to target as a motion.
+
+    The location contains a :py:class:`.Point` and possibly an associated
+    :py:class:`Labware` or :py:class:`Well` instance.
+
+    """
+
+    def __init__(self, point: Point, labware: Union[Well, Labware]):
+        self._point = point
+        self._labware = labware
+    # todo(mm, 2021-10-01): Figure out how to get .point and .labware to show up
+    # in the rendered docs, and then update the class docstring to use cross-references.
+
+    @property
+    def point(self) -> Point:
+        return self._point
+
+    @property
+    def labware(self):
+        return self._labware
+
+    def __iter__(self) -> Iterable[Union[Point, Well, Labware]]:
+        """Iterable interface to support unpacking. Like a tuple."""
+        return iter(( self._point,  self._labware))
+
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, Location)
+            and other._point == self._point
+            and other._labware == self._labware
+        )
+
+    def __repr__(self) -> str:
+        return f"Location(point={repr(self._point)}, labware={self._labware})"

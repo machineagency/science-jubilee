@@ -3,7 +3,7 @@ import json
 import logging
 import os
 
-from labware.Labware import Labware, Well
+from labware.Labware import Labware, Well, Location
 from .Tool import Tool, ToolStateError, ToolConfigurationError
 from typing import Tuple, Union
 
@@ -14,17 +14,17 @@ logger = logging.getLogger(__name__)
 
 class Pipette(Tool):
 
-    def __init__(self, machine, index, name, tiprack, brand, model, max_volume,
+    def __init__(self, machine, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         #TODO:Removed machine from init, check if this should be asigned here or is added later
-        super().__init__(index, name, tiprack = tiprack, brand = brand, 
+        super().__init__(index, name, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self._machine = machine
         self.has_tip = False
-        self.is_active_tool = False
+        self.is_active_tool = False # TODO: add a way to change this to True/False and check before performing action with tool
         self.first_available_tip = None
         self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
@@ -32,33 +32,27 @@ class Pipette(Tool):
 
     @classmethod
     def from_config(cls, machine, index, name, config_file: str,
-                    path :str = os.path.join(os.path.dirname(__file__), 'configs'),
-                    tiprack: Labware = None):
+                    path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         config = os.path.join(path,config_file)
         with open(config) as f:
             kwargs = json.load(f)
 
-        kwargs['tiprack'] = tiprack
         #return cls(machine=machine, index=index, name=name, **kwargs)
         return cls(machine, index, name, **kwargs)
+    
     @staticmethod
-    def _getxyz(location: Union[Well, Tuple]):
+    def _getxyz(location: Union[Well, Tuple, Location]):
         if type(location) == Well:
             x, y, z = location.x, location.y, location.z
         elif type(location) == Tuple:
             x, y, z = location
+        elif type(location)==Location:
+            x,y,z= location._point
         else:
             raise ValueError("Location should be of type Well or Tuple")
         
         return x,y,z
-    
-    
-    @staticmethod
-    def _getTopBottom(location: Well):
-        top = location.top
-        bottom = location.bottom
-        return top, bottom
-        
+               
     def vol2move(self, vol):
         #Function that converts uL to movement
         """
@@ -75,7 +69,7 @@ class Pipette(Tool):
            The corresponding v-axix movement for the desired volume of liquid
 
         """
-        dv = vol / self.mm_to_ul
+        dv = vol * self.mm_to_ul # will need to change this value
 
         return dv
     
@@ -103,8 +97,7 @@ class Pipette(Tool):
 
         self._machine.move_to(v=end_pos, s=s )
 
-    def aspirate(self, vol: float, location : Union[Well, Tuple], s:int = 2000,
-                 from_bottom :float =10, from_top :float = None):
+    def aspirate(self, vol: float, location : Union[Well, Tuple, Location], s:int = 2000):
        
         if self.has_tip is False:
             raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
@@ -115,14 +108,12 @@ class Pipette(Tool):
         
         if type(location) == Well:
             self.current_well = location
-
-            top, bottom = self._getTopBottom(location)
-            if from_bottom is not None :
-                z = bottom+ from_bottom
-            elif from_top is not None:
-                z = top + from_top
-            else:
-                pass
+            if z == location.z:
+                z= z+10
+        elif type(location) == Location:
+            self.current_well = location._labware
+        else:
+            pass
     
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
@@ -144,21 +135,20 @@ class Pipette(Tool):
         #    raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated") 
         self._machine.move_to(v = end_pos, s=s )
 
-    def dispense(self, vol: float, location :Union[Well, Tuple], s:int = 2000, 
-                 from_bottom :float =10, from_top :float = None):
+    def dispense(self, vol: float, location :Union[Well, Tuple, Location], s:int = 2000):
        
         x, y, z = self._getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
-
-            top, bottom = self._getTopBottom(location)
-            if from_bottom is not None :
-                z = bottom+ from_bottom
-            elif from_top is not None:
-                z = top + from_top
+            if z == location.z:
+                z= z+10
             else:
                 pass
+        elif type(location) == Location:
+            self.current_well = location._labware
+        else:
+            pass
         
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
@@ -166,17 +156,19 @@ class Pipette(Tool):
         self._dispense(vol, s=s)
 
 
-    def transfer(self, vol: float, source_well: Union[Well, Tuple],
-                 destination_well :Union[Well, Tuple] , s:int = 3000,
+    def transfer(self, vol: float, source_well: Union[Well, Tuple, Location],
+                 destination_well :Union[Well, Tuple, Location] , s:int = 3000,
                  blowout= None, mix_before: tuple = None,
                  mix_after: tuple = None, new_tip : str = 'always'):
         
         #TODO: check that tip picked up and get a new one if not
         #TODO: ADD A Distance from bottom of well/top to dispense at
         
-        vol_ = self.vol2move(vol) -1
+        vol_ = self.vol2move(vol)
         # get locations
         xs, ys, zs = self._getxyz(source_well)
+        if zs == source_well.z:
+            zs= zs+5
 
         if self.is_primed == True:
             pass
@@ -190,13 +182,21 @@ class Pipette(Tool):
         if isinstance(destination_well, list):
             for well in destination_well:
                 xd, yd, zd =self._getxyz(well)
+                if zd == well.z:
+                     zd= zd+5
+                else:
+                    pass
+
                 # zd_top, zd_bottom = self._getTopBottom(well)
                 
                 
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
-                self._machine.move_to(z = zs+5)
-                self.current_well = source_well
+                self._machine.move_to(z = zs)
+                if type(source_well)== Well:
+                    self.current_well = source_well
+                elif type(source_well)==Location:
+                    self.current_well = source_well._labware
                 self._aspirate(vol_, s=s)
                 
                 if mix_before:
@@ -206,8 +206,11 @@ class Pipette(Tool):
 
                 self._machine.safe_z_movement()
                 self._machine.move_to(x=xd, y=yd)
-                self._machine.move_to(z=zd+7)
-                self.current_well = well
+                self._machine.move_to(z=zd)
+                if type(well)==Well:
+                    self.current_well = well
+                elif type(well)==Location:
+                    self.current_well = well._labware
                 self._dispense(vol_, s=s)
                 
                 if mix_after:
@@ -229,7 +232,7 @@ class Pipette(Tool):
         """
 
         well = self.current_well
-        self._machine.move_to(z = well.top + 5 )
+        self._machine.move_to(z = well.top_ + 5 )
         self._machine.move_to(v = self.blowout_position, s=s)
         self.prime()
 
@@ -239,22 +242,56 @@ class Pipette(Tool):
         
         dv = self.vol2move(vol)*-1
         well = self.current_well
-        self._machine.move_to(z = well.top + 20)
+        self._machine.move_to(z = well.top_ + 20)
         self._machine.move(v= -1*dv)
 
     def mix(self, vol: float, n: int, s: int = 5000):
         
         v = self.vol2move(vol)*-1
 
-        self._machine.move_to(z = self.current_well.top+2)
+        self._machine.move_to(z = self.current_well.top_+2)
         self.prime()
         # self._machine.move(dz = -17)
         
-        self._machine.move_to(z= self.current_well.z-0.5) 
+        # TODO: figure out a better way to indicate mixing height position that si tnot hardcoded
+        self._machine.move_to(z= self.current_well.z) 
         for i in range(0,n):
             self._aspirate(vol, s=s)
             #self._machine.move_to(v=v, s=s)
             self.prime(s=s)   
+
+## In progress (2023-10-12) To test
+    def stir(self, n_times: int = 1, height: float= None):
+                
+        z= self.current_well.z + 0.5  # place pieptte tip close to the bottom
+        pos =  self._machine.get_position()
+        x_ = float(pos['X']) 
+        y_ = float(pos['Y'])
+        z_ = float(pos['Z'])  
+
+        # check position first
+        if x_ != round(self.current_well.x) and y_ != round(self.current_well.y, 2):
+            raise ToolStateError("Error: Pipette shuold be in a well before it can stir")  
+        elif z_ != round(z,2):
+            self._machine.move_to(z=z)
+
+        radius = self.current_well.diameter/2 -(self.current_well.diameter/6) # adjusted so that it does not hit the walls fo the well 
+
+        for n in range(n_times):
+            x_sp = self.current_well.x
+            y_sp = self.current_well.y
+            I = -1*radius
+            J = 0 # keeping same y so relative y difference is 0
+            if height:
+                Z = z + height
+                self._machine.gcode(f'G2 X{x_sp} Y{y_sp} Z{Z} I{I} J{J}')
+                self._machine.gcode(f'M400') # wait until movement is completed
+                self._machine.move_to(z=z) 
+            else:
+                self._machine.gcode(f'G2 X{x_sp} Y{y_sp} I{I} J{J}')
+                self._machine.gcode(f'M400') # wait until movement is completed
+
+
 
     def update_z_offset(self, tip: bool = None):
         
@@ -269,7 +306,6 @@ class Pipette(Tool):
             new_z = self.tool_offset
 
         self._machine.gcode(f'G10 P{self.index} Z{new_z}')
-        # self._machine. 
 
     def add_tiprack(self, tiprack: Union[Labware, list]):
         if isinstance(tiprack, list):
@@ -331,7 +367,6 @@ class Pipette(Tool):
         self.prime()
         self.has_tip = False
         self.update_z_offset(tip=False)
-
 
 
     def _drop_tip(self):
