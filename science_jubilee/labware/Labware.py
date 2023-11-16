@@ -411,7 +411,7 @@ class Labware(WellSet):
     def parameters(self) -> dict:
         """Returns the parameters describing certain features of the labware as a dictionary
 
-        The parameters genereally include weather the shape of the labware is regular or irregular, if it is a tiprack,
+        The parameters genereally include whether the shape of the labware is regular or irregular, if it is a tiprack,
         and other Opentrons specific parameters as we are using their 'Custom Labware Page' to generate the .json config files. 
         
         :return: A dictionary with the parameters of the labware
