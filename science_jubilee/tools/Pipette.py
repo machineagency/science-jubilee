@@ -1,4 +1,3 @@
-# from Platform.Jubilee_controller import JubileeMotionController
 import json
 import logging
 import os
@@ -10,13 +9,89 @@ from typing import Tuple, Union
 
 logger = logging.getLogger(__name__)
 
+def tip_check(func):
+    """Decorator to check if the pipette has a tip attached before performing an action.
+    """
+    def wrapper(self, *args, **kwargs):
+        if self.has_tip == False:
+            raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
+        else:
+            func(self,*args, **kwargs)
+    return wrapper
+
 
 
 class Pipette(Tool):
+    """ A class representation of an Opentrons OT2 pipette.
 
+    :param machine: The :class:`Machine` object that the pipette is loaded on
+    :type machine: :class:`Machine`
+    :param index: The tool index of the pipette on the machine
+    :type index: int
+    :param name: The tool name
+    :type name: str
+    :param brand: The brand of the pipette
+    :type brand: str
+    :param model: The model of the pipette
+    :type model: str
+    :param max_volume: The maximum volume of the pipette in uL
+    :type max_volume: float
+    :param min_volume: The minimum volume of the pipette in uL
+    :type min_volume: float
+    :param zero_position: The position of the plunger before using a :method:`aspirate` step
+    :type zero_position: float
+    :param blowout_position: The position of the plunger for running a :method:`blowout` step
+    :type blowout_position: float
+    :param drop_tip_position: The position of the plunger for running a :method:`drop_tip` step
+    :type drop_tip_position: float
+    :param mm_to_ul: The conversion factor for converting motor microsteps in mm to uL
+    :type mm_to_ul: float
+    :param tiprack: The tiprack that the pipette is using
+    :type tiprack: :class:`Labware`
+    :param tipiterator: The iterator for the tiprack
+    :type tipiterator: :class:`pipette_iterator`
+    :param has_tip: Whether or not the pipette has a tip attached
+    :type has_tip: bool
+    :param is_active_tool: Whether or not the pipette is the active tool on the machine
+    :type is_active_tool: bool
+    :param first_available_tip: The first available tip in the tiprack
+    :type first_available_tip: :class:`Well`
+    :param tool_offset: The offset of the pipette from the top of the machine
+    :type tool_offset: float
+    :param is_primed: Whether or not the pipette has been primed (move the plunger to the zero position)
+    :type is_primed: bool
+    :param current_well: The last well that the pipette has interacted with
+    :type current_well: :class:`Well`
+
+    """
     def __init__(self, machine, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
+        """ Initialize the pipette object
+
+        :param machine: The :class:`Machine` object that the pipette is loaded on
+        :type machine: :class:`Machine`
+        :param index: The tool index of the pipette on the machine
+        :type index: int
+        :param name: The tool name
+        :type name: str
+        :param brand: The brand of the pipette
+        :type brand: str
+        :param model: The model of the pipette
+        :type model: str
+        :param max_volume: The maximum volume of the pipette in uL
+        :type max_volume: float
+        :param min_volume: The minimum volume of the pipette in uL
+        :type min_volume: float
+        :param zero_position: The position of the plunger before using a :method:`aspirate` step
+        :type zero_position: float
+        :param blowout_position: The position of the plunger for running a :method:`blowout` step
+        :type blowout_position: float
+        :param drop_tip_position: The position of the plunger for running a :method:`drop_tip` step
+        :type drop_tip_position: float
+        :param mm_to_ul: The conversion factor for converting motor microsteps in mm to uL
+        :type mm_to_ul: float
+        """        
         #TODO:Removed machine from init, check if this should be asigned here or is added later
         super().__init__(index, name, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
@@ -24,7 +99,8 @@ class Pipette(Tool):
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self._machine = machine
         self.has_tip = False
-        self.is_active_tool = False # TODO: add a way to change this to True/False and check before performing action with tool
+        # TODO: add a way to change this to True/False and check before performing action with tool
+        self.is_active_tool = False 
         self.first_available_tip = None
         self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
@@ -33,15 +109,37 @@ class Pipette(Tool):
     @classmethod
     def from_config(cls, machine, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
+        
+        """Initialize the pipette object from a config file
+
+        :param machine: The :class:`Machine` object that the pipette is loaded on
+        :type machine: :class:`Machine`
+        :param index: The tool index of the pipette on the machine
+        :type index: int
+        :param name: The tool name
+        :type name: str
+        :param config_file: The name of the config file containign the pipette parameters
+        :type config_file: str
+        :returns: A :class:`Pipette` object
+        :rtype: :class:`Pipette`
+        """        
         config = os.path.join(path,config_file)
         with open(config) as f:
             kwargs = json.load(f)
 
-        #return cls(machine=machine, index=index, name=name, **kwargs)
         return cls(machine, index, name, **kwargs)
     
     @staticmethod
     def _getxyz(location: Union[Well, Tuple, Location]):
+        """Helper function to extract the x, y, z coordinates of a location object.
+
+        :param location: The location object to extract the coordinates from. This can either be a 
+            :class:`Well`, a :tuple: of x, y, z coordinates, or a :class:`Location` object
+        :type location: Union[Well, Tuple, Location]
+        :raises ValueError: If the location is not a :class:`Well`, a :class:`tuple`, or a :class:`Location` object
+        :return: The x, y, z coordinates of the location
+        :rtype: float, float, float
+        """
         if type(location) == Well:
             x, y, z = location.x, location.y, location.z
         elif type(location) == Tuple:
@@ -54,37 +152,35 @@ class Pipette(Tool):
         return x,y,z
                
     def vol2move(self, vol):
-        #Function that converts uL to movement
-        """
-        Converts desired uL to movement on v-axis
+        """Converts desired volume in uL to a movement of the pipette motor axis
 
-        ---------Parameters---------
-
-        vol: float
-            The desired amount of liquid expressed in uL
-
-        ---------Returns----------
-
-        dv: float
-           The corresponding v-axix movement for the desired volume of liquid
-
-        """
+        :param vol: The desired amount of liquid expressed in uL
+        :type vol: float
+        :return: The corresponding motor movement in mm
+        :rtype: float
+        """        
         dv = vol * self.mm_to_ul # will need to change this value
 
         return dv
     
     def prime(self, s=2500):
-        """
-        Moves the plunger to the low-point on the v-axis to prepare for further commands
-        This position should not engage the pipette tip plunger
+        """Moves the plunger to the low-point on the pipette motor axis to prepare for further commands
+        Note::This position should not engage the pipette tip plunger
+
+        :param s: The speed of the plunger movement in mm/min
+        :type s: int
         """
         self._machine.move_to(v=self.zero_position, s = s, wait=True)
         self.is_primed = True
 
     def _aspirate(self, vol: float, s:int = 2000):
-        """
-        """
+        """Moves the plunger upwards to aspirate liquid into the pipette tip
 
+        :param vol: The volume of liquid to aspirate in uL
+        :type vol: float
+        :param s: The speed of the plunger movement in mm/min
+        :type s: int
+        """
         if self.is_primed == True:
             pass
         else:
@@ -94,22 +190,24 @@ class Pipette(Tool):
         pos = self._machine.get_position()
         end_pos = float(pos['V']) + dv
 
-
         self._machine.move_to(v=end_pos, s=s )
 
+    @tip_check
     def aspirate(self, vol: float, location : Union[Well, Tuple, Location], s:int = 2000):
-       
-        if self.has_tip is False:
-            raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
-        else:
-            pass
+        """Moves the pipette to the specified location and aspirates the desired volume of liquid
 
+        :param vol: The volume of liquid to aspirate in uL
+        :type vol: float
+        :param location: The location from where to aspirate the liquid from.
+        :type location: Union[Well, Tuple, Location]
+        :param s: The speed of the plunger movement in mm/min, defaults to 2000
+        :type s: int, optional
+        :raises ToolStateError: If the pipette does not have a tip attached
+        """
         x, y, z = self._getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
-            if z == location.z:
-                z= z+10
         elif type(location) == Location:
             self.current_well = location._labware
         else:
@@ -120,9 +218,16 @@ class Pipette(Tool):
         self._machine.move_to(z=z)
         self._aspirate(vol, s=s)
 
-
+    @tip_check
     def _dispense(self,vol: float, s:int = 2000):
-        """
+        """Moves the plunger downwards to dispense liquid out of the pipette tip
+
+        :param vol: The volume of liquid to dispense in uL
+        :type vol: float
+        :param s: The speed of the plunger movement in mm/min
+        :type s: int
+
+        Note:: Ideally the user does not call this functions directly, but instead uses the :method:`dispense` method
         """
         dv = self.vol2move(vol)
         pos = self._machine.get_position()
@@ -135,8 +240,19 @@ class Pipette(Tool):
         #    raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated") 
         self._machine.move_to(v = end_pos, s=s )
 
+    @tip_check
     def dispense(self, vol: float, location :Union[Well, Tuple, Location], s:int = 2000):
-       
+        """Moves the pipette to the specified location and dispenses the desired volume of liquid
+
+        :param vol: The volume of liquid to dispense in uL
+        :type vol: float
+        :param location: The location to dispense the liquid into. 
+        :type location: Union[Well, Tuple, Location]
+        :param s: The speed of the plunger movement in mm/min, defaults to 2000
+        :type s: int, optional
+
+        Note:: Ideally the user does not call this functions directly, but instead uses the :method:`dispense` method
+        """
         x, y, z = self._getxyz(location)
         
         if type(location) == Well:
@@ -155,20 +271,39 @@ class Pipette(Tool):
         self._machine.move_to(z=z)
         self._dispense(vol, s=s)
 
-
+    @tip_check
     def transfer(self, vol: float, source_well: Union[Well, Tuple, Location],
                  destination_well :Union[Well, Tuple, Location] , s:int = 3000,
                  blowout= None, mix_before: tuple = None,
                  mix_after: tuple = None, new_tip : str = 'always'):
         
+        """Transfers the desired volume of liquid from the source well to the destination well
+
+        This is a combination of the :method:`aspirate` and :method:`dispense` steps.
+        
+        :param vol: The volume of liquid to transfer in uL
+        :type vol: float
+        :param source_well: The location from where to aspirate the liquid from. 
+        :type source_well: Union[Well, Tuple, Location]
+        :param destination_well: The location to dispense the liquid into. 
+        :type destination_well: Union[Well, Tuple, Location]
+        :param s: The speed of the plunger movement in mm/min, defaults to 3000
+        :type s: int, optional
+        :param blowout: The location to blowout any remainign liquid in the pipette tip
+        :type blowout: Union[Well, Tuple, Location], optional
+        :param mix_before: The number of times to mix before dispensing and the volume to mix
+        :type mix_before: tuple, optional
+        :param mix_after: The number of times to mix after dispensing and the volume to mix
+        :type mix_after: tuple, optional
+        :param new_tip: Whether or not to use a new tip for the transfer. Can be 'always', 'never', or 'once' 
+
+        Note:: :param new_tip: still not implemented at the moment (2023-11-16) 
+        """
         #TODO: check that tip picked up and get a new one if not
-        #TODO: ADD A Distance from bottom of well/top to dispense at
         
         vol_ = self.vol2move(vol)
         # get locations
         xs, ys, zs = self._getxyz(source_well)
-        if zs == source_well.z:
-            zs= zs+5
 
         if self.is_primed == True:
             pass
@@ -182,14 +317,7 @@ class Pipette(Tool):
         if isinstance(destination_well, list):
             for well in destination_well:
                 xd, yd, zd =self._getxyz(well)
-                if zd == well.z:
-                     zd= zd+5
-                else:
-                    pass
-
-                # zd_top, zd_bottom = self._getTopBottom(well)
-                
-                
+            
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
                 self._machine.move_to(z = zs)
@@ -226,34 +354,51 @@ class Pipette(Tool):
 
                 #TODO: need to add new_tip option!
 
-
+    @tip_check
     def blowout(self,  s : int = 3000):
-        """
+        """Blows out any remaining liquid in the pipette tip
+
+        :param s: The speed of the plunger movement in mm/min, defaults to 3000
+        :type s: int, optional
         """
 
         well = self.current_well
         self._machine.move_to(z = well.top_ + 5 )
         self._machine.move_to(v = self.blowout_position, s=s)
         self.prime()
-
-        return 
     
+    @tip_check
     def air_gap(self, vol):
+        """Moves the plunger upwards to aspirate air into the pipette tip
+
+        :param vol: The volume of air to aspirate in uL
+        :type vol: float
+        """
+        #TODO: Add a check to ensure compounded volume does not exceed max volume of pipette
         
         dv = self.vol2move(vol)*-1
         well = self.current_well
         self._machine.move_to(z = well.top_ + 20)
         self._machine.move(v= -1*dv)
 
+    @tip_check
     def mix(self, vol: float, n: int, s: int = 5000):
-        
+        """Mixes liquid by alternating aspirate and dispense steps for the specified number of times
+
+        :param vol: The volume of liquid to mix in uL
+        :type vol: float
+        :param n: The number of times to mix
+        :type n: int
+        :param s: The speed of the plunger movement in mm/min, defaults to 5000
+        :type s: int, optional
+        """
         v = self.vol2move(vol)*-1
 
         self._machine.move_to(z = self.current_well.top_+2)
         self.prime()
         # self._machine.move(dz = -17)
         
-        # TODO: figure out a better way to indicate mixing height position that si tnot hardcoded
+        # TODO: figure out a better way to indicate mixing height position that is not hardcoded
         self._machine.move_to(z= self.current_well.z) 
         for i in range(0,n):
             self._aspirate(vol, s=s)
@@ -261,8 +406,18 @@ class Pipette(Tool):
             self.prime(s=s)   
 
 ## In progress (2023-10-12) To test
+    @tip_check
     def stir(self, n_times: int = 1, height: float= None):
-                
+        """Stirs the liquid in the current well by moving the pipette tip in a circular motion
+
+        :param n_times: The number of times to stir the liquid, defaults to 1
+        :type n_times: int, optional
+        :param height: The z-coordinate to move the tip to during the stir step, defaults to None
+        :type height: float, optional
+        :raises ToolStateError: If the pipette does not have a tip attached before stirring or if the pipette is not in a well
+        """
+
+
         z= self.current_well.z + 0.5  # place pieptte tip close to the bottom
         pos =  self._machine.get_position()
         x_ = float(pos['X']) 
@@ -291,10 +446,12 @@ class Pipette(Tool):
                 self._machine.gcode(f'G2 X{x_sp} Y{y_sp} I{I} J{J}')
                 self._machine.gcode(f'M400') # wait until movement is completed
 
-
-
     def update_z_offset(self, tip: bool = None):
-        
+        """Shift the z-offset of the tool to account for the tip length
+
+        :param tip: Parameter to indicated whether to add or remove the tip offset, defaults to None
+        :type tip: bool, optional
+        """
         if isinstance(self.tiprack, list):
             tip_offset = self.tiprack[0].tip_length- self.tiprack[0].tip_overlap
         else:
@@ -308,6 +465,11 @@ class Pipette(Tool):
         self._machine.gcode(f'G10 P{self.index} Z{new_z}')
 
     def add_tiprack(self, tiprack: Union[Labware, list]):
+        """Associate a tiprack with the pipette tool
+
+        :param tiprack: The tiprack to associate with the pipette 
+        :type tiprack: Union[Labware, list]
+        """
         if isinstance(tiprack, list):
             for rack in len(tiprack):
                 tips = []
@@ -323,7 +485,11 @@ class Pipette(Tool):
         self.first_available_tip = self.tipiterator.next()
 
     def _pickup_tip(self, z):
-        """
+        """Moves the Jubilee Z-axis upwards to pick up a pipette tip and stops once the tip sensor is triggered
+
+        :param z: The z-coordinate to move the pipette to
+        :type z: float
+        :raises ToolStateError: If the pipette already has a tip attached
         """
         if self.has_tip == False:
             self._machine.move_to(z=z, s=800, param = 'H4')
@@ -332,7 +498,13 @@ class Pipette(Tool):
         #TODO: Should this be an error or a warning?     
         
     def pickup_tip(self, tip_ : Union[Well, Tuple] = None):
-        """
+        """Moves the pipette to the specified location and picks up a tip
+
+        This function can either take a specific tip or if not specified, will pick up the next available 
+        tip in the tiprack associated with the pipette.
+        
+        :param tip_: The location of the pipette tip to pick up, defaults to None
+        :type tip_: Union[Well, Tuple], optional
         """
         if tip_ is None:
             tip = self.first_available_tip
@@ -344,7 +516,7 @@ class Pipette(Tool):
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
         self.has_tip = True
-        self.update_z_offset(tip= True) ### to do!
+        self.update_z_offset(tip= True)
         # if tip is not None:
         #     self.first_available_tip =  self.tiprack.next()
         # move the plate down( should be + z) for safe movement
@@ -353,7 +525,11 @@ class Pipette(Tool):
         #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
 
     def return_tip(self, location: Well = None):
-        
+        """Returns the pipette tip to the either the specified location or to where the tip was picked up from
+
+        :param location: The location to return the tip to, defaults to None (i.e. return to where the tip was picked up from)
+        :type location: :class:`Well`, optional
+        """
         if location is None:
             x, y, z = self._getxyz(self.first_available_tip)
         else:
@@ -370,8 +546,9 @@ class Pipette(Tool):
 
 
     def _drop_tip(self):
-        """
-        Moves the plunger to eject the pipette tip
+        """Moves the plunger to eject the pipette tip
+
+        :raises ToolConfigurationError: If the pipette does not have a tip attached
         """
         if self.has_tip == True:
             self._machine.move_to(v= self.drop_tip_position, s= 4000)
@@ -379,17 +556,17 @@ class Pipette(Tool):
             raise ToolConfigurationError('Error: No pipette tip attached to drop')
         
     def increment_tip(self):
-        """
-        Increment the next available tip
+        """Increment the next available tip
         """
         self.first_available_tip = self.tipiterator.next()
 
+    @tip_check
     def drop_tip(self, location: Union[Well, Tuple]):
-        #TODO: Run the check to see if there is a tip attached before moving machine 
-        """
-        location: well-like location to drop
-        xx nope increment_available: bool, whether or not to update the next available tip
-        """
+        """Moves the pipette to the specified location and drops the pipette tip
+
+        :param location: The location to drop the tip into
+        :type location: Union[:class:`Well`, tuple]
+        """        
         x, y, z = self._getxyz(location)
 
         self._machine.safe_z_movement()
@@ -405,13 +582,29 @@ class Pipette(Tool):
 
 
 class pipette_iterator():
+    """An iterator for iterating through a tiprack
 
+    :param tiprack: The tiprack to iterate through
+    :type tiprack: :class:`Labware`    
+    """
     def __init__(self, tiprack):
+        """Initialize the tip iterator
+
+        :param tiprack: The tiprack to iterate through
+        :type tiprack: :class:`Labware`  
+        """
+
         self.tiprack = tiprack
         self.index = 0
 
     def next(self):
-        print('Pipette tips iterated')
+        """Returns the next available tip in the tiprack
+
+        :raises StopIteration: If there are no more tips available in the tiprack
+        :return: The next available tip in the tiprack
+        :rtype: :class:`Well`
+        """
+        # print('Pipette tips iterated')
         try:
             result = self.tiprack[self.index]
             self.index += 1
@@ -420,6 +613,13 @@ class pipette_iterator():
         return result
 
     def prev(self):
+        """Returns the previous available tip in the tiprack
+
+        :raises StopIteration: If the current pipette tip is the first tip in the tiprack
+        :return: _description_
+        :rtype: _type_
+        """
+
         self.index -= 1
         if self.index < 0:
             raise StopIteration
