@@ -16,6 +16,8 @@ class Tool:
             raise ToolConfigurationError("Incorrect usage: load_tool(<tool_number>, <name>, **kwargs)")
         self.index = index
         self.name = name
+        self.is_active_tool = False
+
         for k,v in kwargs.items():
             setattr(self, k, v )
 
@@ -27,4 +29,15 @@ class Tool:
     #add a park tool method that every tool config can define to do things that need to be done pre or post parking
     #ex: make sure pipette has dropped tips before parking
 
-    
+
+def requires_active_tool(func):
+    """Decorator to ensure that a tool cannot complete an action unless it is the
+    current active tool.
+    """
+    # print('check')
+    def wrapper(self, *args, **kwargs):
+        if self.is_active_tool == False:
+            raise ToolStateError (f"Error: Tool {self.name} is not the current `Active Tool`. Cannot perform this action")
+        else:
+            func(self,*args, **kwargs)
+    return wrapper

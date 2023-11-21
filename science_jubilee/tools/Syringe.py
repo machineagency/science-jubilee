@@ -1,4 +1,4 @@
-from .Tool import Tool, ToolStateError
+from .Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
 from science_jubilee.labware.Labware import Labware, Well
 from typing import Tuple, Union
 import warnings
@@ -55,7 +55,8 @@ class Syringe(Tool):
         """Disallow commands outside of the syringe's configured range"""
         if pos > self.max_range or pos < self.min_range:
             raise ToolStateError(f"Error: {pos} is out of bounds for the syringe!")
-            
+
+    @requires_active_tool        
     def _aspirate(self, vol: float, s: int = 2000):
         """Aspirate a certain number of milliliters."""
         de = vol * -1 * self.mm_to_ml
@@ -63,7 +64,8 @@ class Syringe(Tool):
         end_pos = float(pos[self.e_drive]) + de
         self.check_bounds(end_pos)
         self._machine.move(de=de, wait = True)
-        
+
+    @requires_active_tool    
     def _dispense(self, vol, s: int = 2000):
         """Dispense a certain number of milliliters."""
         de = vol * self.mm_to_ml
@@ -71,7 +73,8 @@ class Syringe(Tool):
         end_pos = float(pos[self.e_drive]) + de
         self.check_bounds(end_pos)
         self._machine.move(de=de, wait = True)
-        
+    
+    @requires_active_tool   
     def aspirate(
         self,
         vol: float,
@@ -95,7 +98,8 @@ class Syringe(Tool):
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
         self._aspirate(vol, s=s)
-        
+
+    @requires_active_tool    
     def dispense(
         self,
         vol: float,
@@ -121,7 +125,8 @@ class Syringe(Tool):
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
         self._dispense(vol, s=s)
-        
+    
+    @requires_active_tool    
     def transfer(
         self,
         vol: float,

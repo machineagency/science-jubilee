@@ -3,7 +3,7 @@ import logging
 import os
 
 from labware.Labware import Labware, Well, Location
-from .Tool import Tool, ToolStateError, ToolConfigurationError
+from .Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
 from typing import Tuple, Union
 
 
@@ -14,12 +14,10 @@ def tip_check(func):
     """
     def wrapper(self, *args, **kwargs):
         if self.has_tip == False:
-            raise ToolStateError ("Error: tip needs to be attached before aspirating liquid")
+            raise ToolStateError ("Error: No tip is attached. Cannot complete this action")
         else:
             func(self,*args, **kwargs)
     return wrapper
-
-
 
 class Pipette(Tool):
     """ A class representation of an Opentrons OT2 pipette.
@@ -100,7 +98,6 @@ class Pipette(Tool):
         self._machine = machine
         self.has_tip = False
         # TODO: add a way to change this to True/False and check before performing action with tool
-        self.is_active_tool = False 
         self.first_available_tip = None
         self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
@@ -150,7 +147,7 @@ class Pipette(Tool):
             raise ValueError("Location should be of type Well or Tuple")
         
         return x,y,z
-               
+           
     def vol2move(self, vol):
         """Converts desired volume in uL to a movement of the pipette motor axis
 
@@ -163,6 +160,7 @@ class Pipette(Tool):
 
         return dv
     
+    @requires_active_tool
     def prime(self, s=2500):
         """Moves the plunger to the low-point on the pipette motor axis to prepare for further commands
         Note::This position should not engage the pipette tip plunger
@@ -173,6 +171,7 @@ class Pipette(Tool):
         self._machine.move_to(v=self.zero_position, s = s, wait=True)
         self.is_primed = True
 
+    @requires_active_tool
     def _aspirate(self, vol: float, s:int = 2000):
         """Moves the plunger upwards to aspirate liquid into the pipette tip
 
@@ -191,7 +190,8 @@ class Pipette(Tool):
         end_pos = float(pos['V']) + dv
 
         self._machine.move_to(v=end_pos, s=s )
-
+    
+    @requires_active_tool
     @tip_check
     def aspirate(self, vol: float, location : Union[Well, Tuple, Location], s:int = 2000):
         """Moves the pipette to the specified location and aspirates the desired volume of liquid
@@ -218,6 +218,7 @@ class Pipette(Tool):
         self._machine.move_to(z=z)
         self._aspirate(vol, s=s)
 
+    @requires_active_tool
     @tip_check
     def _dispense(self,vol: float, s:int = 2000):
         """Moves the plunger downwards to dispense liquid out of the pipette tip
@@ -240,6 +241,7 @@ class Pipette(Tool):
         #    raise ToolStateError ("Error : The volume to be dispensed is greater than what was aspirated") 
         self._machine.move_to(v = end_pos, s=s )
 
+    @requires_active_tool
     @tip_check
     def dispense(self, vol: float, location :Union[Well, Tuple, Location], s:int = 2000):
         """Moves the pipette to the specified location and dispenses the desired volume of liquid
@@ -271,6 +273,7 @@ class Pipette(Tool):
         self._machine.move_to(z=z)
         self._dispense(vol, s=s)
 
+    @requires_active_tool
     @tip_check
     def transfer(self, vol: float, source_well: Union[Well, Tuple, Location],
                  destination_well :Union[Well, Tuple, Location] , s:int = 3000,
@@ -353,7 +356,8 @@ class Pipette(Tool):
                 # if new_tip == 'always':
 
                 #TODO: need to add new_tip option!
-
+    
+    @requires_active_tool
     @tip_check
     def blowout(self,  s : int = 3000):
         """Blows out any remaining liquid in the pipette tip
@@ -367,6 +371,7 @@ class Pipette(Tool):
         self._machine.move_to(v = self.blowout_position, s=s)
         self.prime()
     
+    @requires_active_tool
     @tip_check
     def air_gap(self, vol):
         """Moves the plunger upwards to aspirate air into the pipette tip
@@ -381,6 +386,7 @@ class Pipette(Tool):
         self._machine.move_to(z = well.top_ + 20)
         self._machine.move(v= -1*dv)
 
+    @requires_active_tool
     @tip_check
     def mix(self, vol: float, n: int, s: int = 5000):
         """Mixes liquid by alternating aspirate and dispense steps for the specified number of times
@@ -406,6 +412,7 @@ class Pipette(Tool):
             self.prime(s=s)   
 
 ## In progress (2023-10-12) To test
+    @requires_active_tool
     @tip_check
     def stir(self, n_times: int = 1, height: float= None):
         """Stirs the liquid in the current well by moving the pipette tip in a circular motion
@@ -484,6 +491,7 @@ class Pipette(Tool):
         
         self.first_available_tip = self.tipiterator.next()
 
+    @requires_active_tool
     def _pickup_tip(self, z):
         """Moves the Jubilee Z-axis upwards to pick up a pipette tip and stops once the tip sensor is triggered
 
@@ -496,7 +504,8 @@ class Pipette(Tool):
         else:
             raise ToolStateError("Error: Pipette already equipped with a tip.")  
         #TODO: Should this be an error or a warning?     
-        
+
+    @requires_active_tool    
     def pickup_tip(self, tip_ : Union[Well, Tuple] = None):
         """Moves the pipette to the specified location and picks up a tip
 
@@ -524,6 +533,7 @@ class Pipette(Tool):
 
         #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
 
+    @requires_active_tool
     def return_tip(self, location: Well = None):
         """Returns the pipette tip to the either the specified location or to where the tip was picked up from
 
@@ -544,7 +554,7 @@ class Pipette(Tool):
         self.has_tip = False
         self.update_z_offset(tip=False)
 
-
+    @requires_active_tool
     def _drop_tip(self):
         """Moves the plunger to eject the pipette tip
 
@@ -560,6 +570,7 @@ class Pipette(Tool):
         """
         self.first_available_tip = self.tipiterator.next()
 
+    @requires_active_tool
     @tip_check
     def drop_tip(self, location: Union[Well, Tuple]):
         """Moves the pipette to the specified location and drops the pipette tip

@@ -718,12 +718,10 @@ class Machine():
     #TODO: Unload tool method
 
     @requires_safe_z
-    def pickup_tool(self, tool_id: Union[int, str, Tool] = None):
+    def pickup_tool(self, tool_id: Union[int, str, Tool]):
         """Pick up the tool specified by tool id."""
         #TODO: Make sure axis limits are checked and not exceeded when picking up pipette
-        if isinstance(
-            tool_id, int
-        ):  # Accept either tool index, tool name, or reference to the tool itself
+        if isinstance( tool_id, int):  # Accept either tool index, tool name, or reference to the tool itself
             if tool_id in self.tools:
                 tool_index = tool_id
             else:
@@ -756,6 +754,7 @@ class Machine():
 #         self.safe_z_movement()
         self.gcode(f"T{tool_index}")
         self.active_tool_index = tool_index
+        self.tools[tool_index]['tool'].is_active_tool = True 
 
     @requires_safe_z
     def park_tool(self):
@@ -763,6 +762,8 @@ class Machine():
         self.safe_z_movement()
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
+        current_tool_index= self.active_tool_index
+        self.tools[current_tool_index]['tool'].is_active_tool = False 
         self._active_tool_index = -1
 
 

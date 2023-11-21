@@ -10,7 +10,7 @@ import numpy as np
 
 from labware.Labware import Well, Location
 from typing import Tuple, Union
-from .Tool import Tool
+from .Tool import Tool, requires_active_tool
 
 
 class Camera(Tool):
@@ -50,7 +50,7 @@ class Camera(Tool):
         
         return x,y,z
 
-
+    @requires_active_tool
     def _capture_image(self, timeout = 10):
         """
         Capture image from raspberry pi and write to file
@@ -64,6 +64,7 @@ class Camera(Tool):
 
         return response.content
     
+    @requires_active_tool
     def capture_image(self, location: Union[Well, Tuple]):
         
         x, y, z = self._getxyz(location)
