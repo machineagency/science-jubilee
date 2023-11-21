@@ -4,7 +4,6 @@ from itertools import chain
 from typing import List, Dict, Tuple, Union, Iterable, NamedTuple
 import os
 import json
-from pathlib import Path
 
 
 @dataclass

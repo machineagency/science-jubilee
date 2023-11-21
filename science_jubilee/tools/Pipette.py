@@ -2,8 +2,8 @@ import json
 import logging
 import os
 
-from labware.Labware import Labware, Well, Location
-from .Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee.labware.Labware import Labware, Well, Location
+from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
 from typing import Tuple, Union
 
 
@@ -62,7 +62,7 @@ class Pipette(Tool):
     :type current_well: :class:`Well`
 
     """
-    def __init__(self, machine, index, name, brand, model, max_volume,
+    def __init__(self, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         """ Initialize the pipette object
@@ -95,7 +95,6 @@ class Pipette(Tool):
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
-        self._machine = machine
         self.has_tip = False
         # TODO: add a way to change this to True/False and check before performing action with tool
         self.first_available_tip = None
