@@ -1,4 +1,4 @@
-from .Tool import Tool, ToolStateError
+from .Tool import Tool, ToolStateError, requires_active_tool
 
 import cv2
 import matplotlib
@@ -57,6 +57,7 @@ class Camera(Tool):
             i -= 1
         return arr
 
+    @requires_active_tool
     def get_frame(self, resolution=[1200, 1200], uvc=False):
         with picamera.PiCamera() as camera:
             camera.resolution = (1200, 1200)
@@ -87,6 +88,7 @@ class Camera(Tool):
     def get_show_frame(self):
         self.show_frame(self.get_frame())
 
+    @requires_active_tool
     def video_stream(self, camera_index=0):
         cap = cv2.VideoCapture(
             camera_index
