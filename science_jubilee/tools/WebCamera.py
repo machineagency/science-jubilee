@@ -10,19 +10,18 @@ import numpy as np
 
 from labware.Labware import Well, Location
 from typing import Tuple, Union
-from .Tool import Tool, requires_active_tool
+from science_jubilee.tools.Tool import Tool, requires_active_tool
 
 
 class Camera(Tool):
     """
     raspberry pi camera server client
     """
-    def __init__(self, machine, index, name, ip_address, port,
+    def __init__(self, index, name, ip_address, port,
                  video_endpoint, still_endpoint, image_folder):
         super().__init__(index, name, ip_address = ip_address,
                          port = port, video_endpoint = video_endpoint,
                          still_endpoint = still_endpoint,image_folder= image_folder)
-        self._machine = machine
         self.still_url = f'http://{self.ip_address}:{self.port}/{self.still_endpoint}'
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
         self.tool_offset = self._machine.tool_z_offsets[self.index] 

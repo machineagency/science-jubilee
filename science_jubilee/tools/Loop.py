@@ -1,4 +1,4 @@
-from .Tool import Tool, ToolStateError
+from science_jubilee.tools.Tool import Tool, ToolStateError
 
 
 class Loop(Tool):

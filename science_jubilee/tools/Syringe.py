@@ -1,4 +1,4 @@
-from .Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
 from science_jubilee.labware.Labware import Labware, Well
 from typing import Tuple, Union
 import warnings
