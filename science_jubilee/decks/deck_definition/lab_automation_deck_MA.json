@@ -5,50 +5,45 @@
         "type": "SLAS Standard Labware"
     },
     "slots": { 
-                "-1": {
-                    "offset": [313.050, 38.300],
-                    "has_labware": false,
-                    "labware": null
-                },
-             
                 "0": {
-                    "offset": [14.9, 4.4],
+                    "offset": [20.0, 7.3],
                     "has_labware": false,
                     "labware": null
                 },
              
                 "1": {
-                    "offset": [286.100, 89.100],
+                    "offset": [160.0, 7.3],
                     "has_labware": false,
                     "labware": null
                 },
              
                 "2": {
-                    "offset": [147.000, 187.200],
+                    "offset": [20.0, 107.3],
                     "has_labware": false,
                     "labware": null
                 },
              
                 "3": {
-                    "offset": [286.700, 186.200],
+                    "offset": [160.0, 107.3],
                     "has_labware": false,
                     "labware": null
                 },
              
                 "4": {
-                    "offset": [147.700, 284.000],
+                    "offset": [20.0, 207.3],
                     "has_labware": false,
                     "labware": null
                 },
              
                 "5": {
-                    "offset": [287.400, 283.100],
+                    "offset": [160.0, 207.3],
                     "has_labware": false,
                     "labware": null
                 }
+             
              },
     "offset_from": {
-        "corner": "top_right"
+        "corner": "bottom_left"
     },
     "material": {
         "plate": "Aluminum",
