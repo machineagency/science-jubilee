@@ -1,5 +1,6 @@
 from .Tool import Tool, ToolStateError, requires_active_tool
-
+from science_jubilee.labware.Labware import Labware, Well
+from typing import Tuple, Union
 import cv2
 import matplotlib
 
@@ -20,7 +21,7 @@ class Camera(Tool):
         self._dist_matrix = None
 
         self.load_coefficients(
-            "/home/pi/duckbot/duckbot/tools/calibration_checkerboard.yml"
+            "/home/pi/plos-revision-submission/duckbot/science_jubilee/science_jubilee/tools/configs/calibration_checkerboard.yml"
         )
 
     def load_coefficients(self, path):
@@ -56,7 +57,7 @@ class Camera(Tool):
             index += 1
             i -= 1
         return arr
-
+    
     @requires_active_tool
     def get_frame(self, resolution=[1200, 1200], uvc=False):
         with picamera.PiCamera() as camera:
@@ -64,7 +65,7 @@ class Camera(Tool):
             camera.framerate = 24
             time.sleep(2)
             # print("... camera connection established")
-            output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8)
+            output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8) 
             camera.capture(output, "rgb", use_video_port=True)
             tpose = np.transpose(output, axes=(1, 0, 2))
             undistorted = cv2.undistort(
@@ -114,3 +115,44 @@ class Camera(Tool):
 
         cap.release()
         cv2.destroyAllWindows()
+
+    @requires_active_tool
+    def image_wells(self, resolution=[1200, 1200], uvc=False, wells: Well = None): 
+        # TODO: different functions for saving many images, showing images, or getting frames for analysis?
+        if type(wells) != list:
+            wells = [wells]
+        
+        for well in wells:
+            x, y, z_bottom = self._get_xyz(well=well)
+            self._machine.safe_z_movement()
+            self._machine.move_to(x=x, y=y)
+            self._machine.move_to(z=30) # focus height; read in from config
+            time.sleep(1) # ToDo: Better way to sync gcode movements & images
+            f = self.get_frame()
+            self.show_frame(f)
+            
+    @requires_active_tool
+    def get_well_image(self, resolution=[1200, 1200], uvc=False, well: Well = None): 
+        x, y, z_bottom = self._get_xyz(well=well)
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y)
+        self._machine.move_to(z=30) # focus height; read in from config
+        time.sleep(1) # ToDo: Better way to sync gcode movements & images
+        f = self.get_frame()
+        return f
+    
+    @staticmethod
+    def _get_xyz(well: Well = None, location: Tuple[float] = None):
+        if well is not None and location is not None:
+            raise ValueError("Specify only one of Well or x,y,z location")
+        elif well is not None:
+            x, y, z = well.x, well.y, well.z
+        else:
+            x, y, z = location
+        return x, y, z
+        
+    @staticmethod
+    def _get_top_bottom(well: Well = None):
+        top = well.top
+        bottom = well.bottom
+        return top, bottom

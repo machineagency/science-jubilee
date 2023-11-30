@@ -1,0 +1,22 @@
+{
+    "deck_type": "{{deck_type}}",
+    "deck_slots": {
+        "total": {{num_slots}},
+        "type": "{{slot_type}}"
+    },
+    "slots": { {% for slot in range(-num_sharps_containers, num_slots) %}
+                "{{slot}}": {
+                    "offset": {{slot_data[slot]}},
+                    "has_labware": false,
+                    "labware": null
+                }{{"," if not loop.last else ""}}
+             {% endfor %}
+             },
+    "offset_from": {
+        "corner": "{{offset_corner}}"
+    },
+    "material": {
+        "plate": "{{plate_material}}",
+        "mask": "{{mask_material}}"
+    }
+}

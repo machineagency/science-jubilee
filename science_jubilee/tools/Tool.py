@@ -34,10 +34,9 @@ def requires_active_tool(func):
     """Decorator to ensure that a tool cannot complete an action unless it is the
     current active tool.
     """
-    # print('check')
     def wrapper(self, *args, **kwargs):
         if self.is_active_tool == False:
             raise ToolStateError (f"Error: Tool {self.name} is not the current `Active Tool`. Cannot perform this action")
         else:
-            func(self,*args, **kwargs)
+            return func(self,*args, **kwargs)
     return wrapper

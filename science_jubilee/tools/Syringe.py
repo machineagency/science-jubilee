@@ -44,7 +44,7 @@ class Syringe(Tool):
         """Find extruder drive for this tool."""
         # To read the position of an extruder, we need to know which extruder # to look at
         # Query the object model to find this
-        tool_info = json.loads(self._machine.send('M409 K"tools[]"'))["result"]
+        tool_info = json.loads(self._machine.gcode('M409 K"tools[]"'))["result"]
         for tool in tool_info:
             if tool["number"] == self.index:
                 self.e_drive = f"E{tool['extruders'][0]}" # Syringe tool has only 1 extruder
