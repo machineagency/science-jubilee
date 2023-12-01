@@ -26,7 +26,7 @@ The standard lab automation deck consists of 6 slots (indices 0-5), and a number
     Orientation of slots on deck and labware in slots.
 
 
-To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the ``decks/deck_definitions/`` directory. The preferred method to do so accurately is with a camera tool; the `deck definition calibration notebook <>`_ interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to the top-right corner of each slot.
+To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the ``decks/deck_definitions/`` directory. The preferred method to do so accurately is with a camera tool; the `deck definition calibration notebook <https://github.com/machineagency/science_jubilee/blob/main/science_jubilee/calibration/LabAutomationDeckCalibration.ipynb>`_ interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot.
 
 Creating Labware Definitions
 ============================
@@ -49,7 +49,25 @@ We can then load a deck onto the machine, and labware into the deck::
   m = Machine()
   deck = m.load_deck("<my_deck_definition>")
   labware = deck.load_labware("<my_labware_defintion>")
+  
 
-Note that we can omit the ``.json`` file extension. 
+Note that we can omit the ``.json`` file extension. Let's take an example using a 24-well plate. Each labware is made up of a numbe of ``Well`` objects. We can access information like size and location of each well by its row-column identification (A1, A2, ...) or its index (0, 1, ...), where index 0 corresponds to A1:: 
 
-*in progress*
+  labware = deck.load_labware("greiner_24_wellplate_3300ul", 1)
+  well = labware["A1"] # Identical to labware[0]
+
+The value of ``well`` for this labware is:: 
+
+  Well(name='A1', depth=16.5, totalLiquidVolume=3300, shape='circular', 
+      diameter=16.28, xDimension=None, yDimension=None, x=175.13, 
+      y=79.3, z=2.5, offset=[160.0, 7.3])
+
+The value of ``offset`` comes from your specific automation deck calibration, and is used to adjust the position of each well. All other information derives from your labware definition. We can access each attribute directly:: 
+
+  well.x      # 175.13, the x position of the well center
+  well.y      # 79.3,   the y position of the well center
+  well.depth  # 16.5,   the usable depth of this well from the top of the labware
+  well.z      # 7.5,    the thickness of the labware plate
+
+
+

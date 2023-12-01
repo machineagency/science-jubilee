@@ -80,7 +80,7 @@ Welcome to the Science Jubilee docs! This website contains information for lab a
 What is a Science Jubilee?
 --------------------------
 
-`Jubilee <https://jubilee3d.com/index.php?title=Main_Page>`_ is an open-source & extensible multi-tool motion platform. If that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. ``science_jubilee`` provides tools and associated control software to use Jubilee for laboratory automation. This website contains documentation for various lab automation applications including liquid handling, imaging, and sample manipulation. While these applications might cater exactly to your planned use case, they most likely will not! ``science_jubilee`` is meant to be flexible; hopefully, the examples here provide a foundation for you to design all sorts of niche experiments!
+`Jubilee <https://jubilee3d.com/index.php?title=Main_Page>`_ is an open-source & extensible multi-tool motion platform. If that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. ``science_jubilee`` provides tools and associated control software to use Jubilee for laboratory automation. This website contains documentation for various lab automation applications including liquid handling, imaging, and sample manipulation. While these applications might cater exactly to your planned use case, they most likely will not! ``science_jubilee`` is meant to be flexible; hopefully, the examples here provide a foundation for you to design all sorts of niche experiments.
 
 |pipetting| |duckweed|
 
@@ -91,6 +91,13 @@ What is a Science Jubilee?
    :width: 49%
 
 
+Jubilee is used in various scientific contexts. A few examples include:
+
+* `The Duckbot <https://github.com/machineagency/duckbot>`_, for automating duckweed experiments
+* `Sonication Station <https://github.com/machineagency/sonication_station/>`_, for sonicating samples
+* `Jubiris <https://github.com/bunnie/jubiris/tree/main>`_, for Infra-Red, In-Situ (IRIS) inspection of silicon
+
+We hope that ``science_jubilee`` helps you add to this list-- if you're using Jubilee for lab automation, reach out to be added here!
 
 
 
