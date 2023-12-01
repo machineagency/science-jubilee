@@ -17,7 +17,12 @@ The inoculation loop tool uses the existing `pen tool <https://jubilee3d.com/ind
 Parts to Buy
 ============
 * Inoculation loop
+* See the `Jubilee pen tool <https://jubilee3d.com/index.php?title=Passive_Pen_Tool>`_ for all fabrication other files
 
 Parts to 3D Print
 =================
 * Beyond the pen tool parts documented at the Jubilee project page, we have a customizable inoculation loop `design <https://www.thingiverse.com/thing:5523037>`_ to move heavy duckweed fronds. 
+
+Assembly
+========
+Find step-by-step build instructions `here <https://github.com/machineagency/science_jubilee/tree/main/docs/pdfs/inoculation_loop_tool_assembly.pdf>`_

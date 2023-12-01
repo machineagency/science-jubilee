@@ -94,6 +94,20 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Syringe Tool
 
+    .. card:: Lab Automation Deck
+        
+        Deck attachment to hold 6 standard microplates + disposal containers
+
+        +++
+        
+        .. button-ref:: lab_automation_deck
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            Lab Automation Deck
+
 .. card:: Tool Postrequisites
     :class-card: intro-card
     :shadow: md

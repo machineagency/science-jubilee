@@ -17,7 +17,9 @@ See the `10cc Syringe tool <https://jubilee3d.com/index.php?title=Camera_Inspect
 Parts to Buy
 ============
 * Syringe (10cc or 50cc)
+* The full shopping list can be found `here <https://docs.google.com/spreadsheets/d/19zSPgaUJId5xt-jpjvXQGE22AiIK3zP_XUoAT0gs4UI/edit#gid=1582949094>`_ and is the same for both the 10cc and 50cc syringe.
 
 Parts to 3D Print
 =================
-* Files for a 50cc syringe can be found `here <https://github.com/machineagency/science_jubilee/tree/main/tool_library/syringe_50cc/STLs>`_. See above for 10cc syringe.
+* Parts to print for a 50cc syringe can be found `here <https://github.com/machineagency/science_jubilee/tree/main/tool_library/syringe_50cc/STLs>`_. See above for 10cc syringe.
+* SolidWork files for the 50cc syringe parts are `here <https://github.com/machineagency/science_jubilee/tree/main/tool_library/syringe_50cc/cads>`_
