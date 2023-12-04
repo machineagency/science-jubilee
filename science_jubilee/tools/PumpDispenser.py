@@ -12,6 +12,9 @@ class PumpDispenser(Tool):
     """
 
     def init()
+        
+        # offsets live in config file, pipette tip '0' is centered in Jubilee duet-level setup
+        
 
     """
     parameters for user to give:
