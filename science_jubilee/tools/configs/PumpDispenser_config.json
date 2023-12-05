@@ -1,0 +1,6 @@
+{
+    "number_dispensers":3,
+    "dispense_tip_offsets":[[0,0], [10, -17.4], [-10, -17.4]],
+    "prime_line_volume": 3
+
+}
