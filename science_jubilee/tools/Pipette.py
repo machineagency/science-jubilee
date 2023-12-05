@@ -4,6 +4,7 @@ import os
 
 from science_jubilee.labware.Labware import Labware, Well, Location
 from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee import utils
 from typing import Tuple, Union
 
 
@@ -125,27 +126,6 @@ class Pipette(Tool):
 
         return cls(machine, index, name, **kwargs)
     
-    @staticmethod
-    def _getxyz(location: Union[Well, Tuple, Location]):
-        """Helper function to extract the x, y, z coordinates of a location object.
-
-        :param location: The location object to extract the coordinates from. This can either be a 
-            :class:`Well`, a :tuple: of x, y, z coordinates, or a :class:`Location` object
-        :type location: Union[Well, Tuple, Location]
-        :raises ValueError: If the location is not a :class:`Well`, a :class:`tuple`, or a :class:`Location` object
-        :return: The x, y, z coordinates of the location
-        :rtype: float, float, float
-        """
-        if type(location) == Well:
-            x, y, z = location.x, location.y, location.z
-        elif type(location) == Tuple:
-            x, y, z = location
-        elif type(location)==Location:
-            x,y,z= location._point
-        else:
-            raise ValueError("Location should be of type Well or Tuple")
-        
-        return x,y,z
            
     def vol2move(self, vol):
         """Converts desired volume in uL to a movement of the pipette motor axis
@@ -203,7 +183,7 @@ class Pipette(Tool):
         :type s: int, optional
         :raises ToolStateError: If the pipette does not have a tip attached
         """
-        x, y, z = self._getxyz(location)
+        x, y, z = self.utils.getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -254,7 +234,7 @@ class Pipette(Tool):
 
         Note:: Ideally the user does not call this functions directly, but instead uses the :method:`dispense` method
         """
-        x, y, z = self._getxyz(location)
+        x, y, z = self.utils.getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -305,7 +285,7 @@ class Pipette(Tool):
         
         vol_ = self.vol2move(vol)
         # get locations
-        xs, ys, zs = self._getxyz(source_well)
+        xs, ys, zs = self.utils.getxyz(source_well)
 
         if self.is_primed == True:
             pass
@@ -318,7 +298,7 @@ class Pipette(Tool):
 
         if isinstance(destination_well, list):
             for well in destination_well:
-                xd, yd, zd =self._getxyz(well)
+                xd, yd, zd =self.utils.getxyz(well)
             
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
@@ -519,7 +499,7 @@ class Pipette(Tool):
         else:
             tip = tip_
 
-        x, y, z = self._getxyz(tip)
+        x, y, z = self.utils.getxyz(tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
@@ -540,9 +520,9 @@ class Pipette(Tool):
         :type location: :class:`Well`, optional
         """
         if location is None:
-            x, y, z = self._getxyz(self.first_available_tip)
+            x, y, z = self.utils.getxyz(self.first_available_tip)
         else:
-            x, y, z = self._getxyz(location)
+            x, y, z = self.utils.getxyz(location)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
@@ -577,7 +557,7 @@ class Pipette(Tool):
         :param location: The location to drop the tip into
         :type location: Union[:class:`Well`, tuple]
         """        
-        x, y, z = self._getxyz(location)
+        x, y, z = self.utils.getxyz(location)
 
         self._machine.safe_z_movement()
         if x is not None or y is not None:
