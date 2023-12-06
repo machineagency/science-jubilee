@@ -63,7 +63,7 @@ class Pipette(Tool):
     :type current_well: :class:`Well`
 
     """
-    def __init__(self, index, name, brand, model, max_volume,
+    def __init__(self, machine, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         """ Initialize the pipette object
@@ -96,6 +96,7 @@ class Pipette(Tool):
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
+        self._machine = machine
         self.has_tip = False
         # TODO: add a way to change this to True/False and check before performing action with tool
         self.first_available_tip = None
@@ -183,7 +184,7 @@ class Pipette(Tool):
         :type s: int, optional
         :raises ToolStateError: If the pipette does not have a tip attached
         """
-        x, y, z = self.utils.getxyz(location)
+        x, y, z = utils.getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -234,7 +235,7 @@ class Pipette(Tool):
 
         Note:: Ideally the user does not call this functions directly, but instead uses the :method:`dispense` method
         """
-        x, y, z = self.utils.getxyz(location)
+        x, y, z = utils.getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -285,7 +286,7 @@ class Pipette(Tool):
         
         vol_ = self.vol2move(vol)
         # get locations
-        xs, ys, zs = self.utils.getxyz(source_well)
+        xs, ys, zs = utils.getxyz(source_well)
 
         if self.is_primed == True:
             pass
@@ -298,7 +299,7 @@ class Pipette(Tool):
 
         if isinstance(destination_well, list):
             for well in destination_well:
-                xd, yd, zd =self.utils.getxyz(well)
+                xd, yd, zd = utils.getxyz(well)
             
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
@@ -499,7 +500,7 @@ class Pipette(Tool):
         else:
             tip = tip_
 
-        x, y, z = self.utils.getxyz(tip)
+        x, y, z = utils.getxyz(tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
@@ -520,9 +521,9 @@ class Pipette(Tool):
         :type location: :class:`Well`, optional
         """
         if location is None:
-            x, y, z = self.utils.getxyz(self.first_available_tip)
+            x, y, z = utils.getxyz(self.first_available_tip)
         else:
-            x, y, z = self.utils.getxyz(location)
+            x, y, z = utils.getxyz(location)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
@@ -557,7 +558,7 @@ class Pipette(Tool):
         :param location: The location to drop the tip into
         :type location: Union[:class:`Well`, tuple]
         """        
-        x, y, z = self.utils.getxyz(location)
+        x, y, z = utils.getxyz(location)
 
         self._machine.safe_z_movement()
         if x is not None or y is not None:

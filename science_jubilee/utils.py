@@ -1,7 +1,6 @@
 from science_jubilee.labware.Labware import Labware, Well, Location
 from typing import Tuple, Union
 
-@staticmethod
 def getxyz(location: Union[Well, Tuple, Location]):
     """Helper function to extract the x, y, z coordinates of a location object.
 
