@@ -1,6 +1,5 @@
 {
-    "number_dispensers":3,
+    "name": "dispenser_head",
     "dispense_tip_offsets":[[0,0], [10, -17.4], [-10, -17.4]],
-    "prime_line_volume": 3
-
+    "line_volume": 3
 }

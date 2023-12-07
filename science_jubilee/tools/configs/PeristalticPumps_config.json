@@ -2,6 +2,6 @@
     "name": "generic_pump",
     "steps_per_ml": 11500,
     "n_pumps": 3,
-    "index": 2,
+    "index": 200,
     "tool_axis": "E"
 }
