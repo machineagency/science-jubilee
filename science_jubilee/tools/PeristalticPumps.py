@@ -2,17 +2,24 @@ import json
 import logging
 import os
 
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError
 from typing import Tuple, Union
 
 class PeristalticPumps(Tool):
     """
-    A class representation of a group of PeristalticPumpIndividual objects. Can instantiate with number of pumps to generate and a config. Generic to any stepper-driven peristaltic pump. Combine with PumpDispenser tool for bulk low-precision liquid handling.
+    class representation of peristaltic pumps. Due to duet-level axis definition requirements, currently requires an accompanying PumpDispenser tool to control pumps. 
+
+    :param n_pumps: Number of peristaltic pumps
+    :type n_pumps: int
+    :param steps_per_mL: stepper motor steps to turn pump to pump 1mL of liquid. calibrate gravimetrically. Can pass a float or int to apply same value to each pump or list to apply unique value to each pump.
+    :type steps_per_mL: float, int, list
+    :param tool_axis: Motion axis tool is defined to on duet. Default E
+    :type tool_axis: str
+    :param name: name of tool
+    :type name: str
     """
 
-    def __init__(self, index: int, n_pumps: int, steps_per_ml: Union[float, list], tool_axis: str = 'E', name: str = 'dispenser_pumps'):
-
-        self.index = index
+    def __init__(self, n_pumps: int, steps_per_ml: Union[float, int, list], tool_axis: str = 'E', name: str = 'dispenser_pumps'):
         self.tool_axis = tool_axis
         self.n_pumps = n_pumps
         self.name = name
@@ -27,18 +34,12 @@ class PeristalticPumps(Tool):
     def from_config(cls, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         
-        """Initialize the pipette object from a config file
+        """Initialize a PeristalticPumps object from a config file
 
-        :param machine: The :class:`Machine` object that the pipette is loaded on
-        :type machine: :class:`Machine`
-        :param index: The tool index of the pipette on the machine
-        :type index: int
-        :param name: The tool name
-        :type name: str
-        :param config_file: The name of the config file containign the pipette parameters
+        :param config_file: The name of the config file containign the pump parameters
         :type config_file: str
-        :returns: A :class:`Pipette` object
-        :rtype: :class:`Pipette`
+        :returns: A :class:`PeristalticPumps` object
+        :rtype: :class:`PeristalticPumps`
         """        
         config = os.path.join(path,config_file)
         with open(config) as f:
@@ -62,11 +63,11 @@ class PeristalticPumps(Tool):
     
 
     def pump(self, volume: Union[int, float, list]):
-        """turn on pump to dispense volume"""
-
-        # calculate 'mm' to dispense given volume
-        # actually this is handled in the steps to mm conversion programmed in axis setup on Jubilee 
+        """transfer volume using pump
         
+        :param volume: volume to pump. Specify a number (int/float) to pump same amount from all pumps simultaneously, or a list of numbers to pump unique amount from each pump. 
+        :type volume: int, float, list
+        """
         # dispense given volume
         if isinstance(volume, list):
             assert isinstance(volume[0], float) or isinstance(volume[0], int), 'Volume list must be floats or ints'
@@ -78,7 +79,7 @@ class PeristalticPumps(Tool):
         else:
             raise TypeError('Volume must be an int, float, or list of ints or floats')
 
-        stringvol = ':'.join([str(v) for v in volume]) # negative b/c gcode pump reverse is suspect for now
+        stringvol = ':'.join([str(v) for v in volume]) 
 
         # sticking with a direct gcode to send here makes sense: no 3-motor on axis support in movement code, and no risk of crashing anything here
         self._machine.gcode(f'G1 {self.tool_axis}{stringvol}')

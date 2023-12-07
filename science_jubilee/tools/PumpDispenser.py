@@ -10,19 +10,41 @@ from science_jubilee import utils
 class PumpDispenser(Tool):
     """
     Class to manage dispenser tool, for example for a color mixing demo
+    
+    :param index: The tool index of the dispenser head on the machine
+    :type indes: int
+    :param name: The tool name
+    :type name: str
+    :param pump_group: science_jubilee.tools.PeristalticPump.PeristalticPumps object to assign to dispenser head
+    :type pump_group: science_jubilee.tools.PeristalticPump.PeristalticPumps
+    :param dispense_tip_offset: Offsets from tool reference point for every dispense tip on the tool
+    :type dispense_tip_offset: list 
+    :param line_volume: Volume in mL of tubing line between pump and dispense head for 1 line
+    :type line_volume: int, float
+    :param waste: Location of waste basin
+    :type waste: class 'Well'
+
     """
 
 
     def __init__(self, index, name, pump_group, dispense_tip_offsets, line_volume, waste = None):
         """
-        parameters for user to give:
-        - number of dispenser heads (only 3 supported for now)
-        - pump:dispenser head mapping
-        - garbage/waste well
-        - line prime/purge volume
+        Dispenser tool head for use with peristaltic pumps. 
 
+        Requires science_jubilee.tools.PeristalticPump.PeristalticPumps object to control pumps
 
-        This needs to have all the well management tooling of the pipette
+        :param index: The tool index of the dispenser head on the machine
+        :type indes: int
+        :param name: The tool name
+        :type name: str
+        :param pump_group: science_jubilee.tools.PeristalticPump.PeristalticPumps object to assign to dispenser head
+        :type pump_group: science_jubilee.tools.PeristalticPump.PeristalticPumps
+        :param dispense_tip_offset: Offsets from tool reference point for every dispense tip on the tool
+        :type dispense_tip_offset: list 
+        :param line_volume: Volume in mL of tubing line between pump and dispense head for 1 line
+        :type line_volume: int, float
+        :param waste: Location of waste basin
+        :type waste: class 'Well'
         """
         super().__init__(index, name, pump_group = pump_group, dispense_tip_offsets = dispense_tip_offsets)
 
@@ -37,16 +59,12 @@ class PumpDispenser(Tool):
         
         """Initialize the pipette object from a config file
 
-        :param machine: The :class:`Machine` object that the pipette is loaded on
-        :type machine: :class:`Machine`
-        :param index: The tool index of the pipette on the machine
+        :param index: The tool index of the dispenser_head on the machine
         :type index: int
-        :param name: The tool name
-        :type name: str
-        :param config_file: The name of the config file containign the pipette parameters
+        :param config_file: The name of the config file containign the dispenser tool parameters
         :type config_file: str
-        :returns: A :class:`Pipette` object
-        :rtype: :class:`Pipette`
+        :returns: A :class:`PumpDispenser` object
+        :rtype: :class:`PumpDispenser`
         """        
         config = os.path.join(path,config_file)
         with open(config) as f:
@@ -60,7 +78,10 @@ class PumpDispenser(Tool):
 
     def add_waste(self, location: Union[Well, Tuple, Location]):
         """
-        Specify a waste collection container
+        Specify a waste collection container to dump extra liquid into. This should be large enough to catch liquid from all dispenser tips simultaneously.
+
+        :param location: location of container
+        :type location: class 'Well'
         """
         assert isinstance(location, Well) or isinstance(location, Tuple) or isinstance(location, Location), 'location must be a well, tuple, or location'
         self.waste = location
@@ -69,6 +90,13 @@ class PumpDispenser(Tool):
     def dispense(self, vol: Union[float, int, list], location:Union[Well, Tuple, Location], dispense_head_index = None):
         """
         Dispense volume vol from dispense head dispense_head_index into location 
+
+        :param vol: Volume to dispense, in mL. Specify a single number (float, int) and a dispense head index (int) to dispense from a single specific dispense head, the single volume with no dispense head to dispense this amount from all dispense tips, or a list of volumes to dispense unique amount from each dispense tip
+        :type vol: float, int list
+        :param location: Location to dispense
+        :type location: class 'Well'
+        :param dispense_head_index: index of dispense tip to dispense from, if passing single number for vol
+        :type dispense_head_index: int
         """
         # get dispense volumes for each dispense head 
         if isinstance(vol, list):
@@ -122,7 +150,12 @@ class PumpDispenser(Tool):
 
     def prime_lines(self, volume: Union[int, float] = None, location:Union[Well, Tuple, Location] = None):
         """
-        fill lines with liquid from all pumps at same time, dispense `volume` from each pump
+        Fill all lines with liquid from all pumps simultaneously.
+
+        :param volume: volume to prime with, if not specified in config file
+        :type volue: int, float
+        :param location: location of waste container, if not already specified 
+        :type location: class 'Well'
         """
 
         if volume is None:
@@ -157,7 +190,10 @@ class PumpDispenser(Tool):
         
     def empty_lines(self, volume: Union[int, float] = None):
         """
-        return line contents to stock wells
+        return line contents to stock wells. 
+
+        :param volume: line volume to return, if not set in instance already
+        :type volume: int, float 
         """
         if volume is None:
             try:
