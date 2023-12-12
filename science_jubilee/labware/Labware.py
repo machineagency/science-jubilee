@@ -225,7 +225,7 @@ class Labware(WellSet):
     :param order: Option to order the wells of a labware either by `row` or `columns`, defaults to 'rows'
     :type order: str, optional
     :param path: Path to the folder containing the configuration `.json` files for the labware,
-            defaults to os.path.join(os.path.dirname(__file__), 'labware_definition')
+            defaults to the 'labware_definition/' in the science_jubilee/labware directory.
     :type path: str, optional
     """
 
@@ -241,7 +241,7 @@ class Labware(WellSet):
         :param order: Option to order the wells of a labware either by `row` or `columns`, defaults to 'rows'
         :type order: str, optional
         :param path: Path to the folder containing the configuration `.json` files for the labware,
-                defaults to os.path.join(os.path.dirname(__file__), 'labware_definition')
+                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
         :type path: str, optional
         """
         # load in the labware configuration file
