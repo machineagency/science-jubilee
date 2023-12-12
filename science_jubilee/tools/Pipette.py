@@ -21,57 +21,15 @@ def tip_check(func):
 
 class Pipette(Tool):
     """ A class representation of an Opentrons OT2 pipette.
-
-    :param machine: The :class:`Machine` object that the pipette is loaded on
-    :type machine: :class:`Machine`
-    :param index: The tool index of the pipette on the machine
-    :type index: int
-    :param name: The tool name
-    :type name: str
-    :param brand: The brand of the pipette
-    :type brand: str
-    :param model: The model of the pipette
-    :type model: str
-    :param max_volume: The maximum volume of the pipette in uL
-    :type max_volume: float
-    :param min_volume: The minimum volume of the pipette in uL
-    :type min_volume: float
-    :param zero_position: The position of the plunger before using a :method:`aspirate` step
-    :type zero_position: float
-    :param blowout_position: The position of the plunger for running a :method:`blowout` step
-    :type blowout_position: float
-    :param drop_tip_position: The position of the plunger for running a :method:`drop_tip` step
-    :type drop_tip_position: float
-    :param mm_to_ul: The conversion factor for converting motor microsteps in mm to uL
-    :type mm_to_ul: float
-    :param tiprack: The tiprack that the pipette is using
-    :type tiprack: :class:`Labware`
-    :param tipiterator: The iterator for the tiprack
-    :type tipiterator: :class:`pipette_iterator`
-    :param has_tip: Whether or not the pipette has a tip attached
-    :type has_tip: bool
-    :param is_active_tool: Whether or not the pipette is the active tool on the machine
-    :type is_active_tool: bool
-    :param first_available_tip: The first available tip in the tiprack
-    :type first_available_tip: :class:`Well`
-    :param tool_offset: The offset of the pipette from the top of the machine
-    :type tool_offset: float
-    :param is_primed: Whether or not the pipette has been primed (move the plunger to the zero position)
-    :type is_primed: bool
-    :param current_well: The last well that the pipette has interacted with
-    :type current_well: :class:`Well`
-
     """
     def __init__(self, index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         """ Initialize the pipette object
 
-        :param machine: The :class:`Machine` object that the pipette is loaded on
-        :type machine: :class:`Machine`
         :param index: The tool index of the pipette on the machine
         :type index: int
-        :param name: The tool name
+        :param name: The name associated with the tool (e.g. 'p300_single')
         :type name: str
         :param brand: The brand of the pipette
         :type brand: str
@@ -103,7 +61,7 @@ class Pipette(Tool):
         
 
     @classmethod
-    def from_config(cls, machine, index, name, config_file: str,
+    def from_config(cls, index, name, config_file: str,
                     path :str = os.path.join(os.path.dirname(__file__), 'configs')):
         
         """Initialize the pipette object from a config file
@@ -116,6 +74,8 @@ class Pipette(Tool):
         :type name: str
         :param config_file: The name of the config file containign the pipette parameters
         :type config_file: str
+        :param path: The path to the labware configuration `.json` files for the labware,
+                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
         :returns: A :class:`Pipette` object
         :rtype: :class:`Pipette`
         """        
@@ -123,7 +83,7 @@ class Pipette(Tool):
         with open(config) as f:
             kwargs = json.load(f)
 
-        return cls(machine, index, name, **kwargs)
+        return cls(index, name, **kwargs)
     
     @staticmethod
     def _getxyz(location: Union[Well, Tuple, Location]):
@@ -251,8 +211,7 @@ class Pipette(Tool):
         :type location: Union[Well, Tuple, Location]
         :param s: The speed of the plunger movement in mm/min, defaults to 2000
         :type s: int, optional
-
-        Note:: Ideally the user does not call this functions directly, but instead uses the :method:`dispense` method
+        :raises ToolStateError: If the pipette does not have a tip attached
         """
         x, y, z = self._getxyz(location)
         
