@@ -41,7 +41,7 @@ class Deck(SlotSet):
         self.deck_config = deck_config
         self.slots_data = self.deck_config.get('slots', {})
         self.slots = self._get_slots()
-        self._safe_z = None
+        self._safe_z = 10
     
     def _get_slots(self):
         slots = {}
