@@ -9,15 +9,22 @@ import random
 
 
 class Loop(Tool):
+    """A class representation of an inoculation loop.
+
+    :param Tool: The base tool class
+    :type Tool: :class:`Tool`
+    """
     def __init__(self, index, name):
+        """Constructor method
+        """
         super().__init__(index, name)
 
     @requires_active_tool    
     def transfer(
         self,
-        s: int = 2000,
         source: Well = None,
         destination: Well = None,
+        s: int = 2000,
         sweep_x: float = 5,
         sweep_y: float = 5,
         sweep_z: float = 10,
@@ -25,6 +32,27 @@ class Loop(Tool):
         up_speed: float = 800,
         randomize_pickup: bool = False,
     ):
+        """Dip into a number of (source, destination) well pairs. Used for transferring items from source to destination.
+
+        :param source: Source well, defaults to None
+        :type source: :class:`Well`, optional
+        :param destination: Destination well, defaults to None
+        :type destination: :class:`Well`, optional
+        :param s: Movement speed in mm/min, defaults to 2000
+        :type s: int, optional
+        :param sweep_x: Distance (in mm) to sweep in the x direction to pick up material, defaults to 5
+        :type sweep_x: float, optional
+        :param sweep_y: Distance (in mm) to sweep in the y direction to pick up material, defaults to 5
+        :type sweep_y: float, optional
+        :param sweep_z: Distance (in mm) to move in the z direction to pick up material, defaults to 10
+        :type sweep_z: float, optional
+        :param sweep_speed: Speed (in mm/min) at which to sweep to pick up material, defaults to 100
+        :type sweep_speed: float, optional
+        :param up_speed: Speed to move out of well (in mm/min), defaults to 800
+        :type up_speed: float, optional
+        :param randomize_pickup: Move to a random position in the source well to pick up material, defaults to False
+        :type randomize_pickup: bool, optional
+        """ 
         if type(source) != list:
             source = [source]
         if type(destination) != list:
@@ -85,6 +113,16 @@ class Loop(Tool):
 
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):
+        """Get the (x,y,z) position of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: :class:`Well`, optional
+        :param location: Directly specify an (x,y,z) location, defaults to None
+        :type location: Tuple[float], optional
+        :raises ValueError: Must specify either a well or a location
+        :return: The well location
+        :rtype: Tuple[float, float, float]
+        """
         if well is not None and location is not None:
             raise ValueError("Specify only one of Well or x,y,z location")
         elif well is not None:
@@ -95,6 +133,13 @@ class Loop(Tool):
         
     @staticmethod
     def _get_top_bottom(well: Well = None):
+        """Get the top and bottom heights of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: Well, optional
+        :return: The z-height of the top and bottom of the well
+        :rtype: Tuple[float, float]
+        """
         top = well.top
         bottom = well.bottom
         return top, bottom
