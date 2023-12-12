@@ -15,7 +15,14 @@ if platform.system() == "Linux":
 
 
 class Camera(Tool):
+    """A class representation of a Raspberry Pi camera.
+
+    :param Tool: The base tool class
+    :type Tool: class:`Tool`
+    """   
     def __init__(self, index, name):
+        """Constructor method
+        """
         super().__init__(index, name)
         self._camera_matrix = None
         self._dist_matrix = None
@@ -25,7 +32,14 @@ class Camera(Tool):
         )
 
     def load_coefficients(self, path):
-        """Loads camera matrix and distortion coefficients."""
+        """Loads camera matrix and distortion coefficients.
+
+        :param path: Path to your camera calibration file
+        :type path: str
+        :return: A list containing your camera matrix (index 0) and distortion matrix (index 1)
+        :rtype: list
+        """        """"""
+        
         # N.B. opencv doesn't like opening files in different directories :/
         # ToDo: do this from a json, and update calibration process accordingly
         # FILE_STORAGE_READ
@@ -42,7 +56,11 @@ class Camera(Tool):
         return [camera_matrix, dist_matrix]
 
     def get_camera_indices(self):
-        """Returns valid camera indices for use with OpenCV"""
+        """Returns valid camera indices for use with OpenCV
+
+        :return: A list of valid camera indices
+        :rtype: list
+        """        
         index = 0
         arr = []
         i = 4
@@ -60,6 +78,15 @@ class Camera(Tool):
     
     @requires_active_tool
     def get_frame(self, resolution=[1200, 1200], uvc=False):
+        """Take a picture and return the image. Compensates for lens distortion using camera calibration file.
+
+        :param resolution: Camera resolution, defaults to [1200, 1200]
+        :type resolution: list, optional
+        :param uvc: True if the camera is a USB video class (UVC) camera for programmatically setting focus, defaults to False
+        :type uvc: bool, optional
+        :return: The captured frame
+        :rtype: ndarray
+        """        
         with picamera.PiCamera() as camera:
             camera.resolution = (1200, 1200)
             camera.framerate = 24
@@ -73,7 +100,18 @@ class Camera(Tool):
             )
             return undistorted
 
-    def show_frame(self, frame, grid=False, save=False):
+    def show_frame(self, frame, grid=False, save=False, save_path="fig.png"):
+        """Show a captured frame using matplotlib.
+
+        :param frame: The captured frame to show
+        :type frame: ndarray
+        :param grid: Show grid lines, defaults to False
+        :type grid: bool, optional
+        :param save: Save to file, defaults to False
+        :type save: bool, optional
+        :param save_path: File path to save image, defaults to "fig.png"
+        :type save_path: str, optional
+        """
         plt.imshow(frame)
         plt.title("frame capture")
         if grid:
@@ -83,14 +121,21 @@ class Camera(Tool):
                 [w / 2], [h / 2], marker="o"
             )  # put a marker in the center of the image
         if save:
-            plt.savefig("fig.png")
+            plt.savefig(f"{save_path}")
         plt.show()
 
     def get_show_frame(self):
+        """Get and show a frame.
+        """
         self.show_frame(self.get_frame())
 
     @requires_active_tool
     def video_stream(self, camera_index=0):
+        """Start a video stream from the camera.
+
+        :param camera_index: The camera index, defaults to 0
+        :type camera_index: int, optional
+        """
         cap = cv2.VideoCapture(
             camera_index
         )  # Note that the index corresponding to your camera may not be zero but this is the most common default
@@ -118,6 +163,15 @@ class Camera(Tool):
 
     @requires_active_tool
     def image_wells(self, resolution=[1200, 1200], uvc=False, wells: Well = None): 
+        """Move to a number of wells to take and show images.
+
+        :param resolution: Camera resolution, defaults to [1200, 1200]
+        :type resolution: list, optional
+        :param uvc: True if the camera is a USB video class (UVC) camera for programmatically setting focus, defaults to False
+        :type uvc: bool, optional
+        :param wells: A list of wells to image, defaults to None
+        :type wells: :class:`Well`, optional
+        """ 
         # TODO: different functions for saving many images, showing images, or getting frames for analysis?
         if type(wells) != list:
             wells = [wells]
@@ -133,6 +187,17 @@ class Camera(Tool):
             
     @requires_active_tool
     def get_well_image(self, resolution=[1200, 1200], uvc=False, well: Well = None): 
+        """Move to a single well to take a picture and return the frame.
+
+        :param resolution: Camera resolution, defaults to [1200, 1200]
+        :type resolution: list, optional
+        :param uvc: True if the camera is a USB video class (UVC) camera for programmatically setting focus, defaults to False
+        :type uvc: bool, optional
+        :param well: The well to image, defaults to None
+        :type well: :class:`Well`, optional
+        :return: The captured frame
+        :rtype: ndarray
+        """
         x, y, z_bottom = self._get_xyz(well=well)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
@@ -143,6 +208,16 @@ class Camera(Tool):
     
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):
+        """Get the (x,y,z) position of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: :class:`Well`, optional
+        :param location: Directly specify an (x,y,z) location, defaults to None
+        :type location: Tuple[float], optional
+        :raises ValueError: Must specify either a well or a location
+        :return: The well location
+        :rtype: Tuple[float, float, float]
+        """
         if well is not None and location is not None:
             raise ValueError("Specify only one of Well or x,y,z location")
         elif well is not None:
@@ -153,6 +228,13 @@ class Camera(Tool):
         
     @staticmethod
     def _get_top_bottom(well: Well = None):
+        """Get the top and bottom heights of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: Well, optional
+        :return: The z-height of the top and bottom of the well
+        :rtype: Tuple[float, float]
+        """
         top = well.top
         bottom = well.bottom
         return top, bottom

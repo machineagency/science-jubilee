@@ -8,8 +8,14 @@ import json
 
 
 class Syringe(Tool):
+    """A class representation of a syringe.
+
+    :param Tool: The base tool class
+    :type Tool: :class:`Tool`
+    """
     def __init__(self, index, name, config):
-        """Set default values and load in configuration"""
+        """Constructor method
+        """
         super().__init__(index, name)
         
         self.min_range = 0
@@ -20,7 +26,12 @@ class Syringe(Tool):
         self.load_config(config)
 
     def load_config(self, config):
-        """Load the relevant configuration file for this pipette."""
+        """_summary_
+
+        :param config: Name of the config file for your syringe. Expects the file to be in /tools/configs
+        :type config: str
+        """
+        
         config_directory = os.path.join(os.path.dirname(__file__), "configs")
         config_path = os.path.join(config_directory, f"{config}.json")
         if not os.path.isfile(config_path):
@@ -41,8 +52,10 @@ class Syringe(Tool):
             )
             
     def post_load(self):
-        """Find extruder drive for this tool."""
-        # To read the position of an extruder, we need to know which extruder # to look at
+        """Query the object model after loading the tool to find the extruder number of this syringe.
+        """        
+        
+        # To read the position of an extruder, we need to know which extruder number to look at
         # Query the object model to find this
         tool_info = json.loads(self._machine.gcode('M409 K"tools[]"'))["result"]
         for tool in tool_info:
@@ -52,13 +65,24 @@ class Syringe(Tool):
                 continue
             
     def check_bounds(self, pos):
-        """Disallow commands outside of the syringe's configured range"""
+        """Disallow commands outside of the syringe's configured range
+
+        :param pos: The E position to check
+        :type pos: float
+        """        
+        
         if pos > self.max_range or pos < self.min_range:
             raise ToolStateError(f"Error: {pos} is out of bounds for the syringe!")
 
     @requires_active_tool        
     def _aspirate(self, vol: float, s: int = 2000):
-        """Aspirate a certain number of milliliters."""
+        """Aspirate a certain volume in milliliters. Used only to move the syringe; to aspirate from a particular well, see aspirate() 
+
+        :param vol: Volume to aspirate, in milliliters
+        :type vol: float
+        :param s: Speed at which to aspirate in mm/min, defaults to 2000
+        :type s: int, optional
+        """        
         de = vol * -1 * self.mm_to_ml
         pos = self._machine.get_position()
         end_pos = float(pos[self.e_drive]) + de
@@ -67,7 +91,13 @@ class Syringe(Tool):
 
     @requires_active_tool    
     def _dispense(self, vol, s: int = 2000):
-        """Dispense a certain number of milliliters."""
+        """Dispense a certain volume in milliliters. Used only to move the syringe; to dispense into a particular well, see dispense() 
+
+        :param vol: Volume to dispense, in milliliters
+        :type vol: float
+        :param s: Speed at which to dispense in mm/min, defaults to 2000
+        :type s: int, optional
+        """        
         de = vol * self.mm_to_ml
         pos = self._machine.get_position()
         end_pos = float(pos[self.e_drive]) + de
@@ -84,7 +114,21 @@ class Syringe(Tool):
         from_top: float = None,
         location: Tuple[float] = None,
     ):
-        """Aspirate a given volume of liquid from a given well."""
+        """Aspirate a certain volume from a given well.
+
+        :param vol: Volume to aspirate, in milliliters
+        :type vol: float
+        :param s: Speed at which to aspirate in mm/min, defaults to 2000
+        :type s: int, optional
+        :param well: Well to aspirate from, defaults to None
+        :type well: Well, optional
+        :param from_bottom: Distance in z from the bottom of the well to aspirate from in mm, defaults to 5
+        :type from_bottom: float, optional
+        :param from_top: Distance in z from the top of the well to aspirate from in mm, can be used instead of from_bottom, defaults to None
+        :type from_top: float, optional
+        :param location: Explicit coordinates to aspirate from, can be specified instead of a Well, defaults to None
+        :type location: Tuple[float], optional
+        """        
         x, y, z = self._get_xyz(well=well, location=location)
         if well is not None:
             top, bottom = self._get_top_bottom(well=well)
@@ -109,7 +153,21 @@ class Syringe(Tool):
         from_top: float = 2,
         location: Tuple[float] = None,
     ):
-        """Dispense a given volum of liquid from a given well."""
+        """Dispense a certain volume into a given well.
+
+        :param vol:  Volume to dispense, in milliliters
+        :type vol: float
+        :param s: Speed at which to dispense in mm/min, defaults to 2000
+        :type s: int, optional
+        :param well: Well to dispense into, defaults to None, defaults to None
+        :type well: Well, optional
+        :param from_bottom: Distance in z from the bottom of the well to dispense from, in mm, defaults to None
+        :type from_bottom: float, optional
+        :param from_top: Distance in z from the top of the well to dispense from in mm, can be used instead of from_bottom, defaults to 2
+        :type from_top: float, optional
+        :param location: Explicit coordinates to dispense at, can be specified instead of a Well, defaults to None
+        :type location: Tuple[float], optional
+        """        
         x, y, z = self._get_xyz(well=well, location=location)
 
         if well is not None:
@@ -136,6 +194,21 @@ class Syringe(Tool):
         mix_before: tuple = None,
         mix_after: tuple = None,
     ):
+        """Transfer liquid from source well(s) to a set of destination well(s). Accommodates one-to-one, one-to-many, many-to-one, and uneven transfers.
+
+        :param vol: Volume to transfer in milliliters
+        :type vol: float
+        :param s: Speed at which to aspirate and dispense in mm/min, defaults to 2000
+        :type s: int, optional
+        :param source: A source well or set of source wells, defaults to None
+        :type source: Well, optional
+        :param destination: A destination well or set of destination wells, defaults to None
+        :type destination: Well, optional
+        :param mix_before: Mix the source well before transfering, defaults to None
+        :type mix_before: tuple, optional
+        :param mix_after: Mix the destination well after transfering, defaults to None
+        :type mix_after: tuple, optional
+        """        
         if type(source) != list:
             source = [source]
         if type(destination) != list:
@@ -192,6 +265,16 @@ class Syringe(Tool):
         
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):
+        """Get the (x,y,z) position of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: :class:`Well`, optional
+        :param location: Directly specify an (x,y,z) location, defaults to None
+        :type location: Tuple[float], optional
+        :raises ValueError: Must specify either a well or a location
+        :return: The well location
+        :rtype: Tuple[float, float, float]
+        """
         if well is not None and location is not None:
             raise ValueError("Specify only one of Well or x,y,z location")
         elif well is not None:
@@ -202,6 +285,13 @@ class Syringe(Tool):
         
     @staticmethod
     def _get_top_bottom(well: Well = None):
+        """Get the top and bottom heights of a well.
+
+        :param well: The well to fetch position of, defaults to None
+        :type well: Well, optional
+        :return: The z-height of the top and bottom of the well
+        :rtype: Tuple[float, float]
+        """
         top = well.top
         bottom = well.bottom
         return top, bottom
