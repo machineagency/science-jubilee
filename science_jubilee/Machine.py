@@ -34,13 +34,15 @@ def get_root_dir():
 #               ERRORS
 ##########################################
 class MachineConfigurationError(Exception):
-    """Raise this error if there is something wrong with how the machine is configured"""
+    """Raise this error if there is something wrong with how the machine is configured 
+    """
 
     pass
 
 
 class MachineStateError(Exception):
-    """Raise this error if the machine is in the wrong state to perform the requested action."""
+    """Raise this error if the machine is in the wrong state to perform the requested action.
+    """
 
     pass
 
@@ -48,7 +50,8 @@ class MachineStateError(Exception):
 #               DECORATORS
 ##########################################
 def machine_homed(func):
-    """Check if the machine is homed before performing certain actions."""
+    """Decorator used to check if the machine is homed before performing certain actions.
+    """
 
     def homing_check(self, *args, **kwds):
         # Check the cached value if one exists.
@@ -65,7 +68,8 @@ def machine_homed(func):
     return homing_check
 
 def requires_deck(func):
-    """Check if a deck has been configured before performing certain actions."""
+    """Decorator used ot check if a deck has been configured before performing certain actions.
+    """
 
     def deck_check(self, *args, **kwds):
         if self.deck is None:
@@ -75,7 +79,8 @@ def requires_deck(func):
     return deck_check
 
 def requires_safe_z(func):
-    """Ensure deck is at a safe height before performing certain actions."""
+    """Decorator used to ensure the deck is at a safe height before performing certain actions.
+    """
     
     def z_check(self, *args, **kwds):
         current_z = float(self.get_position()["Z"])
@@ -91,7 +96,8 @@ def requires_safe_z(func):
 ##########################################
 
 class Machine():
-    """Driver for sending motion cmds and polling the machine state."""
+    """ A class representation of Jubilee used to send  motion commands and polling the machine state.
+    """     
     #TODO: Set this up so that a keyboard interrupt leaves the machine in a safe state - ie tool offsets correct. I had an issue 
     #where I keyboard interrupted during pipette tip pickup - tip was picked up but offset was not applied, crashing machine on next move. This should not be possible. 
 
@@ -104,11 +110,27 @@ class Machine():
         deck_config: str = None,
         simulated: bool = False
     ):
-        """Start with sane defaults. Setup command and subscribe connections."""
+        """ Initialize the Machine object.
+        
+        :param port: The port to connect to the machine over serial, defaults to None
+        :type port: str, optional
+        :param baudrate: The baudrate to use when connecting to the machine, defaults to 115200
+        :type baudrate: int, optional
+        :param address: The IP address of the machine. This should match what is loaded onto the config.g on the Jubilee Duet's main board, defaults to None
+        :type address: str, optional
+        :param deck_config: The name of the deck configuration file to load, defaults to None
+        :type deck_config: str, optional
+        :param simulated: Whether to simulate the machine, defaults to False
+        :type simulated: bool, optional
+        
+        :raises MachineStateError: If the machine is not in the correct state to perform the requested action. This is a user error, not a machine error.
+        :raises MachineConfigurationError: If the machine does nto support the indicated configuration, e.g., a tool index is already in use.
+        :raises ValueError: If Jubilee returns an invalid value, e.g., the axis limit queried is not correct or query is unsuccessful.
+
+        """
         if address != self.__class__.LOCALHOST:
             print("Warning: disconnecting this application from the network will halt connection to Jubilee.")
         # Machine Specs
-
 
 
         #serial info
@@ -117,9 +139,9 @@ class Machine():
         self.baudrate = baudrate
         self.lineEnding = "\n"        # serial stuff
 
-
-
+        #HTTP info
         self.address = address
+
         # self.debug = debug
         self.simulated = simulated
         self.model_update_timestamp = 0
@@ -156,7 +178,10 @@ class Machine():
         self._set_absolute_positioning()#force=True)
 
     def connect(self):
-        """Connect to Jubilee over http."""
+        """Connects to Jubilee over http.
+        
+        :raises MachineStateError: If the connection to the machine is unsuccessful.
+        """
         #TODO: incorporate serial connection from machine agency version
         if self.simulated:
             return
@@ -202,7 +227,13 @@ class Machine():
 
     @property
     def configured_axes(self):
-        """Return the configured axes of the machine."""
+        """Return the configured axes of the machine.
+        This is a list of all configured axis on the machine. Usually these are ['X', 'Y', 'Z', 'U']. If a tool has a
+        an associated driver, it will be appended at the end of the axis list.
+
+        :return: A list of configured axes.
+        :rtype: list
+        """
         if self._configured_axes is None:  # Starting from a fresh connection
             try:
                 max_tries = 50
@@ -224,7 +255,15 @@ class Machine():
 
     @property
     def configured_tools(self):
-        """Return the configured tools."""
+        """Returns a list of configured tools.
+        
+        :return: A list of configured tools.The tool name is queried from the `config.g` file on the machine.
+        :rtype: list
+
+        Note: This list is obtained directly from the tools added to the machine's `config.g` file.
+        """
+
+        #TODO: Compare this to loaded tools list 
         if self._configured_tools is None:  # Starting from a fresh connection
             try:
                 max_tries = 50
@@ -247,9 +286,12 @@ class Machine():
 
     @property
     def active_tool_index(self):
-        """Return the index of the current tool."""
-        #print('calling the property func')
-        #print(self._active_tool_index)
+        """Return the index of the current active tool.
+        
+        :return: The index of the current active tool. If no tool is active, returns -1.
+        :rtype: int
+        """
+
         if self._active_tool_index is None: # Starting from a fresh connection.
             try:
                 max_tries = 50
@@ -278,7 +320,7 @@ class Machine():
 
     @active_tool_index.setter
     def active_tool_index(self, tool_index: int):
-        """Set the current tool, and toggle the old tool off."""
+        """Sets the current tool, and toggle the old tool off."""
         if self.tool is not None:
             self.tool.is_active_tool = False
 
@@ -297,7 +339,12 @@ class Machine():
 
     @property
     def tool_z_offsets(self):
-        """Return (in tool order) a list of tool's z offsets"""
+        """Return (in tool order) a list of tool's z offsets.
+        
+        Note: This list is obtained directly from the tools added to the machine's `config.g` file.
+        
+        :return: A list of tool z offsets, in the order of the tool index
+        :rtype: list"""
         # Starting from fresh connection, query from the Duet.
         # if self._tool_z_offsets is None:
         try:
@@ -321,7 +368,12 @@ class Machine():
 
     @property
     def axis_limits(self):
-        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit"""
+        """Return (in XYZU order) a list of tuples specifying (min, max) axis limit
+        
+        :return: A list of tuples specifying (min, max) axis limit
+        :rtype: list
+
+        Note: This list is obtained directly from the tools added to the machine's `config.g` file."""
         # Starting from fresh connection, query from the Duet.
         if self._axis_limits is None:
             try:
@@ -347,7 +399,11 @@ class Machine():
 
     @property
     def position(self):
-        """Returns the machine control point in mm."""
+        """Returns the current machine control point in mm.
+        
+        :return: A dictionary of the machine control point in mm. The keys are the axis name, e.g. 'X'
+        :rtype: dict
+        """
         # Axes are ordered X, Y, Z, U, E, E0, E1, ... En, where E is a copy of E0.
         response_chunks = self.gcode("M114").split()
         positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
@@ -357,13 +413,31 @@ class Machine():
     #                BED PLATE
     ##########################################
     def load_deck(self, deck_filename: str, path :str = os.path.join(os.path.dirname(__file__), 'decks', 'deck_definition')):
-        # do thing
-        #make sure filename has json 
+        """Load a deck configuration file onto the machine.
+        
+        :param deck_filename: The name of the deck configuration file.
+        :type deck_filename: str
+        :param path: The path to the deck configuration `.json` files for the labware,
+                defaults to the 'deck_definition/' in the science_jubilee/decks directory.
+        :type path: str, optional
+        :return: A :class:`Deck` object 
+        :rtype: :class:`Deck`       
+        """ 
         deck = Deck(deck_filename, path=path)
         self.deck = deck
         return deck    
     
     def gcode(self, cmd: str = "", response_wait: float = 30):
+        """Send a G-Code command to the Machine
+
+        :param cmd: The G-Code command to send, defaults to ""
+        :type cmd: str, optional
+        :param response_wait: The time to wait for a response from the machine, defaults to 30 seconds 
+        :type response_wait: float, optional
+
+        :return: The response message from the machine. If too long, the message might not display in the terminal.
+        :rtype: str
+        """
     #    """Send a GCode cmd; return the response"""
         #TODO: Fix hardcoded stuff in here
         #TODO: Add serial option for gcode commands from MA
@@ -430,8 +504,15 @@ class Machine():
 
     
     def download_file(self, filepath: str = None, timeout: float = None):
-        """Download the file into a file object. Full filepath must be specified.
+        """Download a file into a file object. Full machine filepath must be specified.
         Example: /sys/tfree0.g
+
+        :param filepath: The full filepath of the file to download, defaults to None
+        :type filepath: str, optional
+        :param timeout: The time to wait for a response from the machine, defaults to None
+        :type timeout: float, optional
+        :return: The file contents
+        :rtype: file object
         """
         # RRF3 Only
         file_contents = requests.get(f"http://{self.address}/rr_download?name={filepath}",
@@ -457,6 +538,7 @@ class Machine():
 
 
     def home_all(self):
+        """Home all axes."""
         # Having a tool is only possible if the machine was already homed.
         #TODO: Check if machine is already homed and have a user input to verify clear deck to avoid wasting time by accidentally rerunning and \
         #avoid major deck wrecks 
@@ -472,8 +554,7 @@ class Machine():
 
 
     def home_xyu(self):
-        """Home the XY axes.
-        Home Y before X to prevent possibility of crashing into the tool rack.
+        """Home the XYU axes. Home Y before X to prevent possibility of crashing into the tool rack.
         """
         self.gcode("G28 Y")
         self.gcode("G28 X")
@@ -505,7 +586,7 @@ class Machine():
 
     def home_z(self):
         """Home the Z axis.
-        Note that the Deck must be clear first.
+        Note: The deck must be clear first. Will ask for user input to verify.
         """
         response = input("Is the Deck free of obstacles? [y/n]")
         if response.lower() in ["y", "yes", "Yes", "Y", "YES"]:
@@ -532,19 +613,18 @@ class Machine():
                      v: float = None, s: float = 6000, param: str=None , wait: bool = False):
         """Move X/Y/Z/E/V axes. Set absolute/relative mode externally.
 
-        Parameters
-        ----------
-        x: x position on the bed, in whatever units have been set (default mm)
-        y: y position on the bed, in whatever units have been set (default mm)
-        z: z position on the bed, in whatever units have been set (default mm)
-        e: extruder position, in whatever units have been set (default mm)
-        v: v axis position, in whatever units have been set (default mm)
-        s: speed at which to move (default 6000 mm/min)
-
-        Returns
-        -------
-        Nothing
-
+        :param x: x position on the bed, in whatever units have been set (default mm)
+        :type x: float, optional
+        :param y: y position on the bed, in whatever units have been set (default mm)
+        :type y: float, optional
+        :param z: z position on the bed, in whatever units have been set (default mm)
+        :type z: float, optional
+        :param e: extruder position, in whatever units have been set (default mm)
+        :type e: float, optional
+        :param v: v axis position, in whatever units have been set (default mm)
+        :type v: float, optional
+        :param s: speed at which to move (default 6000 mm/min)
+        :type s: float, optional
         """
         
         x = "{0:.2f}".format(x) if x is not None else None
@@ -581,24 +661,21 @@ class Machine():
                  v: float = None, s: float = 6000, param: str =None, wait: bool = False):
         """Move to an absolute X/Y/Z/E/V position.
 
-        Parameters
-        ----------
-        x: x position on the bed, in whatever units have been set (default mm)
-        y: y position on the bed, in whatever units have been set (default mm)
-        z: z position on the bed, in whatever units have been set (default mm)
-        e: extruder position, in whatever units have been set (default mm)
-        v: v axis position, in whatever units have been set (default mm)
-        s: speed at which to move (default 6000 mm/min)
-        force_extrusion: whether to force extrusion to also be absolute positioning (default True)
-
-        Returns
-        -------
-        Nothing
+        :param x: x position on the bed, in whatever units have been set (default mm)
+        :type x: float, optional
+        :param y: y position on the bed, in whatever units have been set (default mm)
+        :type y: float, optional
+        :param z: z position on the bed, in whatever units have been set (default mm)
+        :type z: float, optional
+        :param e: extruder position, in whatever units have been set (default mm)
+        :type e: float, optional
+        :param v: v axis position, in whatever units have been set (default mm)
+        :type v: float, optional
+        :param s: speed at which to move (default 6000 mm/min)
+        :type s: float, optional
 
         """
         self._set_absolute_positioning()
-        # if force:
-        #     self._set_absolute_extrusion()
         
         self._move_xyzev(x = x, y = y, z = z, e = e, v = v, s = s, param=param, wait=wait)
 
@@ -606,20 +683,18 @@ class Machine():
               dv: float = 0, s: float = 6000,  param: str =None, wait: bool = False):
         """Move relative to the current position
 
-        Parameters
-        ----------
-        dx: change in x position, in whatever units have been set (default mm)
-        dy: change in y position, in whatever units have been set (default mm)
-        dz: change in z position, in whatever units have been set (default mm)
-        de: change in e position, in whatever units have been set (default mm)
-        dv: change in v position, in whatever units have been set (default mm)
-        s:  speed at which to move (default 6000 mm/min)
-        force_extrusion: whether to force extrusion to also be relative positioning (default True)
-
-        Returns
-        -------
-        Nothing
-
+        :param dx: change in x position, in whatever units have been set (default mm)
+        :type dx: float, optional
+        :param dy: change in y position, in whatever units have been set (default mm)
+        :type dy: float, optional
+        :param dz: change in z position, in whatever units have been set (default mm)
+        :type dz: float, optional
+        :param de: change in e position, in whatever units have been set (default mm)
+        :type de: float, optional
+        :param dv: change in v position, in whatever units have been set (default mm)
+        :type dv: float, optional
+        :param s:  speed at which to move (default 6000 mm/min)
+        :type s: float, optional
         """
         # Check that the relative move doesn't exceed user-defined limit
         # By default, ensure that it won't crash into the parked tools
@@ -633,24 +708,17 @@ class Machine():
             if z_limit and dz != 0 and ((float(pos['Z']) + dz > z_limit[1]) or (float(pos['Z']) + dz < z_limit[0])):
                 raise MachineStateError("Error: Relative move exceeds Z axis limit!")
         self._set_relative_positioning()
-        # if force:
-        #     self._set_relative_extrusion()
         
         self._move_xyzev(x = dx, y = dy, z = dz, e = de, v = dv, s = s, param=param, wait=wait)
 
 
     def dwell(self, t: float, millis: bool =True):
-        """Pause the machine for a period of time.
+        """Pauses the machine for a period of time.
 
-        Parameters
-        ----------
-        t: time to pause, in milliseconds by default
-        millis (optional): boolean, set to false to use seconds. default unit is milliseconds.
-
-        Returns
-        -------
-        Nothing
-
+        :param t: time to pause, in milliseconds by default
+        :type t: float
+        :param millis: boolean, set to false to use seconds. default unit is milliseconds.
+        :type millis: bool, optional
         """
 
         param = "P" if millis else "S"
@@ -659,7 +727,9 @@ class Machine():
         self.gcode(cmd)
 
     def safe_z_movement(self):
-        #TODO is this redundant? can we reuse decorator in pipette module? 
+        """Move the Z axis to a safe height to avoid crashing into labware.
+        """
+        #TODO is this redundant? can we reuse decorator ? 
         current_z = self.get_position()['Z']
         safe_z = self.deck.safe_z
         if float(current_z) < safe_z :
@@ -669,6 +739,16 @@ class Machine():
     
 
     def _get_tool_index(self, tool_item: Union[int, Tool, str]):
+        """Return the tool index from the provided tool item.
+        
+        This method is allows the user to call a toll by its index, its name, or to use a :class:`Tool` object
+        directly.
+        
+        :param tool_item: The tool index, name, or :class:`Tool` object
+        :type tool_item: Union[int, Tool, str]
+        :return: The tool index
+        :rtype: int
+        """
         if type(tool_item) == int:
             assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
             return tool_item
@@ -704,7 +784,6 @@ class Machine():
         name = tool.name
         idx = tool.index
 
-
         # Ensure that the provided tool index and name are unique.
         if idx not in self.tools:
             raise MachineConfigurationError(f"Error: No tool with index {idx} to update.")
@@ -719,7 +798,13 @@ class Machine():
 
     @requires_safe_z
     def pickup_tool(self, tool_id: Union[int, str, Tool]):
-        """Pick up the tool specified by tool id."""
+        """Pick up the tool specified by a tool index, name or :class:`Tool` object.
+        
+        :param tool_id: The tool index, name, or :class:`Tool` object
+        :type tool_id: Union[int, str, Tool]
+        :raises MachineConfigurationError: If the tool is not loaded on the machine.
+        :raises ValueError: If the indicated tool_id is not of type Union[int, str, Tool].
+        """
         #TODO: Make sure axis limits are checked and not exceeded when picking up pipette
         if isinstance( tool_id, int):  # Accept either tool index, tool name, or reference to the tool itself
             if tool_id in self.tools:
@@ -758,7 +843,7 @@ class Machine():
 
     @requires_safe_z
     def park_tool(self):
-        """Park the current tool."""
+        """Park the current tool adn cahnges active tool index to `-1`."""
         self.safe_z_movement()
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
@@ -768,7 +853,11 @@ class Machine():
 
 
     def get_position(self):
-        """Get the current position, returns a dictionary with X/Y/Z/U/E/V keys"""
+        """Get the current position of the machine control point in mm. 
+        
+        :return: A dictionary of the machine control point in mm. The keys are the axis name, e.g. 'X'
+        :rtype: dict
+        """
 
         max_tries = 50
         for i in range(max_tries):
@@ -794,7 +883,21 @@ class Machine():
 
     def load_labware(self, labware_filename : str, slot: int, path : str = None,
                      order: str = 'rows' ):
-
+        """Function that loads a labware and associates it with a specific slot on the deck.
+         The slot offset is also applied to the labware asocaite with it.
+         
+        :param labware_filename: The name of the labware configuration file.
+        :type labware_filename: str
+        :param slot: The index of the slot to load the labware into.
+        :type slot: int
+        :param path: The path to the labware configuration `.json` files for the labware.
+        :type path: str, optional
+        :param order: The order in which the labware is arranged on the deck. 
+                Can be 'rows' or 'columns', defaults to 'rows'.
+        :type order: str, optional
+        :return: The :class:`Labware` object that has been loaded into the slot.
+        :rtype: :class:`Labware`
+        """
         if path is not None:
             labware = self.deck.load_labware(labware_filename, slot, path = path, order=order)
         else:

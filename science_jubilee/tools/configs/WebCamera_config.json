@@ -3,5 +3,7 @@
     "port": 5000,
     "video_endpoint": "video_feed",
     "still_endpoint": "picture",
-    "image_folder": "./sample_images"
+    "image_folder": "./sample_images",
+    "light": "False",
+    "light_port": ""
 }
