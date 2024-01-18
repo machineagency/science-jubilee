@@ -23,7 +23,7 @@ def tip_check(func):
 class Pipette(Tool):
     """ A class representation of an Opentrons OT2 pipette.
     """
-    def __init__(self, machine, index, name, brand, model, max_volume,
+    def __init__(self,  index, name, brand, model, max_volume,
                   min_volume, zero_position, blowout_position, 
                   drop_tip_position, mm_to_ul):
         """ Initialize the pipette object
@@ -49,14 +49,11 @@ class Pipette(Tool):
         :param mm_to_ul: The conversion factor for converting motor microsteps in mm to uL
         :type mm_to_ul: float
         """        
-        #TODO:Removed machine from init, check if this should be asigned here or is added later
         super().__init__(index, name, brand = brand, 
                          model = model, max_volume = max_volume, min_volume = min_volume,
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
-        self._machine = machine
         self.has_tip = False
-        # TODO: add a way to change this to True/False and check before performing action with tool
         self.first_available_tip = None
         self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
@@ -68,8 +65,6 @@ class Pipette(Tool):
         
         """Initialize the pipette object from a config file
 
-        :param machine: The :class:`Machine` object that the pipette is loaded on
-        :type machine: :class:`Machine`
         :param index: The tool index of the pipette on the machine
         :type index: int
         :param name: The tool name
