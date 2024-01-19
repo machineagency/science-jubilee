@@ -1,6 +1,6 @@
 # Sonicator
 
-This tool can be assembled and interfaced in different ways. You can find below a list of necessary 
+This tool can be assembled and interfaced in different ways. You can find below a list of necessary components
 
 ## Hardware Checklist
 
