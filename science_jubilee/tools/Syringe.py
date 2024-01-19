@@ -1,11 +1,12 @@
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
-from science_jubilee.labware.Labware import Labware, Well
-from typing import Tuple, Union
-import warnings
-import numpy as np
-import os
 import json
+import os
+import warnings
 
+import numpy as np
+
+from science_jubilee.labware.Labware import Labware, Well, Location
+from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from typing import Tuple, Union
 
 class Syringe(Tool):
     """A class representation of a syringe.
@@ -26,7 +27,7 @@ class Syringe(Tool):
         self.load_config(config)
 
     def load_config(self, config):
-        """_summary_
+        """Loads the confirguration file for the syringe tool
 
         :param config: Name of the config file for your syringe. Expects the file to be in /tools/configs
         :type config: str
@@ -108,36 +109,20 @@ class Syringe(Tool):
     def aspirate(
         self,
         vol: float,
-        s: int = 2000,
-        well: Well = None,
-        from_bottom: float = 5,
-        from_top: float = None,
-        location: Tuple[float] = None,
+        location :Union[Well, Tuple, Location],
+        s: int = 2000
     ):
         """Aspirate a certain volume from a given well.
 
         :param vol: Volume to aspirate, in milliliters
         :type vol: float
+        :param location: The location (e.g. a `Well` object) from where to aspirate the liquid from.
+        :type location: Union[Well, Tuple, Location]
         :param s: Speed at which to aspirate in mm/min, defaults to 2000
         :type s: int, optional
-        :param well: Well to aspirate from, defaults to None
-        :type well: Well, optional
-        :param from_bottom: Distance in z from the bottom of the well to aspirate from in mm, defaults to 5
-        :type from_bottom: float, optional
-        :param from_top: Distance in z from the top of the well to aspirate from in mm, can be used instead of from_bottom, defaults to None
-        :type from_top: float, optional
-        :param location: Explicit coordinates to aspirate from, can be specified instead of a Well, defaults to None
-        :type location: Tuple[float], optional
         """        
-        x, y, z = self._get_xyz(well=well, location=location)
-        if well is not None:
-            top, bottom = self._get_top_bottom(well=well)
-            self.current_well = well
-
-        if from_bottom is not None and well is not None:
-            z = bottom + from_bottom
-        elif from_top is not None and well is not None:
-            z = top + from_top # TODO: this should be minus, if I'm understanding right?
+        x, y, z = Labware._getxyz(location)
+ 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
@@ -147,38 +132,21 @@ class Syringe(Tool):
     def dispense(
         self,
         vol: float,
-        s: int = 2000,
-        well: Well = None,
-        from_bottom: float = None,
-        from_top: float = 2,
-        location: Tuple[float] = None,
+        location :Union[Well, Tuple, Location],
+        s: int = 2000
     ):
         """Dispense a certain volume into a given well.
 
         :param vol:  Volume to dispense, in milliliters
         :type vol: float
+        :param location: The location to dispense the liquid into. 
+        :type location: Union[Well, Tuple, Location]
         :param s: Speed at which to dispense in mm/min, defaults to 2000
         :type s: int, optional
-        :param well: Well to dispense into, defaults to None, defaults to None
-        :type well: Well, optional
-        :param from_bottom: Distance in z from the bottom of the well to dispense from, in mm, defaults to None
-        :type from_bottom: float, optional
-        :param from_top: Distance in z from the top of the well to dispense from in mm, can be used instead of from_bottom, defaults to 2
-        :type from_top: float, optional
-        :param location: Explicit coordinates to dispense at, can be specified instead of a Well, defaults to None
-        :type location: Tuple[float], optional
+
         """        
-        x, y, z = self._get_xyz(well=well, location=location)
+        x, y, z = Labware._getxyz(location)
 
-        if well is not None:
-            top, bottom = self._get_top_bottom(well=well)
-            self.current_well = well
-
-        if from_bottom is not None and well is not None:
-            z = bottom + from_bottom
-        elif from_top is not None and well is not None:
-            z = top + from_top # TODO: This should be minus, if I understand right?
-            pass
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
@@ -237,8 +205,8 @@ class Syringe(Tool):
         source_destination_pairs = list(zip(source, destination))
         for source_well, destination_well in source_destination_pairs:
             # TODO: Large volume transfers which exceed tool capacity should be split up into several transfers
-            xs, ys, zs = self._get_xyz(well=source_well)
-            xd, yd, zd = self._get_xyz(well=destination_well)
+            xs, ys, zs =Labware._getxyz(source_well)
+            xd, yd, zd = Labware._getxyz(destination_well)
 
             self._machine.safe_z_movement()
             self._machine.move_to(x=xs, y=ys)
@@ -261,38 +229,3 @@ class Syringe(Tool):
 #                 self.mix(mix_after[0], mix_after[1])
 #             else:
 #                 pass
-
-        
-    @staticmethod
-    def _get_xyz(well: Well = None, location: Tuple[float] = None):
-        """Get the (x,y,z) position of a well.
-
-        :param well: The well to fetch position of, defaults to None
-        :type well: :class:`Well`, optional
-        :param location: Directly specify an (x,y,z) location, defaults to None
-        :type location: Tuple[float], optional
-        :raises ValueError: Must specify either a well or a location
-        :return: The well location
-        :rtype: Tuple[float, float, float]
-        """
-        if well is not None and location is not None:
-            raise ValueError("Specify only one of Well or x,y,z location")
-        elif well is not None:
-            x, y, z = well.x, well.y, well.z
-        else:
-            x, y, z = location
-        return x, y, z
-        
-    @staticmethod
-    def _get_top_bottom(well: Well = None):
-        """Get the top and bottom heights of a well.
-
-        :param well: The well to fetch position of, defaults to None
-        :type well: Well, optional
-        :return: The z-height of the top and bottom of the well
-        :rtype: Tuple[float, float]
-        """
-        top = well.top
-        bottom = well.bottom
-        return top, bottom
-        

@@ -3,9 +3,9 @@ import logging
 import os
 
 from science_jubilee.labware.Labware import Labware, Well, Location
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee.tools.Tool import Tool
 from typing import Tuple, Union
-from science_jubilee import utils
+
 
 class PumpDispenser(Tool):
     """
@@ -116,7 +116,7 @@ class PumpDispenser(Tool):
 
 
         # calculate XY location for each dispense head
-        x, y, z = utils.getxyz(location)
+        x, y, z = Labware._getxyz(location)
 
         if type(location) == Well:
             if z == location.z:
@@ -171,7 +171,7 @@ class PumpDispenser(Tool):
             location = self.waste
 
         # calculate XY location for each dispense head
-        x, y, z = utils.getxyz(location)
+        x, y, z = Labware._getxyz(location)
 
         if type(location) == Well:
             if z == location.z:

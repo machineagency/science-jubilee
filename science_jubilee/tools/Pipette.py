@@ -4,7 +4,6 @@ import os
 
 from science_jubilee.labware.Labware import Labware, Well, Location
 from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
-from science_jubilee import utils
 from typing import Tuple, Union
 
 
@@ -139,7 +138,7 @@ class Pipette(Tool):
         :type s: int, optional
         :raises ToolStateError: If the pipette does not have a tip attached
         """
-        x, y, z = utils.getxyz(location)
+        x, y, z = Labware._getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -189,7 +188,7 @@ class Pipette(Tool):
         :type s: int, optional
         :raises ToolStateError: If the pipette does not have a tip attached
         """
-        x, y, z = utils.getxyz(location)
+        x, y, z = Labware._getxyz(location)
         
         if type(location) == Well:
             self.current_well = location
@@ -240,7 +239,7 @@ class Pipette(Tool):
         
         vol_ = self.vol2move(vol)
         # get locations
-        xs, ys, zs = utils.getxyz(source_well)
+        xs, ys, zs = Labware._getxyz(source_well)
 
         if self.is_primed == True:
             pass
@@ -253,7 +252,7 @@ class Pipette(Tool):
 
         if isinstance(destination_well, list):
             for well in destination_well:
-                xd, yd, zd = utils.getxyz(well)
+                xd, yd, zd = Labware._getxyz(well)
             
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
@@ -454,7 +453,7 @@ class Pipette(Tool):
         else:
             tip = tip_
 
-        x, y, z = utils.getxyz(tip)
+        x, y, z = Labware._getxyz(tip)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._pickup_tip(z)
@@ -475,9 +474,9 @@ class Pipette(Tool):
         :type location: :class:`Well`, optional
         """
         if location is None:
-            x, y, z = utils.getxyz(self.first_available_tip)
+            x, y, z = Labware._getxyz(self.first_available_tip)
         else:
-            x, y, z = utils.getxyz(location)
+            x, y, z = Labware._getxyz(location)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
@@ -512,7 +511,7 @@ class Pipette(Tool):
         :param location: The location to drop the tip into
         :type location: Union[:class:`Well`, tuple]
         """        
-        x, y, z = utils.getxyz(location)
+        x, y, z = Labware._getxyz(location)
 
         self._machine.safe_z_movement()
         if x is not None or y is not None:

@@ -1,9 +1,11 @@
+import os
+import json
+
 import numpy as np
+
 from dataclasses import dataclass
 from itertools import chain
 from typing import List, Dict, Tuple, Union, Iterable, NamedTuple
-import os
-import json
 
 
 @dataclass
@@ -508,6 +510,28 @@ class Labware(WellSet):
             print('Order needs to be either rows or columns')
         
         self.wells = ordered_wells
+
+    @staticmethod
+    def _getxyz(location: Union[Well, Tuple, 'Location']):
+        """Helper function to extract the x, y, z coordinates of a location object.
+
+        :param location: The location object to extract the coordinates from. This can either be a 
+            :class:`Well`, a :tuple: of x, y, z coordinates, or a :class:`Location` object
+        :type location: Union[Well, Tuple, Location]
+        :raises ValueError: If the location is not a :class:`Well`, a :class:`tuple`, or a :class:`Location` object
+        :return: The x, y, z coordinates of the location
+        :rtype: float, float, float
+        """
+        if type(location) == Well:
+            x, y, z = location.x, location.y, location.z
+        elif type(location) == Tuple:
+            x, y, z = location
+        elif type(location)==Location:
+            x,y,z= location._point
+        else:
+            raise ValueError("Location should be of type Well or Tuple")
+        
+        return x,y,z
 
 ## Adapted from Opentrons API  opentrons.types##        
 class Point(NamedTuple):

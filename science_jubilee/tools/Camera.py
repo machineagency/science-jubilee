@@ -1,14 +1,16 @@
-from .Tool import Tool, ToolStateError, requires_active_tool
-from science_jubilee.labware.Labware import Labware, Well
-from typing import Tuple, Union
 import cv2
 import matplotlib
+import platform
+import time
+
+import numpy as np
 
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
-import numpy as np
-import time
-import platform
+from science_jubilee.labware.Labware import Well
+from science_jubilee.tools.Tool import Tool,  requires_active_tool
+from typing import Tuple
+
 
 if platform.system() == "Linux":
     import picamera  # Note that this can only be installed on raspbery pi.

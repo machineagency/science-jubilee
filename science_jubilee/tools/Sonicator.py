@@ -1,17 +1,15 @@
+import adafruit_mcp4725
+import board
+import busio
+import digitalio
 import json
 import logging
 import serial
 import time
-import digitalio
-import board
-import busio
-import adafruit_mcp4725
-
 
 
 from science_jubilee.labware.Labware import Labware, Well, Location
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
-from science_jubilee import utils
+from science_jubilee.tools.Tool import Tool, requires_active_tool
 from typing import Tuple, Union
 
 
@@ -226,7 +224,7 @@ class Sonicator(Tool):
             raise ValueError("Error: plunge depth is too deep.")
 
         
-        x, y, z  = utils._getxyz(location)
+        x, y, z  = Labware.__getxyz(location)
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x,y=y) # Position over the well at safe z height.
