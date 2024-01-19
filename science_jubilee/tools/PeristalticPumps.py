@@ -2,8 +2,8 @@ import json
 import logging
 import os
 
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError
-from typing import Tuple, Union
+from science_jubilee.tools.Tool import Tool 
+from typing import Union
 
 class PeristalticPumps(Tool):
     """

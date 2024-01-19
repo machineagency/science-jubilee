@@ -8,9 +8,9 @@ import webbrowser
 import matplotlib.pyplot as plt
 import numpy as np
 
-from labware.Labware import Well, Location
-from typing import Tuple, Union
+from labware.Labware import Well, Location, Labware
 from science_jubilee.tools.Tool import Tool, requires_active_tool
+from typing import Tuple, Union
 
 
 class Camera(Tool):
@@ -74,29 +74,6 @@ class Camera(Tool):
             kwargs = json.load(f)
         return cls(index=index, name=name,**kwargs)
     
-    @staticmethod
-    def _getxyz(location: Union[Well, Tuple, Location]):
-        """Helper function to extract the x, y, z coordinates of a location object.
-
-        :param location: The location object to extract the coordinates from. This can either be a 
-            :class:`Well`, a :tuple: of x, y, z coordinates, or a :class:`Location` object
-        :type location: Union[Well, Tuple, Location]
-        :raises ValueError: If the location is not a :class:`Well`, a :class:`tuple`, or a :class:`Location` object
-        :return: The x, y, z coordinates of the location
-        :rtype: float, float, float
-        """
-        
-        if type(location) == Well:
-            x, y, z = location.x, location.y, location.z
-        elif type(location) == Tuple:
-            x, y, z = location
-        elif type(location)== Location:
-            x,y,z= location._point
-        else:
-            raise ValueError("Location should be of type Well or Tuple")
-        
-        return x,y,z
-
     @requires_active_tool
     def _capture_image(self, timeout = 10):
         """ Capture image from raspberry pi and write to file
@@ -131,7 +108,7 @@ class Camera(Tool):
         """
         assert 0 <= light_intensity <=1, "Light intensity must be between 0 and 1"
 
-        x, y, z = self._getxyz(location)
+        x, y, z = Labware._getxyz(location)
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)

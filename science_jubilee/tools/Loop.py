@@ -1,11 +1,13 @@
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
-from science_jubilee.labware.Labware import Labware, Well
-from typing import Tuple, Union
-import warnings
-import numpy as np
-import os
 import json
+import os
 import random
+import warnings
+
+import numpy as np
+
+from science_jubilee.labware.Labware import  Well
+from science_jubilee.tools.Tool import Tool,  requires_active_tool
+from typing import Tuple
 
 
 class Loop(Tool):
