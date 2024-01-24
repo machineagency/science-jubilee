@@ -5,7 +5,7 @@
 
 This repository hosts files to build and control a [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) for scientific applications. The core of the software is a Python interface for Jubilee to navigate labware installed in the machine. We currently provide assembly instructions, control software, and examples for various tools including OT-2 pipettes, syringes, and cameras. While these tools might cater exactly to your planned use case, they most likely will not! We share these files as a starting point rather than an endpoint: we also provide instructions for developing new tools and associated software for controlling them. We hope you will build new tools for your application and contribute them back to the community for others to use and extend 🛠️
 
-_Check out the [Wiki](https://github.com/machineagency/science_jubilee/wiki) to get started! Documentation is ongoing._
+_Check out the [Documentation](https://machineagency.github.io/science_jubilee/) to get started!_
 
 
 ## Overview
