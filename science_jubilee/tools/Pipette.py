@@ -4,6 +4,7 @@ import os
 
 from science_jubilee.labware.Labware import Labware, Well, Location
 from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+
 from typing import Tuple, Union
 
 
@@ -54,7 +55,7 @@ class Pipette(Tool):
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self.has_tip = False
         self.first_available_tip = None
-        self.tool_offset = self._machine.tool_z_offsets[self.index]
+        # self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
         
 
