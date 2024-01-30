@@ -4,18 +4,14 @@
 import json
 import os
 import requests # for issuing commands
-from requests.adapters import HTTPAdapter, Retry
-#import serial
+
 import time
 import warnings
-# import curses
-# import pprint
-#from inpromptu import Inpromptu, cli_method
 
-from science_jubilee.decks.Deck import Deck
-from pathlib import Path
 from functools import wraps
-#from serial.tools import list_ports
+from pathlib import Path
+from requests.adapters import HTTPAdapter, Retry
+from science_jubilee.decks.Deck import Deck
 from science_jubilee.tools.Tool import Tool
 from typing import Union
 
@@ -81,7 +77,6 @@ def requires_deck(func):
 def requires_safe_z(func):
     """Decorator used to ensure the deck is at a safe height before performing certain actions.
     """
-    
     def z_check(self, *args, **kwds):
         current_z = float(self.get_position()["Z"])
         safe_z = self.deck.safe_z
@@ -427,51 +422,57 @@ class Machine():
         self.deck = deck
         return deck    
     
-    def gcode(self, cmd: str = "", response_wait: float = 30):
-        """Send a G-Code command to the Machine
+    def gcode(self, cmd: str = "", timeout = None, response_wait :float = 30):
+        """Send a G-Code command to the Machine and return the response.
 
         :param cmd: The G-Code command to send, defaults to ""
         :type cmd: str, optional
-        :param response_wait: The time to wait for a response from the machine, defaults to 30 seconds 
+        :param timeout: The time to wait for a response from the machine, defaults to None
+        :type timeout: float, optional
+        :param response_wait: The time to wait for a response from the machine, defaults to 30
         :type response_wait: float, optional
 
         :return: The response message from the machine. If too long, the message might not display in the terminal.
         :rtype: str
         """
-    #    """Send a GCode cmd; return the response"""
-        #TODO: Fix hardcoded stuff in here
-        #TODO: Add serial option for gcode commands from MA
-        #if self.debug or self.simulated:
-            #print(f"sending: {cmd}")
 
+        #TODO: Add serial option for gcode commands from MA
+        if self.debug or self.simulated:
+            print(f"sending: {cmd}")
         if self.simulated:
             return None
-        # Updated to current duet web API. Response needs to be fetched separately and will be ready once the operation is complete on the machine 
-        # we need to watch the 'reply count' and request the new response when it increments
-        old_reply_count = self.session.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
-        buffer_response = self.session.get(f'http://192.168.1.2/rr_gcode?gcode={cmd}')
-        # wait for a response code to be appended
-        #TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds. 
-        tic = time.time()
-        while True:
+        try:
+            # Try sending the command with requests.post
+            response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
+        except requests.RequestException:
+            # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
-                new_reply_count = self.session.get(f'http://192.168.1.2/rr_model?key=seqs').json()['result']['reply']
-                if new_reply_count != old_reply_count:
-                    response = self.session.get(f'http://192.168.1.2/rr_reply').text
-                    break
-                elif time.time() - tic > response_wait:
-                    response = None
-                    break
-            except Exception as e:
-                print('Connection error, sleeping 1 second')
-                time.sleep(2)
-                continue
+                # Paraphrased from Duet HTTP-requests page:
+                # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
+                # and the response is available at `rr_reply`.
+                reply_count = self.session.get(f'http://{self.address}/rr_model?key=seqs').json()['result']['reply']
+                buffer_response = self.session.get(f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout)                
+                # wait for a response code to be appended
+                #TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds. 
+                tic = time.time()
+                while True:
+                    try:
+                        new_reply_count = self.session.get(f'http://{self.address}/rr_model?key=seqs').json()['result']['reply']
+                        if new_reply_count != reply_count:
+                            response = self.session.get(f'http://{self.address}/rr_reply').text
+                            break
+                        elif time.time() - tic > response_wait:
+                            response = None
+                            break
+                    except Exception as e:
+                        print('Connection error, sleeping 1 second')
+                        time.sleep(2)
+                        continue
 
-            time.sleep(0.1)#
+            except requests.RequestException as e:
+                print(f"Both `requests.post` and `requests.get` requests failed: {e}")
+                response = None
         #TODO: handle this with logging. Also fix so all output goes to logs
-        #if self.debug:
-        #    print(f"received: {response}")
-            #print(json.dumps(r, sort_keys=True, indent=4, separators=(',', ':')))
         return response
     
     def _set_absolute_positioning(self):
@@ -737,7 +738,6 @@ class Machine():
         else:
             pass
     
-
     def _get_tool_index(self, tool_item: Union[int, Tool, str]):
         """Return the tool index from the provided tool item.
         
@@ -778,6 +778,7 @@ class Machine():
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
         tool.post_load()
+        tool.tool_offset = self.tool_z_offsets[idx]
         
     def reload_tool(self, tool: Tool = None):
         """Update a tool which has already been loaded."""
