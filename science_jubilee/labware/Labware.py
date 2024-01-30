@@ -5,6 +5,7 @@ import numpy as np
 
 from dataclasses import dataclass
 from itertools import chain
+from math import sqrt, acos, asin, cos, sin
 from typing import List, Dict, Tuple, Union, Iterable, NamedTuple
 
 
@@ -254,10 +255,13 @@ class Labware(WellSet):
             path, f"{labware_filename}" )
 
         with open(config_path, "r") as f:
-            self.data = json.load(f)
+            # this will be the raw .json file data and fields should not be modified directly
+            # current exceptions is 'manual_offset' field to allow to save custom data for easier handling 
+            # of recurrent slot-labware combinations
+            self.data = json.load(f) 
 
+        self.config_path = config_path
         self.wells_data = self.data.get("wells", {})
-        self.data["ordering"] = np.array(self.data["ordering"]).T
         self.row_data, self.column_data, self.wells = self._create_rows_and_columns()
         
         order_options = ['rows', 'row', 'Rows', 'Row', 'R', 'cols', 'col' ,'C', 'columns', 'Columns']
@@ -265,6 +269,13 @@ class Labware(WellSet):
         self.withWellOrder(order)
         self.offset = offset
         self.slot= None 
+
+        # check to see if a manual offset was saved for this labware in a specific slot
+        if 'manual_offset' in self.data:
+            self.manualOffset = self.data['manual_offset'] 
+        else:
+            # otherwise initialize manual_offset instance variable
+            self.manualOffset = {}
 
     def __repr__(self):
         """Displayed representation of a :class:`Labware` object indicating the type of labware and
@@ -347,7 +358,8 @@ class Labware(WellSet):
         :return: A list of lists of :class:`Well.name` objects
         :rtype: List[List[str]]
         """
-        return self.data.get("ordering", [])
+       
+        return np.array(self.data["ordering"]).T
 
     @property
     def brand(self) -> dict:
@@ -510,6 +522,111 @@ class Labware(WellSet):
             print('Order needs to be either rows or columns')
         
         self.wells = ordered_wells
+
+    @staticmethod
+    def _translate_point(well: Well, theta: float):
+        """
+        Helper function to translate the coordinates of a well by a given angle theta.
+
+        :param well: A :class:`Well` object
+        :type well: :class:`Well`
+        :param theta: The angle by which to translate the coordinates of the well
+        :type theta: float
+        
+        :return: The new x and y coordinates of the well
+        :rtype: float, float
+        """
+
+        x_translated = well.x * cos(theta) - well.y * sin(theta) 
+        y_translated = well.x * sin(theta) + well.y * cos(theta) 
+        
+        return x_translated, y_translated
+
+
+    def manual_offset(self, offset: List[Tuple[float]], save: bool = False, force :bool = False):
+        """Allows the user to manually offset the coordinates of the labware based on three corner wells. 
+
+        Adapted to `https://github.com/machineagency/sonication_station` labware calibration procedure.
+
+        :param offset: A list containing tuples of floats
+        :type offset: Tuple[float]
+        :param save: Option to save the manual offset to the original config `.json` file, defaults to False
+        :type save: bool, optional
+        :param force: Option to force the saving of the manual offset to the original config `.json` file, defaults to False
+        :type force: bool, optional
+
+        :return: An updated :class:`Labware` object with the new coordinates of the wells
+        :rtype: :class:`Labware`
+        """
+        assert self.slot is not None, "Labware has not been assigned to a slot yet. Use the 'add_slot' method to assign a slot"
+        
+        if str(self.slot) in self.manualOffset.keys(): # warn the user if an offset has already been saved for this slot
+            print("Labware already has a manual offset found for this slot. If you want to overwrite it, set save=True")
+        assert len(offset) == 3, "Three points needed to apply manual offset"
+        assert all([len(o) == 2 for o in offset]), "Each point should have three coordinates (x,y)"
+
+        # Get the coordinates of the three corner wells (e.g., A1, A12, H12)
+        upper_left = offset[0]
+        upper_right = offset[1]
+        bottom_right = offset[2]
+
+        # Get the coordinates of the three corner wells
+        # calculate total spacing between wells in each row (width) and column (height)
+        plate_width = sqrt((upper_right[0] - upper_left[0])**2 + (upper_right[1] - upper_left[1])**2)
+        plate_height = sqrt((bottom_right[0] - upper_right[0])**2 + (bottom_right[1] - upper_right[1])**2)     
+        
+        # Define and average the offset angles for the plate
+        theta1 = acos((upper_right[1]-bottom_right[1])/plate_height)
+        theta2 = acos((upper_right[0]-upper_left[0])/plate_width)
+        theta = (theta1 + theta2)/2.0
+        
+        # apply offset to all wells in the labware object
+        for well in self:
+            new_x, new_y = self._translate_point(well, theta)
+            well.x = new_x
+            well.y = new_y
+        print(f'New manual offset applied to {self.parameters()["loadName"]}')
+
+        if save:
+            if str(self.slot) in self.manualOffset.keys() and not force:
+                print("stored manual offset found.  To overwrite it on the `config.json` file, set force=True")
+            elif str(self.slot) in self.manualOffset.keys() and force:
+                k = input("Are you sure you want to overwrite the manual offset for this labware? Press 'y' key to continue")
+                if k == 'y':
+                    self.manualOffset[str(self.slot)] = offset
+                    with open(self.config_path, "w") as f:
+                        self.data['manual_offset'] = {str(self.slot) : offset}
+                        json.dump(self.data, f)
+                    print("Manual offset saved")
+                else:
+                    print("Manual offset not saved")
+            else:
+                self.manualOffset[str(self.slot)] = offset
+                with open(self.config_path, "w") as f:
+                    self.data['manual_offset'] = {str(self.slot) : offset}
+                    f.seek(0)
+                    json.dump(self.data, f, indent=4)
+                print("Manual offset saved")
+        else:
+            self.manualOffset[str(self.slot)] = offset
+
+    def load_manualOffset(self, apply: bool = False):
+        """Loads the manual offset of a labware from its config `.json` file for a specific slot
+
+        :param apply: Option to apply the manual offset to the labware or return values, defaults to False
+        :type apply: bool, optional
+
+        :return: A list of tuples containing the manual offset of the labware
+        :rtype: List[Tuple[float]]
+        """
+        assert self.slot is not None, "Labware has not been assigned to a slot yet. Use the 'add_slot' method to assign a slot"
+        if self.manualOffset[self.slot] :
+            if apply:
+                self.manual_offset(self.manualOffset[str(self.slot)])
+            return self.manualOffset[str(self.slot)]
+        else:
+            return self.data['manual_offset'][self.slot]
+        
 
     @staticmethod
     def _getxyz(location: Union[Well, Tuple, 'Location']):
