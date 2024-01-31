@@ -30,6 +30,7 @@ class Well:
     y: float
     z: float
     offset: Tuple[float] = None
+    slot: int = None
 
     @property
     def x(self):
@@ -502,6 +503,8 @@ class Labware(WellSet):
         :type slot_: str
         """
         self.slot = slot_
+        for w in self:
+                w.slot = slot_
     
     def withWellOrder(self, order) -> list:
         """Reorders the wells by rows or by columns. Automatically updates the :attribute:`Labware.wells`
