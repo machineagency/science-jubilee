@@ -437,10 +437,10 @@ class Machine():
         """
 
         #TODO: Add serial option for gcode commands from MA
-        if self.debug or self.simulated:
-            print(f"sending: {cmd}")
         if self.simulated:
+            print(f"sending: {cmd}")
             return None
+
         try:
             # Try sending the command with requests.post
             response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
