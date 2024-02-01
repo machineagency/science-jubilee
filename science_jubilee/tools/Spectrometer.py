@@ -14,96 +14,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class Spectroscopy_tool(OceanDirectAPI):
-    """ This is just an initial test of tool definiton for
-       connecting the Ocean Optics tools onto the Jubilee Platform.
-
-       For that we wil be unfortunately using their own SDK package, which is NOT
-       open-source. We will need to figure out if there is a workaround this. """
-    
-    def __init__(self, index, name, **kwargs):
-
-        super().__init__(**kwargs)
-        self.name = name
-        self.index = index
-        self.current_well = None
-        
-
-    @classmethod
-    def from_config(cls, index, name, config_file: str,
-                    path :str = os.path.join(os.path.dirname(__file__), 'configs')):
-        
-        """Initialize the pipette object from a config file
-
-        :param index: The tool index of the spectroscopic probe on the machine
-        :type index: int
-        :param name: The tool name
-        :type name: str
-        :param config_file: The name of the config file containign the tool parameters
-        :type config_file: str
-        :param path: The path to the labware configuration `.json` files for the labware,
-                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
-        :returns: A :class:`Spectroscopic_tool` object
-        :rtype: :class:`Spectroscopic_tool`
-        """        
-        config = os.path.join(path,config_file)
-        with open(config) as f:
-            kwargs = json.load(f)
-
-        return cls(index, name, **kwargs) 
-
-    def background_spectrum(self): 
-
-        # ensure shutter is closed    
-        try:
-            self.lamp(False)
-        except:
-            print('No such feature on current device. Please ensure that the light source is off')
-            k= input("Is the light source off? (y/n)")
-            if k == "y":
-                pass
-            else:
-                raise Exception("Please turn off the light source")
-        
-        # collect spectrum
-        self.background = np.array(self.device.get_formatted_spectrum()) #take current spectrum as background
-
-        return self.background
-    
-    def _get_spectrum(self):
-        """ Get the spectrum from the spectrometer """
-
-        # ensure shutter is open
-        try:
-            self.lamp(True)
-        except:
-            print('No such feature on current device. Please ensure that the light source is on')
-            k= input("Is the light source on? (y/n)")
-            if k == "y":
-                pass
-            else:
-                raise Exception("Please turn on the light source")
-        spectrum =  np.array(self.device.get_formatted_spectrum()) - self.background
-        return spectrum
-
-    def lamp(self, state: bool =False):
-        """Opens or closes light source shutter (if available)
-
-        :param state: True opens the shutter/False closes it, defaults to False
-        :type state: bool, optional
-
-        """
-        # need to add a try statement as not all light-sources have a shutter
-        try: 
-            self.device.set_enable_lamp(state)
-            print(f"Light shutter was set to {self.device.get_enable_lamp()}")
-        except:
-            logging.warning('No light source shutter available')
-            print('No such feature on current device')
-        return 
-
-
-
 class SpectroscopyTool(OceanDirectAPI, Spectrometer):
     """ A class representation for an Ocean Optics Spectrometer, Light source, and Probe
 
@@ -289,7 +199,8 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
         spectrum = self.spectrometer.get_formatted_spectrum()
         return spectrum
 
-    def dark_spectrum(self, int_time:float, scan_num:int, boxcar_w:int= None):
+    def dark_spectrum(self, int_time:float, scan_num:int, boxcar_w:int= None,
+                      save:bool = False, path:str = None, filename:str = None):
         """Collect a dark spectrum with the specified experimental parameters. 
         
         A dark spectrum is collected when no light is incident on the detector.
@@ -308,6 +219,10 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
 
         self._dark_spectrum = True
         self._dark = dark
+
+        if save is True:
+            self.save_to_file(dark =True, path=path, filename=filename)
+
         return dark
 
     def _collect_raw_spectrum(self,int_time:float, scan_num:int,
@@ -342,7 +257,8 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
 
     def collect_spectrum(self, location : Union[Well, Tuple, Location], 
                          int_time, scan_num, boxcar_w,
-                         int_time_units ='ms', verbose=False):
+                         int_time_units ='ms', save:bool = False,
+                         filename:str = None, path:str = None):
         """Collect spectrum at the specified location on the labware"""
 
         x, y, z = Labware._getxyz(location)
@@ -357,10 +273,48 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
-        self._collect_raw_spectrum(int_time, scan_num, boxcar_w, 
-                                   int_time_units= int_time_units,
-                                   verbose=verbose)
+        intensities = self._collect_raw_spectrum(int_time, scan_num, boxcar_w, 
+                                   int_time_units= int_time_units)
+        
+        if save is True:
+            self.save_to_file(dark =False, path=path, filename=filename)
 
+        return intensities
+    
+    def save_to_file(self, dark:bool = False, path:str = None, filename:str = None):
+        """ Save the spectrum to a file """
+
+        metadata = {
+            "Date": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "Tool": self.name,
+            "Index": self.index,
+            "Model": self._model,
+            "Serial Number": self._serial_number,
+            "API Version": self._api_version,
+            "USB Device": self._usb_device,
+            "Device ID": self._device_id,
+            "Integration Time": self._integration_time
+        }
+        
+        raw_data = {'wavelegth': self.wavelengths,
+                    'intensity': self._take_spectrum()}
+
+        if filename is None:
+            if dark is True:
+                filename = f"dark_spectrum_{time.strftime('%Y%m%d-%H%M%S')}.txt"
+            else:
+                filename = f"slot{self.current_well.slot}_{self.current_well.name}_spectrum_{time.strftime('%Y%m%d-%H%M%S')}.txt"
+        else:
+            pass
+        # add well location information to metadata as well if not the 'dark' spectrum 
+        if dark is not True:
+            metadata['Well'] = self.current_well.name
+            metadata['Slot'] = self.current_well.slot
+            data_handling = MeasurementManager(metadata, raw_data)
+            data_handling.generate_file(filename, path)
+        
+        print(f"Spectrum saved to {path}/{filename}")
+        return
 
 
 class MeasurementManager:
