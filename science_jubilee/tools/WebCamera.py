@@ -8,7 +8,7 @@ import webbrowser
 import matplotlib.pyplot as plt
 import numpy as np
 
-from labware.Labware import Well, Location, Labware
+from science_jubilee.labware.Labware import Well, Location, Labware
 from science_jubilee.tools.Tool import Tool, requires_active_tool
 from typing import Tuple, Union
 
@@ -47,7 +47,6 @@ class Camera(Tool):
                          light = light, light_pin = light_pin)
         self.still_url = f'http://{self.ip_address}:{self.port}/{self.still_endpoint}'
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
-        self.tool_offset = self._machine.tool_z_offsets[self.index] 
 
         #TODO: Ping camera server and make sure that it is reachable
 
@@ -69,7 +68,7 @@ class Camera(Tool):
         :rtype: :class:`Camera` object
         """
 
-        config = os.path.join(path,config_file)
+        config = os.path.join(path, config_file)
         with open(config, 'rt') as f:
             kwargs = json.load(f)
         return cls(index=index, name=name,**kwargs)

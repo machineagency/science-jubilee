@@ -2,7 +2,6 @@ import adafruit_mcp4725
 import board
 import busio
 import digitalio
-import json
 import logging
 import serial
 import time

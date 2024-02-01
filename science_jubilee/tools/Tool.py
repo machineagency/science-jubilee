@@ -17,6 +17,7 @@ class Tool:
         self.index = index
         self.name = name
         self.is_active_tool = False
+        self.tool_offset = None
 
         for k,v in kwargs.items():
             setattr(self, k, v )
