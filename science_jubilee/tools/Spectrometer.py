@@ -14,43 +14,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-class SpectroscopyTool(OceanDirectAPI, Spectrometer):
+class SpectroscopyTool(Tool, OceanDirectAPI):
     """ A class representation for an Ocean Optics Spectrometer, Light source, and Probe
 
        For that we wil be unfortunately using their own SDK package, which is NOT
        open-source.  """
 
-    def __init__(self, name, index):
+    def __init__(self, index, name):
         self.connection = OceanDirectAPI()
         self.spectrometer = self._open_device()
         self.name = name
         self.index = index
         self.current_well = None
         self._dark_spectrum = False
-        
-    @classmethod
-    def from_config(cls, index, name, config_file: str,
-                    path :str = os.path.join(os.path.dirname(__file__), 'configs')):
-        
-        """Initialize the pipette object from a config file
-
-        :param index: The tool index of the spectroscopic probe on the machine
-        :type index: int
-        :param name: The tool name
-        :type name: str
-        :param config_file: The name of the config file containign the tool parameters
-        :type config_file: str
-        :param path: The path to the labware configuration `.json` files for the labware,
-                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
-        :returns: A :class:`Spectroscopic_tool` object
-        :rtype: :class:`Spectroscopic_tool`
-        """        
-        config = os.path.join(path,config_file)
-        with open(config) as f:
-            kwargs = json.load(f)
-
-        return cls(index, name, **kwargs) 
-    
+           
     @property
     def _api_version(self):
         """ The version of the Ocean Insight SDK """
@@ -67,13 +44,15 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
     def _device_id(self):
         """The ID of the spectrometer
         """
+        usb = self._usb_device
         ids= self.connection.get_device_ids()
         return ids
     
     def _open_device(self):
         """ Connects to the spectrometer device """
         devices =[]
-        for i in self.device_id:
+        idx= self._device_id
+        for i in idx:
             dev = self.connection.open_device(i)
             devices.append(dev)
 
@@ -100,40 +79,42 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
     
     @property
     def _integration_time(self):
-       it = self.spectrometer.get_integration_time()
-       return it
+        it = self.spectrometer.get_integration_time()
+        return it
     
     def integration_time(self,t:float, units:str = 'ms'):
-       """Sets the integration time for the spectrometer.
+        """Sets the integration time for the spectrometer.
         
         :param t: integration time
         :type t: float
         :param units: units of integration time, defaults to 'ms'
         :type units: str, optional 
-        """
-       tint_min = self.spectrometer.get_minimum_integration_time()
-       tint_max = self.spectrometer.get_maximum_integration_time()
-       assert tint_min <= t <= tint_max, \
-            'Indicate integration time between %d and %d ms' %(tint_min, tint_max)
-       
-       self._integration_time_units = units
+        """      
+        self._integration_time_units = units
 
-       # check provided integration time units are supported by the code
-       supported_units  = ['us', 'ms', 's']
-       assert units in supported_units, \
+        # check provided integration time units are supported by the code
+        supported_units  = ['us', 'ms', 's']
+        assert units in supported_units, \
         'Indicate integration time in one of the supported units: %s, %s, %s' \
-           %(supported_units[0], supported_units[1], supported_units[2])
-       if units == 'ms':
-          time= t*10e3
-       elif units == 's':
-          time= t*10e6
-       else:
-          time = t
+            %(supported_units[0], supported_units[1], supported_units[2])
+        if units == 'ms':
+            time= t*10e3
+        elif units == 's':
+            time= t*10e6
+        else:
+            time = t
 
-       self.spectrometer.set_integration_time(time)
-       print('The integration time was set to: %d %s' %(time, units))
-       
-       return 
+        tint_min = self.spectrometer.get_minimum_integration_time()
+        tint_max = self.spectrometer.get_maximum_integration_time()
+        assert tint_min <= time <= tint_max, \
+            'Indicate integration time between %d and %d ms' %(tint_min, tint_max)    
+
+        time = int(time)
+
+        self.spectrometer.set_integration_time(time)
+        print('The integration time was set to: %d %s' %(time, units))
+        
+        return 
     
     @property
     def wavelengths(self):
@@ -142,7 +123,7 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
         :return: A list of wavelengths
         :rtype: list
         """
-        wlt = self.spectrometer.wavelenghts
+        wlt = self.spectrometer.wavelengths
         return wlt
 
     def scans_to_average(self, n:int):
@@ -180,12 +161,19 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
         :type state: bool, optional
         """
         # need to add a try statement as not all light-sources have a shutter
-        try:
-            self.spectrometer.Advanced.set_enable_lamp(open)
-            print(f"Light shutter was set to {self.device.get_enable_lamp()}")
-        except:
-            # logging.warning('No light source shutter available')
+        if open: 
+            state = 'Open'
+        else:
+            state = 'Close'
+
+        self.spectrometer.Advanced.set_enable_lamp(open)
+        if self.spectrometer.Advanced.get_enable_lamp() == open:
+            print(f"Light shutter was set to {state}")
+        else:
             print('No such feature on current device')
+        # except:
+        #     # logging.warning('No light source shutter available')
+        #     print('No such feature on current device')
         return
 
     def _take_spectrum(self, shutter= 'Open'):
@@ -254,7 +242,8 @@ class SpectroscopyTool(OceanDirectAPI, Spectrometer):
         spectrum = self._take_spectrum(shutter='Open')
 
         return spectrum
-
+    
+    @requires_active_tool
     def collect_spectrum(self, location : Union[Well, Tuple, Location], 
                          int_time, scan_num, boxcar_w,
                          int_time_units ='ms', save:bool = False,
