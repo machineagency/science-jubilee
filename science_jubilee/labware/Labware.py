@@ -297,7 +297,7 @@ class Labware(WellSet):
         columns = {}
         wells = {}
 
-        for row_order, column_data in enumerate(self.data.get('ordering', [])):
+        for row_order, column_data in enumerate(self.ordering):
             # Assumes the first char is the row identifier, e.g., "A" in "A1"
             row_id = column_data[0][0]  
             # Extracts column number, e.g., "1" in "A1"
@@ -317,10 +317,10 @@ class Labware(WellSet):
                 wells[well_id] = well
 
         # Convert dictionary data to Row and Column classes
-        rows = {k: Row(identifier=k, wells=v) for k, v in rows.items()}
-        columns = {k: Column(identifier=k, wells=v) for k, v in columns.items()}
+        _rows = {k: Row(identifier=k, wells=v) for k, v in rows.items()}
+        _columns = {k: Column(identifier=k, wells=v) for k, v in columns.items()}
 
-        return rows, columns, wells
+        return _rows, _columns, wells
 
     def get_row(self, row_id: str) -> Row:
         """Fucntions to fetch the :class:`Well.name` of the indicated row.
