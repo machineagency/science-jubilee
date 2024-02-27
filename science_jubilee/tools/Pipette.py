@@ -57,6 +57,7 @@ class Pipette(Tool):
         self.first_available_tip = None
         # self.tool_offset = self._machine.tool_z_offsets[self.index]
         self.is_primed = False 
+        self.current_well = None
         
 
     @classmethod
