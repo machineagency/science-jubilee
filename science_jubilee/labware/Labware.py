@@ -648,7 +648,7 @@ class Labware(WellSet):
         """
         if type(location) == Well:
             x, y, z = location.x, location.y, location.z
-        elif type(location) == Tuple:
+        elif type(location) == tuple:
             x, y, z = location
         elif type(location)==Location:
             x,y,z= location._point
