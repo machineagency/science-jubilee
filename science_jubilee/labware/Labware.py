@@ -5,7 +5,7 @@ import numpy as np
 
 from dataclasses import dataclass
 from itertools import chain
-from math import sqrt, acos, asin, cos, sin
+from math import sqrt, acos, cos, sin
 from typing import List, Dict, Tuple, Union, Iterable, NamedTuple
 
 
@@ -39,10 +39,7 @@ class Well:
         :return: The x-coordinate of the well
         :rtype: float
         """
-        if self.offset is not None:
-            return self._x + self.offset[0]
-        else:
-            return self._x
+        return self._x
 
     @x.setter
     def x(self, new_x):
@@ -60,10 +57,7 @@ class Well:
         :return: The y-coordinate of the well
         :rtype: float
         """
-        if self.offset is not None:
-            return self._y + self.offset[1]
-        else:
-            return self._y
+        return self._y
 
     @y.setter
     def y(self, new_y):
@@ -82,10 +76,7 @@ class Well:
         :return: The z-coordinate of the well
         :rtype: float
         """
-        if self.offset is not None and len(self.offset) ==3 :
-            return self._z + self.offset[2]
-        else:
-            return self._z
+        return self._z
 
     @z.setter
     def z(self, new_z):
@@ -95,6 +86,20 @@ class Well:
         :type new_z: flaot
         """
         self._z = new_z
+
+    def apply_offset(self, offset: Tuple[float]):
+        """Allows the user to offset the coordinates of the well with respect to the deck-slot coordinates
+
+        :param offset: A tuple of floats with the new offset of the well
+        :type offset: Tuple[float]
+        """
+        self._x = self.x + offset[0]
+        self._y = self.y + offset[1]
+
+        if len(offset) == 3:
+            self._z = self.z + offset[2]
+
+        self.offset = offset
 
     @property
     def top_(self):
@@ -113,7 +118,7 @@ class Well:
         :rtype: float
         """
         return self.z
-    
+
     def bottom(self, z: float, check = False):        
         """Allows the user to dinamically indicate a new Z location relative to the 
         bottom of the well. 
@@ -298,7 +303,7 @@ class Labware(WellSet):
         columns = {}
         wells = {}
 
-        for row_order, column_data in enumerate(self.data.get('ordering', [])):
+        for row_order, column_data in enumerate(self.ordering):
             # Assumes the first char is the row identifier, e.g., "A" in "A1"
             row_id = column_data[0][0]  
             # Extracts column number, e.g., "1" in "A1"
@@ -318,10 +323,10 @@ class Labware(WellSet):
                 wells[well_id] = well
 
         # Convert dictionary data to Row and Column classes
-        rows = {k: Row(identifier=k, wells=v) for k, v in rows.items()}
-        columns = {k: Column(identifier=k, wells=v) for k, v in columns.items()}
+        _rows = {k: Row(identifier=k, wells=v) for k, v in rows.items()}
+        _columns = {k: Column(identifier=k, wells=v) for k, v in columns.items()}
 
-        return rows, columns, wells
+        return _rows, _columns, wells
 
     def get_row(self, row_id: str) -> Row:
         """Fucntions to fetch the :class:`Well.name` of the indicated row.
@@ -494,7 +499,7 @@ class Labware(WellSet):
         self._offset = new_offset
         if new_offset is not None:
             for w in self:
-                w.offset = new_offset
+                w.apply_offset(new_offset)
     
     def add_slot(self, slot_):
         """Add name of deck slot after labware has been loaded
@@ -582,7 +587,6 @@ class Labware(WellSet):
         theta1 = acos((upper_right[1]-bottom_right[1])/plate_height)
         theta2 = acos((upper_right[0]-upper_left[0])/plate_width)
         theta = (theta1 + theta2)/2.0
-        
         # apply offset to all wells in the labware object
         for well in self:
             new_x, new_y = self._translate_point(well, theta)
