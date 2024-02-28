@@ -79,7 +79,11 @@ def requires_safe_z(func):
     """
     def z_check(self, *args, **kwds):
         current_z = float(self.get_position()["Z"])
-        safe_z = self.deck.safe_z
+        if self.deck:
+            safe_z = self.deck.safe_z
+        else:
+            safe_z = 25
+            warnings.warn(f"No deck configured, safe z height has been set to {safe_z}. Please modify this if needed.")
         if current_z < safe_z:
             self.move_to(z=safe_z + 20)
         return func(self, *args, **kwds)
