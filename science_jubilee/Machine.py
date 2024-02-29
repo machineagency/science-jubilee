@@ -738,7 +738,7 @@ class Machine():
         current_z = self.get_position()['Z']
         safe_z = self.deck.safe_z
         if float(current_z) < safe_z :
-            self.move_to(z = safe_z + 20)
+            self.move_to(z = safe_z + 5)
         else:
             pass
     
