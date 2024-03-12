@@ -30,7 +30,7 @@ class Camera(Tool):
         self._dist_matrix = None
 
         self.load_coefficients(
-            "/home/pi/plos-revision-submission/duckbot/science_jubilee/science_jubilee/tools/configs/calibration_checkerboard.yml"
+            "/home/pi/science_jubilee/science_jubilee/demos/color-match/calibration_checkerboard.yml"
         )
 
     def load_coefficients(self, path):
@@ -204,7 +204,7 @@ class Camera(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=30) # focus height; read in from config
-        time.sleep(1) # ToDo: Better way to sync gcode movements & images
+        time.sleep(10) # ToDo: Better way to sync gcode movements & images
         f = self.get_frame()
         return f
     
