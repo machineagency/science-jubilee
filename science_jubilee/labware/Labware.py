@@ -31,6 +31,8 @@ class Well:
     z: float
     offset: Tuple[float] = None
     slot: int = None
+    has_tip: bool = False
+    labware_name: str = None
 
     @property
     def x(self):
@@ -159,7 +161,18 @@ class Well:
         coord = (self.x, self.y, from_top_z)
 
         return Location(coord, self)
+    
+    def __repr__(self):
+        """Displayed representation of a :class:`Well` object indicating its name and its coordinates
 
+        :return: A string representation of the name and coordinates of a well
+        :rtype: str
+        """
+        if self.slot:
+            message = f'Well {self.name} form {self.labware_name} on slot {self.slot}'
+        else:
+            message = f'Well {self.name} at coordinates {self.x, self.y, self.z}'
+        return message
 
 @dataclass(repr=False)
 class WellSet:
@@ -321,6 +334,15 @@ class Labware(WellSet):
 
                 columns[col_order + 1][well_id] = well
                 wells[well_id] = well
+        
+        #add tip tracking to the wells
+        if self.is_tip_rack:
+            for well in wells.values():
+                well.has_tip = True
+
+        #add labware name to each Well object
+        for well in wells.values():
+            well.labware_name = self.display_name
 
         # Convert dictionary data to Row and Column classes
         _rows = {k: Row(identifier=k, wells=v) for k, v in rows.items()}
@@ -551,7 +573,7 @@ class Labware(WellSet):
         return x_translated, y_translated
 
 
-    def manual_offset(self, offset: List[Tuple[float]], save: bool = False, force :bool = False):
+    def manual_offset(self, offset: List[Tuple[float]], save: bool = False):
         """Allows the user to manually offset the coordinates of the labware based on three corner wells. 
 
         Adapted to `https://github.com/machineagency/sonication_station` labware calibration procedure.
@@ -560,8 +582,6 @@ class Labware(WellSet):
         :type offset: Tuple[float]
         :param save: Option to save the manual offset to the original config `.json` file, defaults to False
         :type save: bool, optional
-        :param force: Option to force the saving of the manual offset to the original config `.json` file, defaults to False
-        :type force: bool, optional
 
         :return: An updated :class:`Labware` object with the new coordinates of the wells
         :rtype: :class:`Labware`
@@ -595,9 +615,7 @@ class Labware(WellSet):
         print(f'New manual offset applied to {self.parameters()["loadName"]}')
 
         if save:
-            if str(self.slot) in self.manualOffset.keys() and not force:
-                print("stored manual offset found.  To overwrite it on the `config.json` file, set force=True")
-            elif str(self.slot) in self.manualOffset.keys() and force:
+            if str(self.slot) in self.manualOffset.keys():
                 k = input("Are you sure you want to overwrite the manual offset for this labware? Press 'y' key to continue")
                 if k == 'y':
                     self.manualOffset[str(self.slot)] = offset
