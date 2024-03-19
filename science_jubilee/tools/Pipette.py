@@ -55,7 +55,6 @@ class Pipette(Tool):
                          zero_position = zero_position, blowout_position = blowout_position,
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self.has_tip = False
-        self.first_available_tip = None
         self.current_well = None
         self.trash = None
         
