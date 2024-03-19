@@ -2,10 +2,11 @@ import json
 import logging
 import os
 
+from itertools import dropwhile, takewhile
 from science_jubilee.labware.Labware import Labware, Well, Location
 from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
 
-from typing import Tuple, Union
+from typing import Tuple, Union, Iterator, List
 
 
 logger = logging.getLogger(__name__)
@@ -55,10 +56,11 @@ class Pipette(Tool):
                          drop_tip_position = drop_tip_position, mm_to_ul = mm_to_ul)
         self.has_tip = False
         self.first_available_tip = None
-        # self.tool_offset = self._machine.tool_z_offsets[self.index]
-        self.is_primed = False 
         self.current_well = None
+        self.trash = None
         
+        # prime so that pipette is ready to use
+        self.prime()
 
     @classmethod
     def from_config(cls, index, name, config_file: str,
@@ -82,8 +84,7 @@ class Pipette(Tool):
             kwargs = json.load(f)
 
         return cls(index, name, **kwargs)
-    
-           
+               
     def vol2move(self, vol):
         """Converts desired volume in uL to a movement of the pipette motor axis
 
@@ -96,7 +97,6 @@ class Pipette(Tool):
 
         return dv
     
-    @requires_active_tool
     def prime(self, s=2500):
         """Moves the plunger to the low-point on the pipette motor axis to prepare for further commands
         Note::This position should not engage the pipette tip plunger
@@ -209,11 +209,11 @@ class Pipette(Tool):
         self._dispense(vol, s=s)
 
     @requires_active_tool
-    @tip_check
-    def transfer(self, vol: float, source_well: Union[Well, Tuple, Location],
+    def transfer(self, vol: Union[float, list[float]], source_well: Union[Well, Tuple, Location],
                  destination_well :Union[Well, Tuple, Location] , s:int = 3000,
                  blowout= None, mix_before: tuple = None,
-                 mix_after: tuple = None, new_tip : str = 'always'):
+                 mix_after: tuple = None, air_gap : float = None,
+                 new_tip : str = 'always'):
         
         """Transfers the desired volume of liquid from the source well to the destination well
 
@@ -234,64 +234,221 @@ class Pipette(Tool):
         :param mix_after: The number of times to mix after dispensing and the volume to mix
         :type mix_after: tuple, optional
         :param new_tip: Whether or not to use a new tip for the transfer. Can be 'always', 'never', or 'once' 
+        :type new_tip: str, optional
+        :param air_gap: The volume of air to aspirate after aspirating the liquid, defaults to None
+        :type air_gap: float, optional
 
         Note:: :param new_tip: still not implemented at the moment (2023-11-16) 
         """
         #TODO: check that tip picked up and get a new one if not
-        
-        vol_ = self.vol2move(vol)
-        # get locations
-        xs, ys, zs = Labware._getxyz(source_well)
 
         if self.is_primed == True:
             pass
         else:
             self.prime()
 
+        assert self.has_tip == False and new_tip is not 'never', "Error: Pipette should not have a tip before transfer"
+        assert new_tip is 'never' and self.has_tip == True, "Error: Pipette should have a tip before transfer with new_tip = {new_tip}"
+        assert air_gap < self.max_volume,\
+            "Error: Air gap volume should be less than Pipette max volume."
+        assert self.trash is not None, "Error: Trash location not set, do so before continuing."
         # saves some code if we make a list regardless    
         if type(destination_well) != list:
-            destination_well = [destination_well] #make it into a list 
+            destination_well = [destination_well] #make it into a list
+                
+        if type(source_well) != list:
+            source_well = [source_well] #make it into a list  
 
-        if isinstance(destination_well, list):
-            for well in destination_well:
-                xd, yd, zd = Labware._getxyz(well)
+        total_transfers = max(len(source_well), len(destination_well))  
+        volumes = self._create_volume_list(vol, total_transfers)
+        source_well, destination_well = self._extend_source_target_lists(source_well, destination_well)
+        iterations= self._expand_for_volume_contraints(volumes, destination_well, self.max_volume-air_gap)    
+
+        ## TODO: maybe add TiTracker to pipette class
+        TT = self.TipTracker
+        TT_dict = TT._tip_stock_mapping
+
+        for step_vol, (source, dest) in iterations:
             
+            # skip if the volume is zero
+            if step_vol == 0:
+                continue
+            else:
+                # get coordinates for source and destination wells
+                xs, ys, zs = Labware._getxyz(source)
+                xd, yd, zd = Labware._getxyz(dest)
+
+                source_name = f'{source.name}_{source.index}'
+                
+                # --------------- Tip Strategy ----------------
+                if new_tip == 'never':
+                    pass
+                elif new_tip == 'once':
+                    if source_name in TT_dict.keys():
+                        tip = TT_dict[source_name]
+                    else:
+                        tip = TT.next_tip()
+                        TT.assign_tip_to_stock(tip, source)
+                else:
+                    tip = TT.next_tip()
+                
+                self.pickup_tip(tip)
+                TT.use_tip(tip) # note on the TipTracker class that tip is being used
+
+                # --------------- Aspirate ----------------
+
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
-                self._machine.move_to(z = zs)
-                if type(source_well)== Well:
-                    self.current_well = source_well
-                elif type(source_well)==Location:
-                    self.current_well = source_well._labware
-                self._aspirate(vol_, s=s)
                 
+                if type(source)== Well:
+                    self.current_well = source
+                elif type(source)==Location:
+                    self.current_well = source._labware
+
+                self._machine.move_to(z = zs)
+                self._aspirate(step_vol, s=s)
+                
+                if air_gap:
+                    self.air_gap(air_gap) # the check for this is in the _create_volume_list method
+                
+                #mix before moving to destination well
                 if mix_before:
                     self.mix(mix_before[0], mix_before[1]) 
                 else:
                     pass
+                
+                # --------------- Dispense  ----------------
 
                 self._machine.safe_z_movement()
                 self._machine.move_to(x=xd, y=yd)
+                if type(dest)==Well:
+                    self.current_well = dest
+                elif type(dest)==Location:
+                    self.current_well = dest._labware
                 self._machine.move_to(z=zd)
-                if type(well)==Well:
-                    self.current_well = well
-                elif type(well)==Location:
-                    self.current_well = well._labware
-                self._dispense(vol_, s=s)
-                
-                if mix_after:
-                    self.mix(mix_after[0], mix_after[1]) 
+                self._dispense(step_vol, s=s)
+
+                #mix after dispensing into destination well
+                # check if user indicated a specific well to mix after dispensing
+
+                if len(mix_after) == 3:
+                    stock_to_mix = mix_after[2]
+                    if source == stock_to_mix:
+                        self.mix(mix_after[0], mix_after[1])
+                    else:
+                        pass
+                elif mix_after:
+                    self.mix(mix_after[0], mix_after[1])
                 else:
                     pass
-
-                if blowout is not None:
+                
+                #blow_out if indicated
+                if blowout:
                     self.blowout()
                 else:
                     pass
-                # if new_tip == 'always':
-
-                #TODO: need to add new_tip option!
+                
+                # --------------- Tip Strategy ----------------
+                if new_tip == 'always':
+                    self.drop_tip()
+                elif new_tip == 'once':
+                    if len(mix_after)==3 and source == mix_after[2]:
+                        self.drop_tip()
+                        TT_dict.pop(source_name)
+                    else:
+                        self.return_tip(tip)
+                else:
+                    pass
     
+    def _create_volume_list(self, volume, total_xfers):
+        """Creates a list of volumes to transfer
+        
+        :param volume: The volume of liquid to transfer
+        :type volume: Union[float, list[float]]
+        :param total_xfers: The total number of transfer steps to perform
+        :type total_xfers: int
+        :return: A list of volumes to transfer
+
+        Note: This function was taken from the Opentrons API and modified to work with the Pipette class of Science_Jubilee
+        """
+
+        if isinstance(volume, (float, int)):
+            vol_list = [self.vol2move(volume)] * total_xfers
+            return [volume] * total_xfers
+        elif isinstance(volume, list):
+            if not len(volume) == total_xfers:
+                raise RuntimeError(
+                    "List of volumes should be equal to number " "of transfers"
+                )
+            else:
+                vol_list = [self.vol2move(v) for v in volume]
+        else:
+            if not isinstance(volume, List):
+                raise TypeError(
+                    "Volume expected as a number or List or"
+                    " tuple but got {}".format(volume)
+                )
+            return vol_list
+
+    @staticmethod
+    def _extend_source_target_lists(
+        sources: List[Union[Well, Location]],
+        targets: List[Union[Well, Location]],
+    ):
+        """Extend source or target list to match the length of the other
+        
+        :param sources: The list of source wells
+        :type sources: List[Union[Well, Location]]
+        :param targets: The list of target wells
+        :type targets: List[Union[Well, Location]]
+        :return: The extended source and target lists
+        :rtype: Tuple[List[Union[Well, Location]], List[Union[Well, Location]]]
+
+        Note: This function was taken from the Opentrons API and modified to work with the Pipette class of Science_Jubilee
+        """
+        if len(sources) < len(targets):
+            if len(targets) % len(sources) != 0:
+                raise ValueError("Source and destination lists must be divisible")
+            sources = [
+                source
+                for source in sources
+                for i in range(int(len(targets) / len(sources)))
+            ]
+        elif len(sources) > len(targets):
+            if len(sources) % len(targets) != 0:
+                raise ValueError("Source and destination lists must be divisible")
+            targets = [
+                target
+                for target in targets
+                for i in range(int(len(sources) / len(targets)))
+            ]
+        return sources, targets    
+
+    @staticmethod
+    def _expand_for_volume_contraints( volumes: Iterator[float], targets: Iterator, max_volume:float):
+        """ Expands the volumes and targets to ensure that the volume does not exceed the maximum volume of the pipette
+
+        :param volumes: An iterator of the volumes to transfer
+        :type volumes: Iterator[float]
+        :param targets: An iterator of the targets to transfer the volumes to
+        :type targets: Iterator
+        :param max_volume: The maximum volume of the pipette in uL
+        :type max_volume: float
+        :return: An iterator of the volumes and targets to transfer
+        :rtype: Iterator
+
+        Note: This function was taken from the Opentrons API and modified to work with the Pipette class of Science_Jubilee
+        """    
+        for volume, target in zip(volumes, targets):
+            while volume > max_volume*2:
+                yield max_volume, target
+                volume -= max_volume
+            
+            if volume > max_volume:
+                volume /= 2
+                yield volume, target
+            yield volume, target
+
     @requires_active_tool
     @tip_check
     def blowout(self,  s : int = 3000):
@@ -335,15 +492,13 @@ class Pipette(Tool):
         """
         v = self.vol2move(vol)*-1
 
-        self._machine.move_to(z = self.current_well.top_+2)
+        self._machine.move_to(z = self.current_well.top_+ 2)
         self.prime()
-        # self._machine.move(dz = -17)
         
         # TODO: figure out a better way to indicate mixing height position that is not hardcoded
-        self._machine.move_to(z= self.current_well.z) 
+        self._machine.move_to(z= self.current_well.bottom_ + 2) 
         for i in range(0,n):
             self._aspirate(vol, s=s)
-            #self._machine.move_to(v=v, s=s)
             self.prime(s=s)   
 
 ## In progress (2023-10-12) To test
@@ -358,8 +513,6 @@ class Pipette(Tool):
         :type height: float, optional
         :raises ToolStateError: If the pipette does not have a tip attached before stirring or if the pipette is not in a well
         """
-
-
         z= self.current_well.z + 0.5  # place pieptte tip close to the bottom
         pos =  self._machine.get_position()
         x_ = float(pos['X']) 
@@ -412,19 +565,17 @@ class Pipette(Tool):
         :param tiprack: The tiprack to associate with the pipette 
         :type tiprack: Union[Labware, list]
         """
-        if isinstance(tiprack, list):
-            for rack in len(tiprack):
-                tips = []
-                for t in range(96):
-                    tips.append(rack[t])
-            
-            self.tipiterator = pipette_iterator(tips)
-            self.tiprack = tiprack
-        else:
-            self.tipiterator = pipette_iterator(tiprack)
-            self.tiprack = tiprack
+        if type(tiprack) != list:
+            tiprack = [tiprack]
         
-        self.first_available_tip = self.tipiterator.next()
+        tips = []
+        for rack in tiprack:
+            for t in range(96):
+                tips.append(rack[t])
+        
+        self.tips = tips
+        self.TipTracker = TipTracker(tips) 
+        
 
     @requires_active_tool
     def _pickup_tip(self, z):
@@ -435,6 +586,7 @@ class Pipette(Tool):
         :raises ToolStateError: If the pipette already has a tip attached
         """
         if self.has_tip == False:
+            # self._machine.move_to(z=z-10 , s=1200) # test this- we might benefit from a faster approach to pickingup pipette and then slowing down
             self._machine.move_to(z=z, s=800, param = 'H4')
         else:
             raise ToolStateError("Error: Pipette already equipped with a tip.")  
@@ -451,9 +603,12 @@ class Pipette(Tool):
         :type tip_: Union[Well, Tuple], optional
         """
         if tip_ is None:
-            tip = self.first_available_tip
+            tip = self.TipTracker.next_tip()
+            self.TipTracker.use_tip(tip)
         else:
             tip = tip_
+            tip_.set_has_tip(False)
+            tip_.set_clean_tip(False)
 
         x, y, z = Labware._getxyz(tip)
         self._machine.safe_z_movement()
@@ -461,12 +616,10 @@ class Pipette(Tool):
         self._pickup_tip(z)
         self.has_tip = True
         self.update_z_offset(tip= True)
-        # if tip is not None:
-        #     self.first_available_tip =  self.tiprack.next()
-        # move the plate down( should be + z) for safe movement
-        self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
-        #TODO: This should probably iterate the next available tip so that if you use a tip then replace it, you have to manually specify to go use that tip again rather than it just getting picked up. 
+        # This might should not be necessary - will test and remove/uncomment if appropriate
+        # # move the plate down( should be + z) for safe movement
+        # self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
     @requires_active_tool
     def return_tip(self, location: Well = None):
@@ -476,100 +629,120 @@ class Pipette(Tool):
         :type location: :class:`Well`, optional
         """
         if location is None:
-            x, y, z = Labware._getxyz(self.first_available_tip)
+            w = self.TipTracker.previous_tip()
+            x, y, z = Labware._getxyz(w)
         else:
+            if type(location) == Well:
+                w = location
+            elif type(location) == Location:
+                w = location._labware
+
             x, y, z = Labware._getxyz(location)
+
+        self.TipTracker.return_tip(w) # this will still setthe pipette tip as not clean!
+
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
-        self._machine.move(dz = -25)
+        self._machine.move_to(z = w.top_ +10)
         self._drop_tip()
-        self._machine.move(dz = 25)
         self.prime()
         self.has_tip = False
         self.update_z_offset(tip=False)
 
     @requires_active_tool
+    @tip_check
     def _drop_tip(self):
         """Moves the plunger to eject the pipette tip
 
         :raises ToolConfigurationError: If the pipette does not have a tip attached
         """
-        if self.has_tip == True:
-            self._machine.move_to(v= self.drop_tip_position, s= 4000)
-        else:
-            raise ToolConfigurationError('Error: No pipette tip attached to drop')
-        
-    def increment_tip(self):
-        """Increment the next available tip
-        """
-        self.first_available_tip = self.tipiterator.next()
+        self._machine.move_to(v= self.drop_tip_position, s= 5000)
+
 
     @requires_active_tool
     @tip_check
-    def drop_tip(self, location: Union[Well, Tuple]):
+    def drop_tip(self, location: Union[Well, Tuple]= None):
         """Moves the pipette to the specified location and drops the pipette tip
 
         :param location: The location to drop the tip into
         :type location: Union[:class:`Well`, tuple]
         """        
-        x, y, z = Labware._getxyz(location)
+
+        if location is None and self.trash:
+            x, y, z = Labware._getxyz(self.trash)
+        elif location is not None:
+            x, y, z = Labware._getxyz(location)
+        else:
+            raise ToolConfigurationError("Error: No location specified to drop tip into. Either specify a location or set the trash location for the Pipette")
 
         self._machine.safe_z_movement()
-        if x is not None or y is not None:
-            self._machine.move_to(x=x, y=y)
+        self._machine.move_to(x=x, y=y)
         self._drop_tip()
         self.prime()
         self.has_tip = False
         self.update_z_offset(tip=False)
 
-        self.first_available_tip = self.tipiterator.next()
         # logger.info(f"Dropped tip at {(x,y,z)}")
 
 
-class pipette_iterator():
-    """An iterator for iterating through a tiprack
+class TipTracker:
+    """A class to track the usage of pipette tips and their location in the tiprack
 
-    :param tiprack: The tiprack to iterate through
-    :type tiprack: :class:`Labware`    
+    :param tips: The list of tips in the tiprack
+    :type tips: list[:class:`Well`]
+    :param start_well: The starting well to begin tracking the tips from, defaults to None
+    :type start_well: :class:`Well`, optional
+
+    Note: This function was taken from the Opentrons API and modified to work with the Pipette class of Science_Jubilee
     """
-    def __init__(self, tiprack):
-        """Initialize the tip iterator
 
-        :param tiprack: The tiprack to iterate through
-        :type tiprack: :class:`Labware`  
-        """
+    def __init__(self, tips, start_well=None):
+        
+        self._wells = tips[start_well:]
+        self._available_clean_tips = tips
+        self._tip_stock_mapping = {}
+        
+    def next_tip(self, start_well=None):
+        if start_well:
+            start_index = self._wells.index(start_well)
+            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_tips[start_index:]))
+        else:
+            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_tips))
+        
+        assert available_wells, "No more available tips"
 
-        self.tiprack = tiprack
-        self.index = 0
+        clean_tips = list(takewhile(lambda w: w.is_clean_tip, available_wells))        
+        if clean_tips:
+            self._available_clean__tips = clean_tips
+        else:   
+            self._available_clean_tips = []
 
-    def next(self):
-        """Returns the next available tip in the tiprack
+        first_available_well = clean_tips[0]
+        return first_available_well
+    
+    def use_tip(self, tip_well):
+        tip_well.set_has_tip(False)
+        tip_well.is_clean_tip(False)
+    
+    def previous_tip(self):
 
-        :raises StopIteration: If there are no more tips available in the tiprack
-        :return: The next available tip in the tiprack
-        :rtype: :class:`Well`
-        """
-        # print('Pipette tips iterated')
+        drop_leading_filled = list(dropwhile(lambda w: w.has_tip, self._wells))
+        first_gap = list(takewhile(lambda w: not w.has_tip, drop_leading_filled))
         try:
-            result = self.tiprack[self.index]
-            self.index += 1
+            return first_gap[-1]
         except IndexError:
-            raise StopIteration
-        return result
+            return None
+    
+    def return_tip(self, well=None):
+        if well.has_tip:
+            raise AssertionError(f"Well {repr(well)} has a tip")
+        else:
+            well.set_has_tip(True)
 
-    def prev(self):
-        """Returns the previous available tip in the tiprack
-
-        :raises StopIteration: If the current pipette tip is the first tip in the tiprack
-        :return: _description_
-        :rtype: _type_
-        """
-
-        self.index -= 1
-        if self.index < 0:
-            raise StopIteration
-        return self.tiprack[self.index]
-
-    def __iter__(self):
-        return self
+    def assign_tip_to_stock(self, tip_well, stock_well):
+               
+        if stock_well in self._tip_stock_mapping.keys():
+            pass
+        else:
+            self._tip_stock_mapping[stock_well] = tip_well
