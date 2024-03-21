@@ -58,8 +58,8 @@ class Pipette(Tool):
         self.current_well = None
         self.trash = None
         
-        # prime so that pipette is ready to use
-        self.prime()
+        # # prime so that pipette is ready to use
+        # self.prime()
 
     @classmethod
     def from_config(cls, index, name, config_file: str,
@@ -211,7 +211,7 @@ class Pipette(Tool):
     def transfer(self, vol: Union[float, list[float]], source_well: Union[Well, Tuple, Location],
                  destination_well :Union[Well, Tuple, Location] , s:int = 3000,
                  blowout= None, mix_before: tuple = None,
-                 mix_after: tuple = None, air_gap : float = None,
+                 mix_after: tuple = None, air_gap : float = 0,
                  new_tip : str = 'always'):
         
         """Transfers the desired volume of liquid from the source well to the destination well
@@ -246,11 +246,14 @@ class Pipette(Tool):
         else:
             self.prime()
 
-        assert self.has_tip == False and new_tip is not 'never', "Error: Pipette should not have a tip before transfer"
-        assert new_tip is 'never' and self.has_tip == True, "Error: Pipette should have a tip before transfer with new_tip = {new_tip}"
-        assert air_gap < self.max_volume,\
-            "Error: Air gap volume should be less than Pipette max volume."
-        assert self.trash is not None, "Error: Trash location not set, do so before continuing."
+        if new_tip == 'never':
+            assert self.has_tip == True, "Error: Pipette should have a tip before transfer with new_tip = 'never'"    
+        else:
+            assert self.has_tip == False, f"Error: Pipette should not have a tip before transfer with new_tip = '{new_tip}'"
+        if air_gap > 0:
+            assert air_gap < self.max_volume,\
+                "Error: Air gap volume should be less than Pipette max volume."
+        assert self.trash != None, "Error: Trash location not set, do so before continuing."
         # saves some code if we make a list regardless    
         if type(destination_well) != list:
             destination_well = [destination_well] #make it into a list
@@ -261,23 +264,28 @@ class Pipette(Tool):
         total_transfers = max(len(source_well), len(destination_well))  
         volumes = self._create_volume_list(vol, total_transfers)
         source_well, destination_well = self._extend_source_target_lists(source_well, destination_well)
-        iterations= self._expand_for_volume_contraints(volumes, destination_well, self.max_volume-air_gap)    
+        targets = zip(source_well, destination_well)
+        iterations= self._expand_for_volume_contraints(volumes, targets, self.max_volume-air_gap)    
 
         ## TODO: maybe add TiTracker to pipette class
         TT = self.TipTracker
         TT_dict = TT._tip_stock_mapping
 
         for step_vol, (source, dest) in iterations:
-            
             # skip if the volume is zero
             if step_vol == 0:
                 continue
             else:
+                if type(source) == Well:
+                    src = source
+                elif type(source) == Location:
+                    src = source._labware
+                
                 # get coordinates for source and destination wells
                 xs, ys, zs = Labware._getxyz(source)
                 xd, yd, zd = Labware._getxyz(dest)
 
-                source_name = f'{source.name}_{source.index}'
+                source_name = f'{src.name}_{src.slot}'
                 
                 # --------------- Tip Strategy ----------------
                 if new_tip == 'never':
@@ -287,7 +295,7 @@ class Pipette(Tool):
                         tip = TT_dict[source_name]
                     else:
                         tip = TT.next_tip()
-                        TT.assign_tip_to_stock(tip, source)
+                        TT.assign_tip_to_stock(tip, source_name)
                 else:
                     tip = TT.next_tip()
                 
@@ -299,15 +307,12 @@ class Pipette(Tool):
                 self._machine.safe_z_movement()
                 self._machine.move_to(x= xs, y=ys)
                 
-                if type(source)== Well:
-                    self.current_well = source
-                elif type(source)==Location:
-                    self.current_well = source._labware
-
+                self.current_well = src
+                
                 self._machine.move_to(z = zs)
                 self._aspirate(step_vol, s=s)
                 
-                if air_gap:
+                if air_gap > 0:
                     self.air_gap(air_gap) # the check for this is in the _create_volume_list method
                 
                 #mix before moving to destination well
@@ -329,17 +334,17 @@ class Pipette(Tool):
 
                 #mix after dispensing into destination well
                 # check if user indicated a specific well to mix after dispensing
-
-                if len(mix_after) == 3:
-                    stock_to_mix = mix_after[2]
-                    if source == stock_to_mix:
+                if mix_after:
+                    if len(mix_after) == 3:
+                        stock_to_mix = mix_after[2]
+                        if src == stock_to_mix:
+                            self.mix(mix_after[0], mix_after[1])
+                        else:
+                            pass
+                    elif mix_after:
                         self.mix(mix_after[0], mix_after[1])
                     else:
                         pass
-                elif mix_after:
-                    self.mix(mix_after[0], mix_after[1])
-                else:
-                    pass
                 
                 #blow_out if indicated
                 if blowout:
@@ -351,9 +356,12 @@ class Pipette(Tool):
                 if new_tip == 'always':
                     self.drop_tip()
                 elif new_tip == 'once':
-                    if len(mix_after)==3 and source == mix_after[2]:
-                        self.drop_tip()
-                        TT_dict.pop(source_name)
+                    if mix_after:
+                        if len(mix_after)==3 and src == mix_after[2]:
+                            self.drop_tip()
+                            TT_dict.pop(source_name)
+                        else:
+                            self.return_tip(tip)
                     else:
                         self.return_tip(tip)
                 else:
@@ -547,9 +555,9 @@ class Pipette(Tool):
         :type tip: bool, optional
         """
         if isinstance(self.tiprack, list):
-            tip_offset = self.tiprack[0].tip_length- self.tiprack[0].tip_overlap
+            tip_offset = self.tiprack[0].tip_length - self.tiprack[0].tip_overlap
         else:
-            tip_offset = self.tiprack.tip_length- self.tiprack.tip_overlap
+            tip_offset = self.tiprack.tip_length - self.tiprack.tip_overlap
 
         if tip == True:
             new_z = self.tool_offset - tip_offset
@@ -574,7 +582,7 @@ class Pipette(Tool):
         
         self.tips = tips
         self.TipTracker = TipTracker(tips) 
-        
+        self.tiprack = tiprack
 
     @requires_active_tool
     def _pickup_tip(self, z):
@@ -615,10 +623,8 @@ class Pipette(Tool):
         self._pickup_tip(z)
         self.has_tip = True
         self.update_z_offset(tip= True)
-
-        # This might should not be necessary - will test and remove/uncomment if appropriate
         # # move the plate down( should be + z) for safe movement
-        # self._machine.move_to(z= self._machine.deck.safe_z + 10)
+        self._machine.move_to(z= self._machine.deck.safe_z + 10)
 
     @requires_active_tool
     def return_tip(self, location: Well = None):
@@ -643,7 +649,7 @@ class Pipette(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
-        self._machine.move_to(z = w.top_ +10)
+        self._machine.move_to(z = w.top_ - 10)
         self._drop_tip()
         self.prime()
         self.has_tip = False
@@ -705,15 +711,15 @@ class TipTracker:
     def next_tip(self, start_well=None):
         if start_well:
             start_index = self._wells.index(start_well)
-            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_tips[start_index:]))
+            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_clean_tips[start_index:]))
         else:
-            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_tips))
+            available_wells = list(dropwhile(lambda w: not w.has_tip, self._available_clean_tips))
         
         assert available_wells, "No more available tips"
 
-        clean_tips = list(takewhile(lambda w: w.is_clean_tip, available_wells))        
+        clean_tips = list(dropwhile(lambda w: not w.clean_tip == True, available_wells))        
         if clean_tips:
-            self._available_clean__tips = clean_tips
+            self._available_clean_tips = clean_tips
         else:   
             self._available_clean_tips = []
 
@@ -722,7 +728,7 @@ class TipTracker:
     
     def use_tip(self, tip_well):
         tip_well.set_has_tip(False)
-        tip_well.is_clean_tip(False)
+        tip_well.set_clean_tip(False)
     
     def previous_tip(self):
 

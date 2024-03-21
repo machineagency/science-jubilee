@@ -170,7 +170,7 @@ class Well:
         :return: A string representation of the name and coordinates of a well
         :rtype: str
         """
-        if self.slot:
+        if self.slot != None:
             message = f'Well {self.name} form {self.labware_name} on slot {self.slot}'
         else:
             message = f'Well {self.name} at coordinates {self.x, self.y, self.z}'
@@ -573,7 +573,7 @@ class Labware(WellSet):
         
         self.wells = ordered_wells
 
-    @staticmethod
+    # @staticmethod
     def _translate_point(self, well: Well, theta: float, x_space: float, y_space: float, upper_left: Tuple[float]):
         """
         Helper function to translate the coordinates of a well by a given angle theta.
