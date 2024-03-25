@@ -684,7 +684,7 @@ class Labware(WellSet):
         :rtype: List[Tuple[float]]
         """
         assert self.slot is not None, "Labware has not been assigned to a slot yet. Use the 'add_slot' method to assign a slot"
-        if self.manualOffset[self.slot] :
+        if self.manualOffset[str(self.slot)]:
             if apply:
                 self.manual_offset(self.manualOffset[str(self.slot)])
             return self.manualOffset[str(self.slot)]
