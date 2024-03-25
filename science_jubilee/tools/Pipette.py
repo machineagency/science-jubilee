@@ -57,9 +57,8 @@ class Pipette(Tool):
         self.has_tip = False
         self.current_well = None
         self.trash = None
+        self.is_primed = False
         
-        # # prime so that pipette is ready to use
-        # self.prime()
 
     @classmethod
     def from_config(cls, index, name, config_file: str,
@@ -83,7 +82,12 @@ class Pipette(Tool):
             kwargs = json.load(f)
 
         return cls(index, name, **kwargs)
-               
+
+    def post_load(self):
+        """Prime the Pipette after loading it onto the Machine sot hat it is ready to use"""
+        self.prime()
+
+    
     def vol2move(self, vol):
         """Converts desired volume in uL to a movement of the pipette motor axis
 
