@@ -17,7 +17,7 @@ class Camera(Tool):
     """ A class representation of a Raspberry Pi camera server client.
     """
     def __init__(self, index, name, ip_address, port,
-                 video_endpoint, still_endpoint, image_folder, light: bool = False, 
+                 video_endpoint, still_endpoint, image_folder, focus_height, light: bool = False, 
                  light_pin: int = None ):
         """Initializes the Camera object.
 
@@ -43,8 +43,8 @@ class Camera(Tool):
 
         super().__init__(index, name, ip_address = ip_address,
                          port = port, video_endpoint = video_endpoint,
-                         still_endpoint = still_endpoint,image_folder= image_folder,
-                         light = light, light_pin = light_pin)
+                         still_endpoint = still_endpoint, image_folder= image_folder,
+                         light = light, light_pin = light_pin, focus_height= focus_height)
         self.still_url = f'http://{self.ip_address}:{self.port}/{self.still_endpoint}'
         self.video_url = f'http://{self.ip_address}:{self.port}/{self.video_endpoint}'
 
@@ -111,7 +111,9 @@ class Camera(Tool):
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
-        self._machine.move_to(z = 43.4, wait = True)
+
+        picture_heigth = self.focus_height - abs(self.tool_offset)
+        self._machine.move_to(z = picture_heigth, wait = True)
         if light is True:
             self._machine.gcode(f'M42 P{self.light_pin} S{light_intensity}')
             image = self._capture_image()
