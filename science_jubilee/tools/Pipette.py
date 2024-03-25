@@ -393,6 +393,7 @@ class Pipette(Tool):
                 )
             else:
                 vol_list = [self.vol2move(v) for v in volume]
+                return vol_list
         else:
             if not isinstance(volume, List):
                 raise TypeError(
@@ -462,7 +463,7 @@ class Pipette(Tool):
 
     @requires_active_tool
     @tip_check
-    def blowout(self,  s : int = 3000):
+    def blowout(self,  s : int = 5000):
         """Blows out any remaining liquid in the pipette tip
 
         :param s: The speed of the plunger movement in mm/min, defaults to 3000
@@ -470,7 +471,7 @@ class Pipette(Tool):
         """
 
         well = self.current_well
-        self._machine.move_to(z = well.top_ + 5 )
+        self._machine.move_to(z = well.top_ + 2 )
         self._machine.move_to(v = self.blowout_position, s=s)
         self.prime()
     
@@ -503,11 +504,11 @@ class Pipette(Tool):
         """
         v = self.vol2move(vol)*-1
 
-        self._machine.move_to(z = self.current_well.top_+ 2)
+        self._machine.move_to(z = self.current_well.top_+ 1)
         self.prime()
         
         # TODO: figure out a better way to indicate mixing height position that is not hardcoded
-        self._machine.move_to(z= self.current_well.bottom_ + 2) 
+        self._machine.move_to(z= self.current_well.bottom_ + 1) 
         for i in range(0,n):
             self._aspirate(vol, s=s)
             self.prime(s=s)   
