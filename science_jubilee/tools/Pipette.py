@@ -341,6 +341,10 @@ class Pipette(Tool):
                 if mix_after:
                     if len(mix_after) == 3:
                         stock_to_mix = mix_after[2]
+                        if type(stock_to_mix) == Location:
+                            stock_to_mix = stock_to_mix._labware
+                        elif type(stock_to_mix) == Well:
+                            pass
                         if src == stock_to_mix:
                             self.mix(mix_after[0], mix_after[1])
                         else:
@@ -361,7 +365,7 @@ class Pipette(Tool):
                     self.drop_tip()
                 elif new_tip == 'once':
                     if mix_after:
-                        if len(mix_after)==3 and src == mix_after[2]:
+                        if len(mix_after)==3 and src == stock_to_mix:
                             self.drop_tip()
                             TT_dict.pop(source_name)
                         else:
