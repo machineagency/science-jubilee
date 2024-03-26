@@ -82,6 +82,7 @@ class Camera(Tool):
         :return: the image as a bstring
         :rtype: bytes
         """
+        time.sleep(1)
         try:
             response = requests.get(self.still_url, timeout = timeout)
         except [ConnectionError, ConnectionRefusedError]:
