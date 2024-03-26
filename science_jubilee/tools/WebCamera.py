@@ -172,8 +172,11 @@ class Camera(Tool):
         :return: the masked image
         :rtype: np.array
         """
-        mask = np.zeros(image.shape[:2], dtype = "uint8")
-        cv2.circle(mask, (300, 300), radius, 255, -1)
+        image_shape = image.shape[:2]
+        w = image_shape[0]//2
+        h = image_shape[1]//2
+        mask = np.zeros(image_shape, dtype = "uint8")
+        cv2.circle(mask, (w, w), radius, 255, -1)
         masked = cv2.bitwise_and(image, image, mask=mask)
 
         return masked
