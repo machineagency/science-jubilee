@@ -607,10 +607,10 @@ class Labware(WellSet):
 
         return x_nominal, y_nominal
 
-    def manual_offset(self, offset: List[Tuple[float]], save: bool = False):
+    def manual_offset(self, corner_wells: List[Tuple[float]], save: bool = False):
         """Allows the user to manually offset the coordinates of the labware based on three corner wells. 
 
-        Adapted to `https://github.com/machineagency/sonication_station` labware calibration procedure.
+        Adapted from `https://github.com/machineagency/sonication_station` labware calibration procedure.
 
         :param offset: A list containing tuples of floats
         :type offset: Tuple[float]
@@ -622,15 +622,13 @@ class Labware(WellSet):
         """
         assert self.slot is not None, "Labware has not been assigned to a slot yet. Use the 'add_slot' method to assign a slot"
         
-        if str(self.slot) in self.manualOffset.keys(): # warn the user if an offset has already been saved for this slot
-            print("Labware already has a manual offset found for this slot. If you want to overwrite it, set save=True")
-        assert len(offset) == 3, "Three points needed to apply manual offset"
-        assert all([len(o) == 2 for o in offset]), "Each point should have three coordinates (x,y)"
+        assert len(corner_wells) == 3, "Three points needed to apply manual offset"
+        assert all([len(o) == 2 for o in corner_wells]), "Each point should have three coordinates (x,y)"
 
         # Get the coordinates of the three corner wells (e.g., A1, A12, H12)
-        upper_left = offset[0]
-        upper_right = offset[1]
-        bottom_right = offset[2]
+        upper_left = corner_wells[0]
+        upper_right = corner_wells[1]
+        bottom_right = corner_wells[2]
 
         # Get the coordinates of the three corner wells
         # calculate total spacing between wells in each row (width) and column (height)
@@ -657,24 +655,24 @@ class Labware(WellSet):
             if str(self.slot) in self.manualOffset.keys():
                 k = input("Are you sure you want to overwrite the manual offset for this labware? Press 'y' key to continue")
                 if k == 'y':
-                    self.manualOffset[str(self.slot)] = offset
+                    self.manualOffset[str(self.slot)] = corner_wells
                     with open(self.config_path, "w") as f:
-                        self.data['manual_offset'] = {str(self.slot) : offset}
+                        self.data['manual_offset'] = {str(self.slot) : corner_wells}
                         json.dump(self.data, f)
                     print("Manual offset saved")
                 else:
                     print("Manual offset applied, but not saved")
             else:
-                self.manualOffset[str(self.slot)] = offset
+                self.manualOffset[str(self.slot)] = corner_wells
                 with open(self.config_path, "w") as f:
-                    self.data['manual_offset'] = {str(self.slot) : offset}
+                    self.data['manual_offset'] = {str(self.slot) : corner_wells}
                     f.seek(0)
                     json.dump(self.data, f, indent=4)
                 print("Manual offset saved")
         else:
-            self.manualOffset[str(self.slot)] = offset
+            self.manualOffset[str(self.slot)] = corner_wells
 
-    def load_manualOffset(self, apply: bool = False):
+    def load_manualOffset(self, apply: bool = True):
         """Loads the manual offset of a labware from its config `.json` file for a specific slot
 
         :param apply: Option to apply the manual offset to the labware or return values, defaults to False
@@ -687,7 +685,9 @@ class Labware(WellSet):
         if self.manualOffset[str(self.slot)]:
             if apply:
                 self.manual_offset(self.manualOffset[str(self.slot)])
-            return self.manualOffset[str(self.slot)]
+                return
+            else:
+                return self.manualOffset[str(self.slot)]
         else:
             return self.data['manual_offset'][self.slot]
         
