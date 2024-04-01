@@ -448,6 +448,8 @@ class Machine():
         try:
             # Try sending the command with requests.post
             response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
+            if 'rejected' in response:
+                raise requests.RequestException
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
