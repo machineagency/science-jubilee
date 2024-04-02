@@ -588,8 +588,8 @@ class Labware(WellSet):
         """
         x_nom, y_nom = self._nominal_coordinates(well, x_space, y_space)
 
-        x_translated = x_nom * cos(theta) - y_nom * sin(theta) + upper_left[0] 
-        y_translated = x_nom * sin(theta) + y_nom * cos(theta) + upper_left[1]
+        x_translated = upper_left[0] +  x_nom * cos(theta) - y_nom * sin(theta) 
+        y_translated = upper_left[1] - (x_nom * sin(theta) + y_nom * cos(theta))
         
         return x_translated, y_translated
 
