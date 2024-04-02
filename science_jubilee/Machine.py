@@ -854,7 +854,7 @@ class Machine():
     @requires_safe_z
     def park_tool(self):
         """Park the current tool adn cahnges active tool index to `-1`."""
-        self.safe_z_movement()
+        # self.safe_z_movement()
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         current_tool_index= self.active_tool_index
