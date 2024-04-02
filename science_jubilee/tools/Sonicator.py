@@ -250,7 +250,7 @@ class Sonicator(Tool):
             self.perform_cleanining_protocol()
  
 
-    def set_cleaning_protocol(self, wells:List[Well], power:List[float], time:List[float]):
+    def set_cleaning_protocol(self, wells:List[Well], power:List[float], time:List[float], plunge_depth :float = None):
         """Set the cleaning protocol for the sonicator.
         
         :param wells: list of wells to clean
@@ -259,11 +259,13 @@ class Sonicator(Tool):
         :type power: List[float]
         :param time: time to clean for
         :type time: List[float]
+        :param plunge_depth: depth of the sonicator into the well, defaults to None
+        :type plunge_depth: float, optional
         """
         assert len(wells) == len(power) == len(time), \
             "Error: wells, power, and time must be the same length."
 
-        self.cleaning = {'Wells': wells, 'Power': power, 'Time': time}
+        self.cleaning = {'Wells': wells, 'Power': power, 'Time': time, 'Plunge Depth': plunge_depth}
         print("Cleaning protocol set.")
 
     def perform_cleanining_protocol(self, plunge_depth :float = None):
@@ -276,12 +278,19 @@ class Sonicator(Tool):
         wells = self.cleaning['Wells']
         power = self.cleaning['Power']
         time = self.cleaning['Time']
+        depth = self.cleaning['Plunge Depth']
 
-        if self.plunge_depth is None:
-            plunge_depth = plunge_depth
+        if depth != None:
+            z_depth = depth
+        elif plunge_depth != None:
+            z_depth = plunge_depth
+        elif self.plunge_depth != None and depth == None and plunge_depth == None:
+            z_depth = self.plunge_depth
+        else:
+            assert plunge_depth != None, "Error: plunge depth must be specified."
 
         for well, power, time in zip(wells, power, time):
-            self.sonicate_well(well, plunge_depth, time, power, 1, 1.0, verbose=True)
+            self.sonicate_well(well, z_depth, time, power, 1, 1.0, verbose=True)
 
         self._machine.move_to(z=wells[-1].top(30))
         time.sleep(30)
