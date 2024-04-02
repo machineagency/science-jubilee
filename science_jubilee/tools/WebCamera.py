@@ -74,7 +74,7 @@ class Camera(Tool):
         return cls(index=index, name=name,**kwargs)
     
     @requires_active_tool
-    def _capture_image(self, timeout = 10):
+    def _capture_image(self, timeout = 30):
         """ Capture image from raspberry pi and write to file
 
         :param timeout: the timeout for the http request, defaults to 10
@@ -94,7 +94,7 @@ class Camera(Tool):
     
     @requires_active_tool
     def capture_image(self, location: Union[Well, Tuple], light: bool = False,
-                      light_intensity: int = 0):
+                      light_intensity: int = 0, timeout= 30):
         """Capture an image from the WebCamera at the specified location
 
         :param location: the location of the well to capture an image of
@@ -117,7 +117,7 @@ class Camera(Tool):
         self._machine.move_to(z = picture_heigth, wait = True)
         if light is True:
             self._machine.gcode(f'M42 P{self.light_pin} S{light_intensity}')
-            image = self._capture_image()
+            image = self._capture_image(timeout= timeout)
             self._machine.gcode(f'M42 P{self.light_pin} S0')
         else:
             image = self._capture_image()
