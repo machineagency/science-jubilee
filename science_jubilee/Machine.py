@@ -355,12 +355,13 @@ class Machine():
                 else:
                     break               
 
-            self._tool_z_offsets = [] # Create a fresh list.
+            self._tool_z_offsets = {} # Create a fresh dictionary.
             for tool_data in response:
                 if tool_data is None:
                     continue
+                tool_number = tool_data["number"]
                 tool_z_offset = tool_data["offsets"][2] # Pull Z axis
-                self._tool_z_offsets.append(tool_z_offset)
+                self._tool_z_offsets[tool_number] = tool_z_offset
         except ValueError as e:
             print("Error occurred trying to read z offsets of all tools!")
             raise e
