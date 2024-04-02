@@ -350,13 +350,15 @@ class Machine():
             max_tries = 50
             for i in range(max_tries):
                 response = json.loads(self.gcode('M409 K"tools"'))["result"]
-                if len(response) == 0 :
+                if len(response) == 0:
                     continue
                 else:
                     break               
-            #pprint.pprint(response)
+
             self._tool_z_offsets = [] # Create a fresh list.
             for tool_data in response:
+                if tool_data is None:
+                    continue
                 tool_z_offset = tool_data["offsets"][2] # Pull Z axis
                 self._tool_z_offsets.append(tool_z_offset)
         except ValueError as e:
