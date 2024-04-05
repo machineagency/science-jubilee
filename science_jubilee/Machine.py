@@ -350,15 +350,18 @@ class Machine():
             max_tries = 50
             for i in range(max_tries):
                 response = json.loads(self.gcode('M409 K"tools"'))["result"]
-                if len(response) == 0 :
+                if len(response) == 0:
                     continue
                 else:
                     break               
-            #pprint.pprint(response)
-            self._tool_z_offsets = [] # Create a fresh list.
+
+            self._tool_z_offsets = {} # Create a fresh dictionary.
             for tool_data in response:
+                if tool_data is None:
+                    continue
+                tool_number = tool_data["number"]
                 tool_z_offset = tool_data["offsets"][2] # Pull Z axis
-                self._tool_z_offsets.append(tool_z_offset)
+                self._tool_z_offsets[tool_number] = tool_z_offset
         except ValueError as e:
             print("Error occurred trying to read z offsets of all tools!")
             raise e
@@ -448,6 +451,8 @@ class Machine():
         try:
             # Try sending the command with requests.post
             response = requests.post(f"http://{self.address}/machine/code", data=f"{cmd}", timeout=timeout).text
+            if 'rejected' in response:
+                raise requests.RequestException
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
@@ -849,7 +854,7 @@ class Machine():
     @requires_safe_z
     def park_tool(self):
         """Park the current tool adn cahnges active tool index to `-1`."""
-        self.safe_z_movement()
+        # self.safe_z_movement()
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         current_tool_index= self.active_tool_index
