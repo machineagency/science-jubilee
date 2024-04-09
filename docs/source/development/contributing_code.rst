@@ -52,9 +52,13 @@ As you make your changes, be sure to test often. This is to ensure that other co
 As you're working on the codebase, you'll need to commit your changes to git. A 'commit' records the changes to a set of files. It can get confusing if you make too many changes in a single commit (e.g. it's hard to figure out where things are going wrong if something isn't working), or if you commit too many small changes (e.g. no need to make a commit after a change to a single line of code if you're going to make other related changes). A good rule of thumb is to commit whenever you've finished a task that can be summarized in a sentence-- use you best judgement!
 
 A standard git workflow for commiting changes is:
+
 1. **Check your changes.** Run ``git status`` to see a list of your modified, added, and deleted files. Look through this list and make sure that it looks right. If there are files there that you didn't expect, you can double-check the changes by running ``git diff``. If there are changes there that you did not intend, you should restore them back to their original state.  You should not commit changes to any files which are not relevant to your specific pull request.
+
 2. **Choose the files to add to your commit.** To add all of the files listed from step 1, you can run ``git add .``, where the period ``.`` means 'everything'.
+
 3. **Commit your changes.** Run ``git commit -m <commit_message>`` to commit the changes. You should replace ``<commit_message>`` with a short description of the changes. Avoid generic statements; for example, instead of something like ``Fixed Machine.py``, say ``Fixed hardcoded values in gcode() method``.
+
 4. Repeat as needed after you make more changes!
 
 

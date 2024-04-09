@@ -22,9 +22,15 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
         Tool Prereqs
 
-.. card-carousel:: 2
+.. grid:: 1 2 2 2
+    :gutter: 4
+    :padding: 2 2 0 0
+    :class-container: sd-text-center
 
-    .. card:: Pipette
+    .. grid-item-card:: Pipette
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/pipette-flexure.jpg
 
         To Use an OpenTrons Pipette with Jubilee
 
@@ -38,8 +44,11 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Pipette Tool
     
-    .. card:: Inoculation Loop
-        
+    .. grid-item-card:: Inoculation Loop
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/loop-card.png
+
         To hold inoculation loops, pens, or other probes. 
 
         +++
@@ -52,7 +61,10 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Inoculation Loop Tool
 
-    .. card:: Top-Down Camera
+    .. grid-item-card:: Top-Down Camera
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/camera-card.png
 
         To hold a Raspberry Pi camera for imaging the deck.
 
@@ -66,7 +78,10 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Camera Tool
 
-    .. card:: Side Camera
+    .. grid-item-card:: Side Camera
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/side-camera-card.png
 
         To hold a Raspberry Pi camera to image parallel to the deck.
 
@@ -80,7 +95,10 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Side Camera Tool
     
-    .. card:: Syringe
+    .. grid-item-card:: Syringe
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/syringe-card.png
         
         To hold a 10cc or 50cc syringe
 
@@ -94,7 +112,10 @@ All tools which are supported in ``science_jubilee`` are documented here. For ex
 
             Syringe Tool
 
-    .. card:: Lab Automation Deck
+    .. grid-item-card:: Lab Automation Deck
+        :class-card: intro-card
+        :shadow: md
+        :img-bottom: _static/deck-card.png
         
         Deck attachment to hold 6 standard microplates + disposal containers
 
