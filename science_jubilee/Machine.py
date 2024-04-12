@@ -918,14 +918,12 @@ class Machine():
     # ***************MACROS***************
     def tool_lock(self):
         """Runs Jubilee tool lock macro. Assumes tool_lock.g macro exists."""
-        macro_file = "0:/macros/tool_lock.g"
-        cmd = f"M98 P{macro_file}"
+        cmd = 'M98 P"0:/macros/tool_lock.g"'
         self.gcode(cmd)
         
     def tool_unlock(self):
         """Runs Jubilee tool unlock macro. Assumes tool_unlock.g macro exists."""
-        macro_file = "0:/macros/tool_unlock.g"
-        cmd = f"M98 P{macro_file}"
+        cmd = 'M98 P"0:/macros/tool_unlock.g"'
         self.gcode(cmd)
 
     def disconnect(self):
