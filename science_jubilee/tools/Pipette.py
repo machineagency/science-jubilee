@@ -467,7 +467,7 @@ class Pipette(Tool):
 
     @requires_active_tool
     @tip_check
-    def blowout(self,  s : int = 5000):
+    def blowout(self,  s : int = 6000):
         """Blows out any remaining liquid in the pipette tip
 
         :param s: The speed of the plunger movement in mm/min, defaults to 3000
@@ -496,7 +496,7 @@ class Pipette(Tool):
 
     @requires_active_tool
     @tip_check
-    def mix(self, vol: float, n: int, s: int = 5000):
+    def mix(self, vol: float, n: int, s: int = 5500):
         """Mixes liquid by alternating aspirate and dispense steps for the specified number of times
 
         :param vol: The volume of liquid to mix in uL
@@ -658,9 +658,10 @@ class Pipette(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
         # z moves up/down to make sure tip actually makes it into rack 
-        self._machine.move_to(z = w.top_ - 10)
+        self._machine.move_to(z = w.bottom_ + 20)
         self._drop_tip()
         self.prime()
+        self._machine.move_to(z = w.bottom_ + 30)
         self.has_tip = False
         self.update_z_offset(tip=False)
 
