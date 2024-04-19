@@ -1,11 +1,3 @@
-import platform
-
-if platform.system() == "Linux":
-    import adafruit_mcp4725
-    import board
-    import busio
-    import digitalio
-
 import logging
 import serial
 import time
@@ -51,6 +43,11 @@ class Sonicator(Tool):
     def _raspberrypi_hat(self):
         """Initialize the pins used on the Raspberry Pi Hat."""
 
+        import adafruit_mcp4725
+        import board
+        import busio
+        import digitalio
+
         # define DAC pins for I2C communication 
         self.i2c = busio.I2C(board.SCL, board.SDA)
         self.dac = adafruit_mcp4725.MCP4725(self.i2c, address=0x60)
@@ -75,8 +72,6 @@ class Sonicator(Tool):
         :param power: power level to set the sonicator to. Must be between 0.4 and 1.0.
         :type power: float
         """
-        assert 0.4 <= power <= 1.0, \
-            f"Error: power must be between 0.4 and 1.0. Value specified is: {power}"
         if self.interface_mode == 'Pico':
             self.serial_interface.write(f'DAC:{power}\n'.encode('utf-8'))
             while self.serial_interface.out_waiting > 0: # wait for message to be sent
@@ -186,8 +181,9 @@ class Sonicator(Tool):
     @requires_active_tool
     def sonicate_well(self, location:Union[Well, Tuple, Location],
                         plunge_depth: float, sonication_time: float,
-                        power: float, pulse_duty_cycle: float, pulse_interval: float,
-                        verbose:bool = False,  autoclean : bool = False, *args):
+                        power: float = 0.4, pulse_duty_cycle: float = 0.5,
+                        pulse_interval: float = 1.0, verbose:bool = False,
+                        autoclean : bool = False, *args):
         """Sonicate one well at a specified depth for a given time.
         
         :param location: location of the well to sonicate
@@ -236,7 +232,7 @@ class Sonicator(Tool):
         if autoclean:
             assert self.cleaning is not None, "Error: cleaning protocol not set."
 
-        x, y, z  = Labware.__getxyz(location)
+        x, y, z  = Labware._getxyz(location)
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x,y=y) # Position over the well at safe z height.
@@ -250,7 +246,8 @@ class Sonicator(Tool):
             self.perform_cleanining_protocol()
  
 
-    def set_cleaning_protocol(self, wells:List[Well], power:List[float], time:List[float], plunge_depth :float = None):
+    def set_cleaning_protocol(self, wells:List[Well], power:List[float],
+                              time:List[float], plunge_depth :float = None):
         """Set the cleaning protocol for the sonicator.
         
         :param wells: list of wells to clean
