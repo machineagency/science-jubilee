@@ -329,7 +329,6 @@ class Machine():
         else:
             self._active_tool_index = tool_index
             if tool_index not in self.tools:
-                warnings.warn("Connection initiated with tool equipped. Use reload_tool() after instantiate this tool.")
                 temp_tool = Tool(tool_index, "temp_tool")
                 self.load_tool(temp_tool)
             tool = self.tools[tool_index]["tool"]
@@ -776,10 +775,14 @@ class Machine():
         #TODO: Fix this so if you reload you don't break everything
         name = tool.name
         idx = tool.index
-
+        
         # Ensure that the provided tool index and name are unique.
         if idx in self.tools:
-            raise MachineConfigurationError("Error: Tool index already in use.")
+             # Handle the case that connection was established with a tool equipped
+            if self.tools[idx]['name'] == "temp_tool":
+                tool.is_active_tool = True
+            else:
+                raise MachineConfigurationError("Error: Tool index already in use.")
         for loaded_tool in self.tools.values():
             if loaded_tool["name"] is name:
                 raise MachineConfigurationError("Error: Tool name already in use.")

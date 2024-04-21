@@ -44,10 +44,10 @@ class Camera(Tool):
             config = yaml.safe_load(file)
 
         k_data = config['K']['data']
-        camera_matrix = np.array([k_data[i:i+3] for i in range(0, len(k_data), 3)])
+        camera_matrix = np.array([k_data[i:i+3] for i in range(0, len(k_data), 3)], dtype=object)
         
         d_data = config['D']['data']
-        dist_matrix = np.array([d_data[i:i+3] for i in range(0, len(d_data), 3)])
+        dist_matrix = np.array([d_data[i:i+3] for i in range(0, len(d_data), 3)], dtype=object)
         self._camera_matrix = camera_matrix
         self._dist_matrix = dist_matrix
 
