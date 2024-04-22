@@ -82,7 +82,7 @@ class SyringeExtruder(Tool):
         d = self.dist(start, end)
         
         # hardcoding nozzle/syringe radius for now
-        return d * (0.898 / 14) ** 2
+        return 2 * d * (0.898 / 14) ** 2
     
     def dist(self, start, end):
         dist = math.sqrt( (end[0] - start[0])**2 + (end[1]- start[1])**2 + (end[2] - start[2])**2)
@@ -94,7 +94,6 @@ class SyringeExtruder(Tool):
         self.move_extrude(x=x, y=y-50, z=z, multiplier=3)
         
     def wipe_tower(self, x = 285, y = 250, z = 0.2):
-        z -= 1.5 # glass plate height
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z = z)
         self._machine.move_to(x=x, y=y-10, z=z, s = 360)
