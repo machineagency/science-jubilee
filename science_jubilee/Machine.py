@@ -616,7 +616,29 @@ class Machine():
             if axis.upper() not in ['X', 'Y', 'Z', 'U']:
                 raise TypeError(f"Error: cannot home unknown axis: {axis}.")
             self.gcode(f"G92 {axis.upper()}0")
-
+            
+    def set_tool_offset(self, tool_idx = None, x = None, y = None, z = None):
+        if tool_idx is None:
+            raise MachineConfigurationError("No tool index provided!")
+            
+        x = "{0:.2f}".format(x) if x is not None else None
+        y = "{0:.2f}".format(y) if y is not None else None
+        z = "{0:.2f}".format(z) if z is not None else None
+        
+        p_cmd = x_cmd = y_cmd = z_cmd = ''
+        
+        if tool_idx is not None:
+            p_cmd = f"P{tool_idx}"
+        if x is not None:
+            x_cmd = f"X{x}"
+        if y is not None:
+            y_cmd = f"Y{y}"
+        if z is not None:
+            z_cmd = f"Z{z}"
+        
+        cmd = f"G10 {p_cmd} {z_cmd} {x_cmd} {y_cmd}"
+        self.gcode(cmd)
+        
     @machine_homed
     def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None,
                      v: float = None, s: float = 6000, param: str=None , wait: bool = False):
