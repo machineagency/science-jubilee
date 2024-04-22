@@ -1,13 +1,12 @@
 import json
 import logging
 import os
-import time
-
+ 
 # this is the Ocean Optics SDK, which is (very unfortunately) not open-source
-from oceandirect.OceanDirectAPI import OceanDirectAPI, Spectrometer
-
+from oceandirect.OceanDirectAPI import OceanDirectAPI
+from datetime import date
 from science_jubilee.labware.Labware import Labware, Well, Location
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+from science_jubilee.tools.Tool import Tool, requires_active_tool
 from typing import Tuple, Union
 
 import matplotlib.pyplot as plt
@@ -27,6 +26,7 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         self.index = index
         self.current_well = None
         self._dark_spectrum = False
+        self.reference_spectrum = None
            
     @property
     def _api_version(self):
@@ -157,16 +157,17 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
     def lamp_shutter(self, open=True):
         """Opens or closes light source shutter, if feature is available on light source.)
 
-        :param state: True opens the shutter/False closes it, defaults to False
+        :param open: True opens the shutter/False closes it, defaults to False
         :type state: bool, optional
         """
         # need to add a try statement as not all light-sources have a shutter
-        if open: 
+        if open == True: 
             state = 'Open'
         else:
             state = 'Close'
 
         self.spectrometer.Advanced.set_enable_lamp(open)
+
         if self.spectrometer.Advanced.get_enable_lamp() == open:
             print(f"Light shutter was set to {state}")
         else:
@@ -176,15 +177,13 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         #     print('No such feature on current device')
         return
 
-    def _take_spectrum(self, shutter= 'Open'):
+    def _take_spectrum(self, open= True):
         """Collect a spectrum with the specified experimental parameters"""
         
-        if shutter== 'Open' or 'open':
-            self.lamp_shutter(open=True)
-        else:
-            self.lamp_shutter(open=False)
+        self.lamp_shutter(open=open)
 
         spectrum = self.spectrometer.get_formatted_spectrum()
+
         return spectrum
 
     def dark_spectrum(self, int_time:float, scan_num:int, boxcar_w:int= None,
@@ -201,15 +200,14 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         self.integration_time(int_time)
         self.scans_to_average(scan_num)
         self.boxcar_width(boxcar_w)
-        self.lamp_shutter(open=False)
         
-        dark = self._take_spectrum(shutter='close')
+        dark = self._take_spectrum(open=False)
 
         self._dark_spectrum = True
         self._dark = dark
 
         if save is True:
-            self.save_to_file(dark =True, path=path, filename=filename)
+            self.save_to_file(dark, dark =True, path=path, filename=filename)
 
         return dark
 
@@ -239,7 +237,7 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         else:
             pass
 
-        spectrum = self._take_spectrum(shutter='Open')
+        spectrum = self._take_spectrum(open=True)
 
         return spectrum
     
@@ -266,15 +264,15 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
                                    int_time_units= int_time_units)
         
         if save is True:
-            self.save_to_file(dark =False, path=path, filename=filename)
+            self.save_to_file(intensities, dark =False, path=path, filename=filename)
 
         return intensities
     
-    def save_to_file(self, dark:bool = False, path:str = None, filename:str = None):
+    def save_to_file(self, data, dark:bool = False, path:str = None, filename:str = None):
         """ Save the spectrum to a file """
 
         metadata = {
-            "Date": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "Date": date.today().strftime("%Y%m%d"),
             "Tool": self.name,
             "Index": self.index,
             "Model": self._model,
@@ -285,14 +283,19 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
             "Integration Time": self._integration_time
         }
         
-        raw_data = {'wavelegth': self.wavelengths,
-                    'intensity': self._take_spectrum()}
+        raw_data = {'wavelength': self.wavelengths,
+                    'intensity': data}
 
         if filename is None:
             if dark is True:
-                filename = f"dark_spectrum_{time.strftime('%Y%m%d-%H%M%S')}.txt"
+                filename = f"dark_spectrum_{metadata['Date']}.txt"
             else:
-                filename = f"slot{self.current_well.slot}_{self.current_well.name}_spectrum_{time.strftime('%Y%m%d-%H%M%S')}.txt"
+                filename = f"slot{self.current_well.slot}_{self.current_well.name}_spectrum_{metadata['Date']}.txt"
+        else:
+            pass
+
+        if path is None:
+            path = './'
         else:
             pass
         # add well location information to metadata as well if not the 'dark' spectrum 
@@ -304,6 +307,29 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         
         print(f"Spectrum saved to {path}/{filename}")
         return
+    
+    def read_from_file(self, filepath, scale = True, reference_spectrum = None):
+
+        metadata, measurements = MeasurementManager.read_file(filepath)
+
+        if scale == True:
+            if reference_spectrum == None and self.reference_spectrum == None:
+                print("Reference spectrum must be provided for scaling.")
+                return
+            elif reference_spectrum == None and self.reference_spectrum != None:
+                reference_spectrum = self.reference_spectrum
+            else:
+                pass
+            measurements['Intensity'] = self.scale_intensity(measurements['Intensity'], reference_spectrum)
+        return metadata, measurements
+    
+    @staticmethod
+    def scale_intensity( data:list, reference_spectrum:list):
+
+        assert len(data) == len(reference_spectrum), "Data and reference spectrum must be of same size"
+        scaled_intensities = [d/r for d, r in zip(data, reference_spectrum)]
+
+        return scaled_intensities
 
 
 class MeasurementManager:
@@ -311,8 +337,8 @@ class MeasurementManager:
 
     def __init__(self, metadata, raw_data):
         self.raw_data = raw_data
-        self.wavelength = raw_data["wavelength"]
-        self.intensity = raw_data["intensity"]
+        self.wavelengths = raw_data["wavelength"]
+        self.intensities = raw_data["intensity"]
         self.metadata = metadata 
 
     def pretty_print(self):
@@ -332,7 +358,6 @@ class MeasurementManager:
             file.write("---- METADATA ----\n")
             for key, value in self.metadata.items():
                 file.write(f"{key}: {value}\n")
-            file.write("\n")
 
             # Write raw data section
             file.write("---- RAW DATA ----\n")
@@ -341,7 +366,7 @@ class MeasurementManager:
     
     def read_file(filepath):
         metadata = {}
-        measurements = []
+        measurements = {"Wavelength": [], "Intensity": []}
 
         with open(filepath, "r") as file:
             section = None
@@ -356,6 +381,8 @@ class MeasurementManager:
                     metadata[key] = value
                 elif section == "raw_data":
                     wavelength, intensity = line.split("\t")
-                    measurements.append((float(wavelength), float(intensity)))
+                    measurements["Wavelength"].append(float(wavelength))
+                    measurements['Intensity'].append(float(intensity))
 
         return metadata, measurements
+    
