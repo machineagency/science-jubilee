@@ -82,8 +82,8 @@ def requires_safe_z(func):
         if self.deck:
             safe_z = self.deck.safe_z
         else:
-            safe_z = 25
-            warnings.warn(f"No deck configured, safe z height has been set to {safe_z}. Please modify this if needed.")
+            safe_z = 0
+            # warnings.warn(f"No deck configured, safe z height has been set to {safe_z}. Please modify this if needed.")
         if current_z < safe_z:
             self.move_to(z=safe_z + 20)
         return func(self, *args, **kwds)
@@ -803,10 +803,8 @@ class Machine():
              # Handle the case that connection was established with a tool equipped
             if self.tools[idx]['name'] == "temp_tool":
                 tool.is_active_tool = True
-            else:
-                raise MachineConfigurationError("Error: Tool index already in use.")
         for loaded_tool in self.tools.values():
-            if loaded_tool["name"] is name:
+            if loaded_tool["name"] is name and loaded_tool["tool"].index != idx:
                 raise MachineConfigurationError("Error: Tool name already in use.")
 
         self.tools[idx] = {"name": name, "tool": tool}

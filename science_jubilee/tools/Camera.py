@@ -88,7 +88,7 @@ class Camera(Tool):
         with picamera.PiCamera() as camera:
             camera.resolution = (1200, 1200)
             camera.framerate = 24
-            time.sleep(2)
+            time.sleep(5)
             output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8) 
             camera.capture(output, "rgb", use_video_port=True)
             tpose = np.transpose(output, axes=(1, 0, 2))
