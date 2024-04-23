@@ -24,6 +24,9 @@ class SyringeExtruder(Tool):
         self.max_range = None
         self.mm_to_ml = None
         self.e_drive = "E1"
+        
+        self.nozzle_diameter = 0.898 # default 18 gauge tip
+        self.syringe_diameter = 14
 
         self.load_config(config)
 
@@ -61,6 +64,8 @@ class SyringeExtruder(Tool):
         # Query the object model to find this
         tool_info = json.loads(self._machine.gcode('M409 K"tools[]"'))["result"]
         for tool in tool_info:
+            if tool is None:
+                continue
             if tool["number"] == self.index:
                 self.e_drive = f"E{tool['extruders'][0]}" # Syringe tool has only 1 extruder
             else:
@@ -78,15 +83,36 @@ class SyringeExtruder(Tool):
     def make_e(self, x, y, z):
         pos = self._machine.get_position()
         start = [float(pos['X']), float(pos['Y']), float(pos['Z'])]
+        if x is None:
+            x = start[0]
+        if y is None:
+            y = start[1]
+        if z is None:
+            z = start[2]
         end = [x, y, z]
         d = self.dist(start, end)
         
-        # hardcoding nozzle/syringe radius for now
-        return d * (0.898 / 14) ** 2
+        return 2 * d * (self.nozzle_diameter / self.syringe_diameter) ** 2
     
     def dist(self, start, end):
         dist = math.sqrt( (end[0] - start[0])**2 + (end[1]- start[1])**2 + (end[2] - start[2])**2)
         return dist
+    
+    def wipe_nozzle(self, x = 285, y = 250, z=0.2):
+        self._machine.move_to(x=x, y=y)
+        self._machine.move_to(z = z)
+        self.move_extrude(x=x, y=y-50, z=z, multiplier=3)
+        
+    def wipe_tower(self, x = 285, y = 250, z = 0.2):
+        self._machine.move_to(x=x, y=y, s=3600)
+        self._machine.move_to(z = z)
+        self.move_extrude(x=x, y=y-20, z=z, s = 200)
+        self.move_extrude(x=x-20, y=y-20, z=z, s = 200)
+        self.move_extrude(x=x-20, y=y, z=z, s = 200)
+        self.move_extrude(x=x, y=y, z=z, s = 200)
+        self._machine.move(dx=3)
+        
+        
                     
     @requires_active_tool
     def move_extrude(self, x = None, y = None, z = None, s = 180, multiplier = 1, e = None):

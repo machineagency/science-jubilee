@@ -10,7 +10,7 @@ from matplotlib import pyplot as plt
 from science_jubilee.labware.Labware import Well
 from science_jubilee.tools.Tool import Tool,  requires_active_tool
 from typing import Tuple
-
+import yaml
 
 if platform.system() == "Linux":
     import picamera  # Note that this can only be installed on raspbery pi.
@@ -28,10 +28,9 @@ class Camera(Tool):
         super().__init__(index, name)
         self._camera_matrix = None
         self._dist_matrix = None
-
-        self.load_coefficients(
-            "/home/pi/plos-revision-submission/duckbot/science_jubilee/science_jubilee/tools/configs/calibration_checkerboard.yml"
-        )
+        # self.load_coefficients(
+        #     "/home/pi/POSE/science_jubilee/science_jubilee/tools/configs/calibration_checkerboard.yml"
+        # )
 
     def load_coefficients(self, path):
         """Loads camera matrix and distortion coefficients.
@@ -41,20 +40,17 @@ class Camera(Tool):
         :return: A list containing your camera matrix (index 0) and distortion matrix (index 1)
         :rtype: list
         """        """"""
-        
-        # N.B. opencv doesn't like opening files in different directories :/
-        # ToDo: do this from a json, and update calibration process accordingly
-        # FILE_STORAGE_READ
-        cv_file = cv2.FileStorage(path, cv2.FILE_STORAGE_READ)
+        with open(path, 'r') as file:
+            config = yaml.safe_load(file)
 
-        # note we also have to specify the type to retrieve other wise we only get a
-        # FileNode object back instead of a matrix
-        camera_matrix = cv_file.getNode("K").mat()
-        dist_matrix = cv_file.getNode("D").mat()
+        k_data = config['K']['data']
+        camera_matrix = np.array([k_data[i:i+3] for i in range(0, len(k_data), 3)], dtype=object)
+        
+        d_data = config['D']['data']
+        dist_matrix = np.array([d_data[i:i+3] for i in range(0, len(d_data), 3)], dtype=object)
         self._camera_matrix = camera_matrix
         self._dist_matrix = dist_matrix
 
-        cv_file.release()
         return [camera_matrix, dist_matrix]
 
     def get_camera_indices(self):
@@ -92,15 +88,14 @@ class Camera(Tool):
         with picamera.PiCamera() as camera:
             camera.resolution = (1200, 1200)
             camera.framerate = 24
-            time.sleep(2)
-            # print("... camera connection established")
+            time.sleep(5)
             output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8) 
             camera.capture(output, "rgb", use_video_port=True)
             tpose = np.transpose(output, axes=(1, 0, 2))
-            undistorted = cv2.undistort(
-                tpose, self._camera_matrix, self._dist_matrix, None, self._camera_matrix
-            )
-            return undistorted
+            # undistorted = cv2.undistort(
+            #     tpose, self._camera_matrix, self._dist_matrix, None, self._camera_matrix
+            # )
+            return tpose
 
     def show_frame(self, frame, grid=False, save=False, save_path="fig.png"):
         """Show a captured frame using matplotlib.
@@ -123,6 +118,7 @@ class Camera(Tool):
                 [w / 2], [h / 2], marker="o"
             )  # put a marker in the center of the image
         if save:
+            plt.axis('off')
             plt.savefig(f"{save_path}")
         plt.show()
 

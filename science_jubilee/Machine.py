@@ -82,8 +82,8 @@ def requires_safe_z(func):
         if self.deck:
             safe_z = self.deck.safe_z
         else:
-            safe_z = 25
-            warnings.warn(f"No deck configured, safe z height has been set to {safe_z}. Please modify this if needed.")
+            safe_z = 0
+            # warnings.warn(f"No deck configured, safe z height has been set to {safe_z}. Please modify this if needed.")
         if current_z < safe_z:
             self.move_to(z=safe_z + 20)
         return func(self, *args, **kwds)
@@ -329,7 +329,6 @@ class Machine():
         else:
             self._active_tool_index = tool_index
             if tool_index not in self.tools:
-                warnings.warn("Connection initiated with tool equipped. Use reload_tool() after instantiate this tool.")
                 temp_tool = Tool(tool_index, "temp_tool")
                 self.load_tool(temp_tool)
             tool = self.tools[tool_index]["tool"]
@@ -617,7 +616,29 @@ class Machine():
             if axis.upper() not in ['X', 'Y', 'Z', 'U']:
                 raise TypeError(f"Error: cannot home unknown axis: {axis}.")
             self.gcode(f"G92 {axis.upper()}0")
-
+            
+    def set_tool_offset(self, tool_idx = None, x = None, y = None, z = None):
+        if tool_idx is None:
+            raise MachineConfigurationError("No tool index provided!")
+            
+        x = "{0:.2f}".format(x) if x is not None else None
+        y = "{0:.2f}".format(y) if y is not None else None
+        z = "{0:.2f}".format(z) if z is not None else None
+        
+        p_cmd = x_cmd = y_cmd = z_cmd = ''
+        
+        if tool_idx is not None:
+            p_cmd = f"P{tool_idx}"
+        if x is not None:
+            x_cmd = f"X{x}"
+        if y is not None:
+            y_cmd = f"Y{y}"
+        if z is not None:
+            z_cmd = f"Z{z}"
+        
+        cmd = f"G10 {p_cmd} {z_cmd} {x_cmd} {y_cmd}"
+        self.gcode(cmd)
+        
     @machine_homed
     def _move_xyzev(self, x: float = None, y: float = None, z: float = None, e: float = None,
                      v: float = None, s: float = 6000, param: str=None , wait: bool = False):
@@ -776,12 +797,14 @@ class Machine():
         #TODO: Fix this so if you reload you don't break everything
         name = tool.name
         idx = tool.index
-
+        
         # Ensure that the provided tool index and name are unique.
         if idx in self.tools:
-            raise MachineConfigurationError("Error: Tool index already in use.")
+             # Handle the case that connection was established with a tool equipped
+            if self.tools[idx]['name'] == "temp_tool":
+                tool.is_active_tool = True
         for loaded_tool in self.tools.values():
-            if loaded_tool["name"] is name:
+            if loaded_tool["name"] is name and loaded_tool["tool"].index != idx:
                 raise MachineConfigurationError("Error: Tool name already in use.")
 
         self.tools[idx] = {"name": name, "tool": tool}
