@@ -64,6 +64,8 @@ class SyringeExtruder(Tool):
         # Query the object model to find this
         tool_info = json.loads(self._machine.gcode('M409 K"tools[]"'))["result"]
         for tool in tool_info:
+            if tool is None:
+                continue
             if tool["number"] == self.index:
                 self.e_drive = f"E{tool['extruders'][0]}" # Syringe tool has only 1 extruder
             else:
