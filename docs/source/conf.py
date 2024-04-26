@@ -44,3 +44,15 @@ autoapi_dirs = ['../../science_jubilee']
 
 html_theme = 'pydata_sphinx_theme'
 html_static_path = ['_static']
+
+html_theme_options = {
+    "use_edit_page_button": True,
+}
+
+html_context = {
+    # "github_url": "https://github.com", # or your GitHub Enterprise site
+    "github_user": "machineagency",
+    "github_repo": "science_jubilee",
+    "github_version": "main",
+    "doc_path": "docs/source",
+}
