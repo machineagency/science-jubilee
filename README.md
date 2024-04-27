@@ -53,7 +53,26 @@ m.load_tool(pipette)                                           # configure the p
 ...
 ```
 
+[![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee)
+[![ReadTheDocs](https://readthedocs.org/projects/science_jubilee/badge/?version=latest)](https://science_jubilee.readthedocs.io/en/stable/)
+[![Coveralls](https://img.shields.io/coveralls/github/<USER>/science_jubilee/main.svg)](https://coveralls.io/r/<USER>/science_jubilee)
+[![PyPI-Server](https://img.shields.io/pypi/v/science_jubilee.svg)](https://pypi.org/project/science_jubilee/)
+[![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee)
+[![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
+[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/science_jubilee)
+-->
+
+[![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
 
 
+> Add a short description here!
+
+A longer description of your project goes here...
 
 
+<!-- pyscaffold-notes -->
+
+## Note
+
+This project has been set up using PyScaffold 4.5. For details and usage
+information on PyScaffold see https://pyscaffold.org/.
