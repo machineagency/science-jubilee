@@ -1,6 +1,19 @@
 # 🔬🧪 Science Jubilee ⚡⚙️
 ### Controlling Jubilees for Science!
 
+[![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee)
+[![ReadTheDocs](https://readthedocs.org/projects/science_jubilee/badge/?version=latest)](https://science_jubilee.readthedocs.io/en/stable/)
+[![Coveralls](https://img.shields.io/coveralls/github/<USER>/science_jubilee/main.svg)](https://coveralls.io/r/<USER>/science_jubilee)
+[![PyPI-Server](https://img.shields.io/pypi/v/science_jubilee.svg)](https://pypi.org/project/science_jubilee/)
+[![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee)
+[![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
+[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/science_jubilee)
+-->
+
+[![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
+
+> Use an open-source toolchanger to do science
+
 <p align="center"><img src="./docs/images/pipetting.gif" width="800"/></p>
 
 This repository hosts files to build and control a [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) for scientific applications. The core of the software is a Python interface for Jubilee to navigate labware installed in the machine. We currently provide assembly instructions, control software, and examples for various tools including OT-2 pipettes, syringes, and cameras. While these tools might cater exactly to your planned use case, they most likely will not! We share these files as a starting point rather than an endpoint: we also provide instructions for developing new tools and associated software for controlling them. We hope you will build new tools for your application and contribute them back to the community for others to use and extend 🛠️
@@ -52,22 +65,6 @@ pipette = Pipette(<index>, <name>, <tip_rack>, <config_file>)  # instantiate you
 m.load_tool(pipette)                                           # configure the pipette for use on the machine
 ...
 ```
-
-[![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee)
-[![ReadTheDocs](https://readthedocs.org/projects/science_jubilee/badge/?version=latest)](https://science_jubilee.readthedocs.io/en/stable/)
-[![Coveralls](https://img.shields.io/coveralls/github/<USER>/science_jubilee/main.svg)](https://coveralls.io/r/<USER>/science_jubilee)
-[![PyPI-Server](https://img.shields.io/pypi/v/science_jubilee.svg)](https://pypi.org/project/science_jubilee/)
-[![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee)
-[![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
-[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/science_jubilee)
--->
-
-[![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
-
-
-> Add a short description here!
-
-A longer description of your project goes here...
 
 
 <!-- pyscaffold-notes -->
