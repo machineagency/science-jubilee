@@ -1,0 +1,22 @@
+# Requirements file for ReadTheDocs, check .readthedocs.yml.
+# To build the module reference correctly, make sure every external package
+# under `install_requires` in `setup.cfg` is also listed here!
+# sphinx_rtd_theme
+myst-parser[linkify]
+sphinx>=3.2.1
+flask
+pydata-sphinx-theme
+pyserial #==3.5
+requests
+ipykernel
+numpy
+opencv_contrib_python #==4.5.3.56
+matplotlib
+Jinja2
+sphinx
+sphinx-design
+pydata_sphinx_theme
+sphinx-autoapi
+picamera; platform_machine=='aarch64'
+adafruit-mcp4725
+Adafruit-Blinka
