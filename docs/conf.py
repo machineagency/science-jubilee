@@ -72,6 +72,9 @@ extensions = [
     "sphinx.ext.ifconfig",
     "sphinx.ext.mathjax",
     "sphinx.ext.napoleon",
+    "sphinx.ext.githubpages",
+    "sphinx_design",
+    "autoapi.extension",
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -173,12 +176,14 @@ todo_emit_warnings = True
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
 
-autoapi_dirs = ["../science_jubilee"]
+# autoapi info
+autoapi_dirs = ["../src"]
+# autoapi_add_toctree_entry = False
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
-html_theme_options = {"sidebar_width": "300px", "page_width": "1200px"}
+# html_theme_options = {"sidebar_width": "300px", "page_width": "1200px"}
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
