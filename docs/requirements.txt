@@ -5,7 +5,9 @@
 myst-parser[linkify]
 sphinx>=3.2.1
 flask
-pydata-sphinx-theme
+pydata_sphinx_theme
+sphinx-autoapi
+sphinx-design
 pyserial #==3.5
 requests
 ipykernel
