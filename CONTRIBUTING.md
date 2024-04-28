@@ -68,10 +68,7 @@ by adding missing information and correcting mistakes.
 This means that the docs are kept in the same repository as the project code, and
 that any documentation update is done in the same way was a code contribution.
 
-```{todo} Don't forget to mention which markup language you are using.
-
-    e.g.,  [reStructuredText] or [CommonMark] with [MyST] extensions.
-```
+We are using [CommonMark] with [MyST] extensions.
 
 ```{todo} If your project is hosted on GitHub, you can also mention the following tip:
 
@@ -186,7 +183,7 @@ conda activate science_jubilee
 2. Start your work on this branch. Don't forget to add [docstrings] to new
    functions, modules and classes, especially if they are part of public APIs.
 
-3. Add yourself to the list of contributors in `AUTHORS.rst`.
+3. Add yourself to the list of contributors in `AUTHORS.md`.
 
 4. When you’re done editing, do:
 
