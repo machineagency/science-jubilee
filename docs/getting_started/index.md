@@ -1,10 +1,13 @@
-.. _getting_started:
+---
+title: Getting Started with Science Jubilee
+---
 
-===============
-Getting Started
-===============
+(getting-started)=
+# Getting Started
 
+## Installation
 
+```{eval-rst}
 .. card:: Installation
     :class-card: intro-card
     :shadow: md
@@ -20,7 +23,19 @@ Getting Started
         :expand:
 
         Installation Guide
+```
 
+## Overview
+
+`science_jubilee` provides a Python interface to operate a Jubilee. It is comprised of:
+- a `Machine`, which controls the Jubilee motion platform;
+- `tools`, which provide task-specific functionality;
+- `decks`, which can be attached to the Jubilee bed plate;
+- and `labware` to be used on the machine.
+
+These tutorials focus on applications using a Lab Automation deck which holds 6 standard sized microplates, thus allowing Jubilee to navigate between labware wells. However, there is no requirement to use the Lab Automation deck, and you might find it useful to develop alternative decks for your application!
+
+```{eval-rst}
 .. grid:: 1 2 2 2
     :gutter: 4
     :padding: 2 2 0 0
@@ -50,7 +65,7 @@ Getting Started
 
         +++
 
-        .. button-ref:: machine_guide
+        .. button-ref:: machine-intro
             :ref-type: ref
             :click-parent:
             :color: secondary
@@ -66,7 +81,7 @@ Getting Started
 
         +++
 
-        .. button-ref:: deck_guide
+        .. button-ref:: deck-guide
             :ref-type: ref
             :click-parent:
             :color: secondary
@@ -82,18 +97,19 @@ Getting Started
 
         +++
 
-        .. button-ref:: pipette_guide
+        .. button-ref:: pipette-guide
             :ref-type: ref
             :click-parent:
             :color: secondary
             :expand:
 
             Serial Dilution Pipetting Tutorial
+```
 
-.. toctree::
-   :maxdepth: 5
-   :hidden:
-
-   getting_started/index
-   building/index
-   development/index
+```{toctree}
+installation
+primer
+machine_intro
+deck_guide
+pipette_guide
+```
