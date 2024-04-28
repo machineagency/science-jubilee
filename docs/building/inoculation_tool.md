@@ -4,9 +4,10 @@ title: Inoculation Loop Tool
 
 (last edited by Blair on 2023.11.11)
 
+(inoculation-loop-tool)=
 # Inoculation Loop Tool
 
-![Inoculation loop dipping into a well to pick up duckweed fronds](../_static/loop-dip.png){scale="25%" alt="Inoculation loop dipping into well."}
+![Inoculation loop dipping into a well to pick up duckweed fronds](_static/loop-dip.png){scale="25%" alt="Inoculation loop dipping into well."}
 
 The inoculation loop tool uses the existing [pen tool](https://jubilee3d.com/index.php?title=Passive_Pen_Tool) to hold an inoculation loop or other probes.
 

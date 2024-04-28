@@ -3,6 +3,7 @@ title: Jubilee Build Resources
 last_edited: Blair, 2023.11.10
 ---
 
+(jubilee-build-resources)=
 # Jubilee Build Resources
 
 The Jubilee project has its own documentation and build resources. This page collates existing documentation to help you get started in building a Jubilee.

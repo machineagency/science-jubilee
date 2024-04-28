@@ -4,9 +4,10 @@ title: Side Camera Tool
 
 (last edited by Blair on 2023.11.11)
 
+(side-camera-tool)=
 # Side Camera Tool
 
-![Side Camera tool parked on a Jubilee](../_static/side-camera.png){scale="25%"}
+![Side Camera tool parked on a Jubilee](_static/side-camera.png){scale="25%"}
 
 ## Parts to Buy
 

@@ -2,6 +2,7 @@
 title: Building Science Jubilee Tools
 ---
 
+(building-science-jubilee-tools)=
 # Building Science Jubilee Tools
 
 All tools which are supported in `science_jubilee` are documented here. For existing tools, we link to documentation on the Jubilee project page and provide additional information where necessary.
@@ -16,7 +17,7 @@ Most any Jubilee tool will require a few parts, like a parking post and cable ma
 
 ### Pipette Tool
 
-![Pipette](../_static/pipette-flexure.jpg)
+![Pipette](_static/pipette-flexure.jpg)
 
 To use an OpenTrons Pipette with Jubilee
 
@@ -24,7 +25,7 @@ To use an OpenTrons Pipette with Jubilee
 
 ### Inoculation Loop Tool
 
-![Inoculation Loop](../_static/loop-card.png)
+![Inoculation Loop](_static/loop-card.png)
 
 To hold inoculation loops, pens, or other probes.
 
@@ -32,7 +33,7 @@ To hold inoculation loops, pens, or other probes.
 
 ### Top-Down Camera Tool
 
-![Top-Down Camera](../_static/camera-card.png)
+![Top-Down Camera](_static/camera-card.png)
 
 To hold a Raspberry Pi camera for imaging the deck.
 
@@ -40,7 +41,7 @@ To hold a Raspberry Pi camera for imaging the deck.
 
 ### Side Camera Tool
 
-![Side Camera](../_static/side-camera-card.png)
+![Side Camera](_static/side-camera-card.png)
 
 To hold a Raspberry Pi camera to image parallel to the deck.
 
@@ -48,7 +49,7 @@ To hold a Raspberry Pi camera to image parallel to the deck.
 
 ### Syringe Tool
 
-![Syringe](../_static/syringe-card.png)
+![Syringe](_static/syringe-card.png)
 
 To hold a 10cc or 50cc syringe.
 
@@ -56,7 +57,7 @@ To hold a 10cc or 50cc syringe.
 
 ### Lab Automation Deck
 
-![Lab Automation Deck](../_static/deck-card.png)
+![Lab Automation Deck](_static/deck-card.png)
 
 Deck attachment to hold 6 standard microplates + disposal containers.
 
