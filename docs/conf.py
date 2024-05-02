@@ -272,7 +272,7 @@ latex_documents = [
         "index",
         "user_guide.tex",
         "science_jubilee Documentation",
-        "Sterling G. Baird",
+        "Machine Agency",
         "manual",
     )
 ]
