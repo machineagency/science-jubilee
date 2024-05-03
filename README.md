@@ -8,8 +8,6 @@
 [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee)
 [![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/science_jubilee)
--->
-
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
 
 > Use an open-source toolchanger to do science
