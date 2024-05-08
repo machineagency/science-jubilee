@@ -21,7 +21,7 @@ Getting Started
 
         Installation Guide
 
-.. grid:: 1 2 2 2 1
+.. grid:: 1 2 2 2
     :gutter: 4
     :padding: 2 2 0 0
     :class-container: sd-text-center
@@ -107,7 +107,7 @@ Getting Started
             Color Mixing Demo Guide
 
 .. toctree::
-   :maxdepth: 6
+   :maxdepth: 5
    :hidden:
 
    getting_started/index
