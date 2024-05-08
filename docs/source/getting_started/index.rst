@@ -21,7 +21,7 @@ Getting Started
 
         Installation Guide
 
-.. grid:: 1 2 2 2
+.. grid:: 1 2 2 2 1
     :gutter: 4
     :padding: 2 2 0 0
     :class-container: sd-text-center
@@ -90,8 +90,24 @@ Getting Started
 
             Serial Dilution Pipetting Tutorial
 
+    .. grid-item-card::  Color Mixing Demo Guide
+        :class-card: intro-card
+        :shadow: md
+
+        Run an autonomous optimization experiment on Jubilee.
+
+        +++
+
+        .. button-ref:: color_mixing_setup
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            Color Mixing Demo Guide
+
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 6
    :hidden:
 
    getting_started/index
