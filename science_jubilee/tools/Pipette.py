@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 
 from itertools import dropwhile, takewhile
 from science_jubilee.labware.Labware import Labware, Well, Location
@@ -111,13 +112,15 @@ class Pipette(Tool):
         self.is_primed = True
 
     @requires_active_tool
-    def _aspirate(self, vol: float, s:int = 2000):
+    def _aspirate(self, vol: float, s:int = 3000, post_aspirate_wait = True):
         """Moves the plunger upwards to aspirate liquid into the pipette tip
 
         :param vol: The volume of liquid to aspirate in uL
         :type vol: float
         :param s: The speed of the plunger movement in mm/min
         :type s: int
+        :param post_aspirate_wait: If true, pauses after aspirating to allow liquids to equilibrate
+        :type post_aspirate_wait: bool
         """
         if self.is_primed == True:
             pass
@@ -129,6 +132,8 @@ class Pipette(Tool):
         end_pos = float(pos['V']) + dv
 
         self._machine.move_to(v=end_pos, s=s )
+        if post_aspirate_wait:
+            time.sleep(0.6)
     
     @requires_active_tool
     @tip_check

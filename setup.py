@@ -18,7 +18,7 @@ setuptools.setup(
                        'requests',
                        'ipykernel',
                        'numpy',
-                       'opencv_contrib_python==4.5.3.56',
+                       'opencv_contrib_python',
                        'matplotlib',
                        'Jinja2',
                        'sphinx',

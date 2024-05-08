@@ -689,7 +689,7 @@ class Machine():
             self.gcode(f"M400")
 
     def move_to(self, x: float = None, y: float = None, z: float = None, e: float = None,
-                 v: float = None, s: float = 6000, param: str =None, wait: bool = False):
+                 v: float = None, s: float = 15000, param: str =None, wait: bool = False):
         """Move to an absolute X/Y/Z/E/V position.
 
         :param x: x position on the bed, in whatever units have been set (default mm)
