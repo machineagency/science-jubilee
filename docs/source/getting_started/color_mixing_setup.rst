@@ -8,7 +8,7 @@ Last Edited: Brenden, 2024.05.08
 
 Introduction:
 =============
-This is a guide to configuring a Jubilee to run the color mixing demo (link to pozzorg color mixing demo repo goes here)
+This is a guide to configuring a Jubilee to run a color matching autonomous experimentation demonstration. Code for this demonstration lives at `<https://github.com/pozzo-research-group/jubilee_pipette_BOdemo>`
 
 While this guide is specific to this experiment, many steps detailed here are transferrable to other experiments. The related config files and jupyter notebooks could be used as templates to set up new experiments.
 
@@ -18,14 +18,15 @@ Prerequisites
 =============
 
 This guide assumes you have: 
+
 1. A correctly assembled Jubilee motion platform with a lab automation deck plate, running a duet 5 mini ethernet and duet 3 expansion board 
 2. A completed opentrons pipette tool
 3. A Raspberry pi-based WebCamera tool with a ring light 
 
 Steps 
 =====
-1. Update the duet config.g file with the associated example file
-2. Wire everything according to the wiring guide
+1. Update the duet config.g file with the associated example file. The `color mixing example config <https://github.com/machineagency/science_jubilee/blob/main/docs/gcode/color_mixing_demo_config.g>` can be found in the science_jubilee github repo under docs/gcode. 
+2. Wire everything according to the `wiring guide <https://github.com/machineagency/science_jubilee/blob/main/docs/pdfs/jubilee_wiring_colormix.pdf>`
 3. Make sure everything homes without crashing 
 4. Set tool parking post positions
 5. Set tool offsets
