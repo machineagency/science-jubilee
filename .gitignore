@@ -52,3 +52,4 @@ MANIFEST
 .venv*/
 .conda*/
 .python-version
+tool_library/OT2_pipette/designs/OT_post_base.3mf
