@@ -1,12 +1,12 @@
 # 🔬🧪 Science Jubilee ⚡⚙️
 ### Controlling Jubilees for Science!
 
-<!-- [![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee) -->
-[![ReadTheDocs](https://readthedocs.org/projects/science_jubilee/badge/?version=latest)](https://science_jubilee.readthedocs.io/en/stable/)
-[![Coveralls](https://img.shields.io/coveralls/github/machineagency/science_jubilee/main.svg)](https://coveralls.io/r/machineagency/science_jubilee)
-[![PyPI-Server](https://img.shields.io/pypi/v/science_jubilee.svg)](https://pypi.org/project/science_jubilee/)
-<!-- [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee) -->
-[![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
+<!-- [![Built Status](https://api.cirrus-ci.com/github/<USER>/science-jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science-jubilee) -->
+[![ReadTheDocs](https://readthedocs.org/projects/science-jubilee/badge/?version=latest)](https://science-jubilee.readthedocs.io/en/stable/)
+[![Coveralls](https://img.shields.io/coveralls/github/machineagency/science-jubilee/main.svg)](https://coveralls.io/r/machineagency/science-jubilee)
+[![PyPI-Server](https://img.shields.io/pypi/v/science-jubilee.svg)](https://pypi.org/project/science-jubilee/)
+<!-- [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science-jubilee.svg)](https://anaconda.org/conda-forge/science-jubilee) -->
+[![Monthly Downloads](https://pepy.tech/badge/science-jubilee/month)](https://pepy.tech/project/science-jubilee)
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/machine_agency)
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
 
@@ -16,7 +16,7 @@
 
 This repository hosts files to build and control a [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) for scientific applications. The core of the software is a Python interface for Jubilee to navigate labware installed in the machine. We currently provide assembly instructions, control software, and examples for various tools including OT-2 pipettes, syringes, and cameras. While these tools might cater exactly to your planned use case, they most likely will not! We share these files as a starting point rather than an endpoint: we also provide instructions for developing new tools and associated software for controlling them. We hope you will build new tools for your application and contribute them back to the community for others to use and extend 🛠️
 
-_Check out the [Documentation](https://machineagency.github.io/science_jubilee/) to get started!_
+_Check out the [Documentation](https://machineagency.github.io/science-jubilee/) to get started!_
 
 
 ## Overview
@@ -48,7 +48,7 @@ src/
 The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates.
 
 ### Using science_jubilee
-You can import and use science_jubilee modules by importing the modules you need at the top of your python file/notebook. For example, if we want to pipette using a lab automation deck, we might write:
+You can import and use `science_jubilee` modules by importing the modules you need at the top of your python file/notebook. For example, if we want to pipette using a lab automation deck, we might write:
 ```python
 from science_jubilee.Machine import Machine                             # import machine driver
 from science_jubilee.decks.LabAutomationDeck import LabAutomationDeck   # import lab automation deck module
