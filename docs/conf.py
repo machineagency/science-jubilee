@@ -108,8 +108,8 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "science_jubilee"
-copyright = "2024, Sterling G. Baird"
+project = "science-jubilee"
+copyright = "2023, Machine Agency"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
