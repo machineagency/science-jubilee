@@ -5,8 +5,6 @@ title: Intro to the Machine Driver
 (machine-intro)=
 # Intro to the Machine Driver
 
-_Last Edited by Blair on 2023.11.13_
-
 This guide walks you through the basics of using `science_jubilee` to control your machine. It assumes you have an understanding of key concepts, and that you have a working motion platform with tools configured.
 
 ## Connecting to the Machine

@@ -2,8 +2,6 @@
 title: Camera Tool
 ---
 
-(last edited by Blair on 2023.11.30)
-
 (camera-tool)=
 # Camera Tool
 

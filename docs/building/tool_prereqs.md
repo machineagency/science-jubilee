@@ -2,8 +2,6 @@
 title: Tool Prerequisites
 ---
 
-(last edited by Blair on 2023.11.10)
-
 (tool-prerequisites)=
 # Tool Prerequisites
 

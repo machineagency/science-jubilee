@@ -2,8 +2,6 @@
 title: Side Camera Tool
 ---
 
-(last edited by Blair on 2023.11.11)
-
 (side-camera-tool)=
 # Side Camera Tool
 

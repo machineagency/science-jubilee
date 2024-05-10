@@ -2,8 +2,6 @@
 title: Pipette Tool
 ---
 
-(last edited by Blair on 2023.11.11)
-
 (pipette-tool)=
 # Pipette Tool
 

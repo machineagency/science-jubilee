@@ -1,6 +1,5 @@
 ---
 title: Jubilee Build Resources
-last_edited: Blair, 2023.11.10
 ---
 
 (jubilee-build-resources)=

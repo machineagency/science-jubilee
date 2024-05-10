@@ -2,8 +2,6 @@
 title: Syringe Tool
 ---
 
-(last edited by Blair on 2023.11.11)
-
 (syringe-tool)=
 # Syringe Tool
 

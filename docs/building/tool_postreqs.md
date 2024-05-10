@@ -2,8 +2,6 @@
 title: Tool Postrequisites
 ---
 
-(last edited by Blair on 2023.11.10)
-
 (tool-postrequisites)=
 # Tool Postrequisites
 

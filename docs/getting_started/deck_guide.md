@@ -5,8 +5,6 @@ title: Lab Automation Deck Tutorial
 (deck-guide)=
 # Lab Automation Deck Tutorial
 
-_Last Edited by Blair on 2023.11.13_
-
 This guide walks you through the basics of using a lab automation deck in conjunction with labware. It assumes you have a lab automation deck installed on your machine.
 
 ## Creating a Deck Definition

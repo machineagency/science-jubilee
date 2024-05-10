@@ -2,8 +2,6 @@
 title: Lab Automation Deck
 ---
 
-(last edited by Blair on 2023.11.30)
-
 (lab-automation-deck)=
 # Lab Automation Deck
 
