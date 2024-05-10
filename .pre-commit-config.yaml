@@ -6,6 +6,8 @@ repos:
   hooks:
   - id: trailing-whitespace
   - id: check-added-large-files
+    args: ['--maxkb=5000']
+    # exclude: ^(docs/_static/robot-loop.gif)$
   - id: check-ast
   - id: check-json
   - id: check-merge-conflict
