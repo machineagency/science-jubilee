@@ -104,6 +104,22 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
             :expand:
 
             Serial Dilution Pipetting Tutorial
+
+    .. grid-item-card::  Color Mixing Demo Guide
+        :class-card: intro-card
+        :shadow: md
+
+        Run an autonomous optimization experiment on Jubilee.
+
+        +++
+
+        .. button-ref:: color_mixing_setup
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            Color Mixing Demo Guide
 ```
 
 ```{toctree}
