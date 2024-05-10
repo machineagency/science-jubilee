@@ -1,16 +1,18 @@
-import cv2
-import matplotlib
 import platform
 import time
 
+import cv2
+import matplotlib
 import numpy as np
 
 matplotlib.use("TkAgg")
-from matplotlib import pyplot as plt
-from science_jubilee.labware.Labware import Well
-from science_jubilee.tools.Tool import Tool,  requires_active_tool
 from typing import Tuple
+
 import yaml
+from matplotlib import pyplot as plt
+
+from science_jubilee.labware.Labware import Well
+from science_jubilee.tools.Tool import Tool, requires_active_tool
 
 if platform.system() == "Linux":
     import picamera  # Note that this can only be installed on raspbery pi.
@@ -21,10 +23,10 @@ class Camera(Tool):
 
     :param Tool: The base tool class
     :type Tool: class:`Tool`
-    """   
+    """
+
     def __init__(self, index, name):
-        """Constructor method
-        """
+        """Constructor method"""
         super().__init__(index, name)
         self._camera_matrix = None
         self._dist_matrix = None
@@ -39,15 +41,19 @@ class Camera(Tool):
         :type path: str
         :return: A list containing your camera matrix (index 0) and distortion matrix (index 1)
         :rtype: list
-        """        """"""
-        with open(path, 'r') as file:
+        """ """"""
+        with open(path, "r") as file:
             config = yaml.safe_load(file)
 
-        k_data = config['K']['data']
-        camera_matrix = np.array([k_data[i:i+3] for i in range(0, len(k_data), 3)], dtype=object)
-        
-        d_data = config['D']['data']
-        dist_matrix = np.array([d_data[i:i+3] for i in range(0, len(d_data), 3)], dtype=object)
+        k_data = config["K"]["data"]
+        camera_matrix = np.array(
+            [k_data[i : i + 3] for i in range(0, len(k_data), 3)], dtype=object
+        )
+
+        d_data = config["D"]["data"]
+        dist_matrix = np.array(
+            [d_data[i : i + 3] for i in range(0, len(d_data), 3)], dtype=object
+        )
         self._camera_matrix = camera_matrix
         self._dist_matrix = dist_matrix
 
@@ -58,7 +64,7 @@ class Camera(Tool):
 
         :return: A list of valid camera indices
         :rtype: list
-        """        
+        """
         index = 0
         arr = []
         i = 4
@@ -73,7 +79,7 @@ class Camera(Tool):
             index += 1
             i -= 1
         return arr
-    
+
     @requires_active_tool
     def get_frame(self, resolution=[1200, 1200], uvc=False):
         """Take a picture and return the image. Compensates for lens distortion using camera calibration file.
@@ -84,12 +90,12 @@ class Camera(Tool):
         :type uvc: bool, optional
         :return: The captured frame
         :rtype: ndarray
-        """        
+        """
         with picamera.PiCamera() as camera:
             camera.resolution = (1200, 1200)
             camera.framerate = 24
             time.sleep(5)
-            output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8) 
+            output = np.empty((resolution[1], resolution[0], 3), dtype=np.uint8)
             camera.capture(output, "rgb", use_video_port=True)
             tpose = np.transpose(output, axes=(1, 0, 2))
             # undistorted = cv2.undistort(
@@ -118,13 +124,12 @@ class Camera(Tool):
                 [w / 2], [h / 2], marker="o"
             )  # put a marker in the center of the image
         if save:
-            plt.axis('off')
+            plt.axis("off")
             plt.savefig(f"{save_path}")
         plt.show()
 
     def get_show_frame(self):
-        """Get and show a frame.
-        """
+        """Get and show a frame."""
         self.show_frame(self.get_frame())
 
     @requires_active_tool
@@ -160,7 +165,7 @@ class Camera(Tool):
         cv2.destroyAllWindows()
 
     @requires_active_tool
-    def image_wells(self, resolution=[1200, 1200], uvc=False, wells: Well = None): 
+    def image_wells(self, resolution=[1200, 1200], uvc=False, wells: Well = None):
         """Move to a number of wells to take and show images.
 
         :param resolution: Camera resolution, defaults to [1200, 1200]
@@ -169,22 +174,22 @@ class Camera(Tool):
         :type uvc: bool, optional
         :param wells: A list of wells to image, defaults to None
         :type wells: :class:`Well`, optional
-        """ 
+        """
         # TODO: different functions for saving many images, showing images, or getting frames for analysis?
         if type(wells) != list:
             wells = [wells]
-        
+
         for well in wells:
             x, y, z_bottom = self._get_xyz(well=well)
             self._machine.safe_z_movement()
             self._machine.move_to(x=x, y=y)
-            self._machine.move_to(z=30) # focus height; read in from config
-            time.sleep(1) # ToDo: Better way to sync gcode movements & images
+            self._machine.move_to(z=30)  # focus height; read in from config
+            time.sleep(1)  # ToDo: Better way to sync gcode movements & images
             f = self.get_frame()
             self.show_frame(f)
-            
+
     @requires_active_tool
-    def get_well_image(self, resolution=[1200, 1200], uvc=False, well: Well = None): 
+    def get_well_image(self, resolution=[1200, 1200], uvc=False, well: Well = None):
         """Move to a single well to take a picture and return the frame.
 
         :param resolution: Camera resolution, defaults to [1200, 1200]
@@ -199,11 +204,11 @@ class Camera(Tool):
         x, y, z_bottom = self._get_xyz(well=well)
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y)
-        self._machine.move_to(z=30) # focus height; read in from config
-        time.sleep(1) # ToDo: Better way to sync gcode movements & images
+        self._machine.move_to(z=30)  # focus height; read in from config
+        time.sleep(1)  # ToDo: Better way to sync gcode movements & images
         f = self.get_frame()
         return f
-    
+
     @staticmethod
     def _get_xyz(well: Well = None, location: Tuple[float] = None):
         """Get the (x,y,z) position of a well.
@@ -223,7 +228,7 @@ class Camera(Tool):
         else:
             x, y, z = location
         return x, y, z
-        
+
     @staticmethod
     def _get_top_bottom(well: Well = None):
         """Get the top and bottom heights of a well.

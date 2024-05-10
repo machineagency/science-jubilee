@@ -2,12 +2,12 @@ import json
 import os
 import random
 import warnings
+from typing import Tuple
 
 import numpy as np
 
-from science_jubilee.labware.Labware import  Well
-from science_jubilee.tools.Tool import Tool,  requires_active_tool
-from typing import Tuple
+from science_jubilee.labware.Labware import Well
+from science_jubilee.tools.Tool import Tool, requires_active_tool
 
 
 class Loop(Tool):
@@ -16,12 +16,12 @@ class Loop(Tool):
     :param Tool: The base tool class
     :type Tool: :class:`Tool`
     """
+
     def __init__(self, index, name):
-        """Constructor method
-        """
+        """Constructor method"""
         super().__init__(index, name)
 
-    @requires_active_tool    
+    @requires_active_tool
     def transfer(
         self,
         source: Well = None,
@@ -54,22 +54,26 @@ class Loop(Tool):
         :type up_speed: float, optional
         :param randomize_pickup: Move to a random position in the source well to pick up material, defaults to False
         :type randomize_pickup: bool, optional
-        """ 
+        """
         if type(source) != list:
             source = [source]
         if type(destination) != list:
             destination = [destination]
-        
+
         # Assemble tuples of (source, destination)
         num_source_wells = len(source)
         num_destination_wells = len(destination)
-        if num_source_wells == num_destination_wells: # n to n transfers
+        if num_source_wells == num_destination_wells:  # n to n transfers
             pass
-        elif num_source_wells == 1 and num_destination_wells > 1: # one to many transfers
+        elif (
+            num_source_wells == 1 and num_destination_wells > 1
+        ):  # one to many transfers
             source = list(np.repeat(source, num_destination_wells))
-        elif num_source_wells > 1 and num_destination_wells == 1: # many to one transfers
+        elif (
+            num_source_wells > 1 and num_destination_wells == 1
+        ):  # many to one transfers
             destination = list(np.repeat(destination, num_source_wells))
-        elif num_source_wells > 1 and num_destination_wells > 1: # uneven transfers
+        elif num_source_wells > 1 and num_destination_wells > 1:  # uneven transfers
             # for uneven transfers, find least common multiple to pair off wells
             # raise a warning, as this might be a mistake
             # this mimics OT-2 behavior
@@ -79,11 +83,13 @@ class Loop(Tool):
             source = list(np.repeat(source, source_repeat))
             destination = list(np.repeat(destination, destination_repeat))
             warnings.warn("Warning: Uneven source & destination wells specified.")
-                                        
+
         source_destination_pairs = list(zip(source, destination))
         for source_well, destination_well in source_destination_pairs:
             xs, ys, zs = self._get_xyz(well=source_well)
-            if randomize_pickup: # to make sure we don't try to pickup from an empty region
+            if (
+                randomize_pickup
+            ):  # to make sure we don't try to pickup from an empty region
                 r = 20
                 rx = random.randint(-r, r)
                 ry = random.randint(-r, r)
@@ -107,9 +113,9 @@ class Loop(Tool):
             self._machine.move_to(z=zd + 5)
             # sweep again to drop off duckweed
             # make smaller movements and move opposite direction
-            self._machine.move(dx=sweep_x/2, s=sweep_speed)
+            self._machine.move(dx=sweep_x / 2, s=sweep_speed)
             self._machine.move(dy=-sweep_y, s=sweep_speed)
-            self._machine.dwell(250) # give the duckweed time to release
+            self._machine.dwell(250)  # give the duckweed time to release
             self.current_well = destination_well
             # self._dispense(vol, s=s)
 
@@ -132,7 +138,7 @@ class Loop(Tool):
         else:
             x, y, z = location
         return x, y, z
-        
+
     @staticmethod
     def _get_top_bottom(well: Well = None):
         """Get the top and bottom heights of a well.

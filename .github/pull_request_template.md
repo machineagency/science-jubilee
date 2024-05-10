@@ -15,4 +15,3 @@ Resolves #[Add issue number here]
 -->
 
 - [ ] [Inline documentation] is included / updated
-

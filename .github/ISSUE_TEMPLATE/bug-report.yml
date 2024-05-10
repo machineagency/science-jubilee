@@ -12,7 +12,7 @@ body:
     label: Steps to reproduce this bug
     description: Include a simple code snippet that demonstrates the problem if relevant, along with any errors produced. If this isn't possible, then simply describe the issue as best you can!
     value: "### Steps:
-    
+
     1.
 
     2.
@@ -23,12 +23,12 @@ body:
 
 
     ### Snippet:
-    
+
 
     ```python
 
 
-      // Paste your code here :) 
+      // Paste your code here :)
 
 
     ```"
