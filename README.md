@@ -1,13 +1,13 @@
 # 🔬🧪 Science Jubilee ⚡⚙️
 ### Controlling Jubilees for Science!
 
-[![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee)
+<!-- [![Built Status](https://api.cirrus-ci.com/github/<USER>/science_jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science_jubilee) -->
 [![ReadTheDocs](https://readthedocs.org/projects/science_jubilee/badge/?version=latest)](https://science_jubilee.readthedocs.io/en/stable/)
-[![Coveralls](https://img.shields.io/coveralls/github/<USER>/science_jubilee/main.svg)](https://coveralls.io/r/<USER>/science_jubilee)
+[![Coveralls](https://img.shields.io/coveralls/github/machineagency/science_jubilee/main.svg)](https://coveralls.io/r/machineagency/science_jubilee)
 [![PyPI-Server](https://img.shields.io/pypi/v/science_jubilee.svg)](https://pypi.org/project/science_jubilee/)
-[![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee)
+<!-- [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science_jubilee.svg)](https://anaconda.org/conda-forge/science_jubilee) -->
 [![Monthly Downloads](https://pepy.tech/badge/science_jubilee/month)](https://pepy.tech/project/science_jubilee)
-[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/science_jubilee)
+[![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/machine_agency)
 [![Project generated with PyScaffold](https://img.shields.io/badge/-PyScaffold-005CA0?logo=pyscaffold)](https://pyscaffold.org/)
 
 > Use an open-source toolchanger to do science
@@ -21,30 +21,31 @@ _Check out the [Documentation](https://machineagency.github.io/science_jubilee/)
 
 ## Overview
 ### Hardware
-This repository is designed to be used with the Jubilee platform, outfitted with tools for laboratory automation. Jubilee an open-source & extensible multi-tool motion platform—if that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. You can read about [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) more generally at the project page. 
+This repository is designed to be used with the Jubilee platform, outfitted with tools for laboratory automation. Jubilee an open-source & extensible multi-tool motion platform—if that doesn't mean much to you, you can think of it as a 3D printer that can change its tools. You can read about [Jubilee](https://jubilee3d.com/index.php?title=Main_Page) more generally at the project page.
 
 ### Software
 The software here is intended to control Jubilee from Python scripts or Jupyter notebooks to design and run experiments. The folders are organized as follows:
 ```
 calibration/                 # notebooks to support machine & tool setup/calibration
 tool_library/                # design files, assembly instructions, & configuration info for all tools & plates
-science_jubilee/
-├── Machine.py               # jubilee machine driver
-├── tools/
-│   ├── configs/             # all tool configs are here
-│   ├── Tool.py              # base tool class
-│   └── ...                  # all tool modules are here
-├── decks/
-│   ├── configs/             # all deck configs are here
-│   ├── Deck.py              # base deck class
-│   └── ...                  # all deck modules are here
-└── labware/
-    ├── labware_definitions/ # all labware definitions are here
-    └── Labware.py           # base labware class
+src/
+└── science_jubilee/
+    ├── Machine.py               # jubilee machine driver
+    ├── tools/
+    │   ├── configs/             # all tool configs are here
+    │   ├── Tool.py              # base tool class
+    │   └── ...                  # all tool modules are here
+    ├── decks/
+    │   ├── configs/             # all deck configs are here
+    │   ├── Deck.py              # base deck class
+    │   └── ...                  # all deck modules are here
+    └── labware/
+        ├── labware_definitions/ # all labware definitions are here
+        └── Labware.py           # base labware class
 ```
 
 ### Labware and Wetware
-The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates. 
+The basic functionality supported by this software is intended to be used with a custom deck which accommodates up to 6 standard sized microplates.
 
 ### Using science_jubilee
 You can import and use science_jubilee modules by importing the modules you need at the top of your python file/notebook. For example, if we want to pipette using a lab automation deck, we might write:
