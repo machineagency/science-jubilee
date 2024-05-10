@@ -2,8 +2,6 @@
 title: Inoculation Loop Tool
 ---
 
-(last edited by Blair on 2023.11.11)
-
 (inoculation-loop-tool)=
 # Inoculation Loop Tool
 
