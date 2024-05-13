@@ -20,3 +20,8 @@ To use a Jubilee for laboratory automation, you first need a Jubilee! This guide
 Once you have a motion platform, you can add tools relevant to your application. Existing tools for laboratory automation are documented on this page.
 
 [Laboratory Automation Tools](building_tools)
+
+```{toctree}
+building_a_jubilee
+building_tools
+```
