@@ -2,11 +2,12 @@
 title: Color Mixing Demonstration Setup Guide
 ---
 
+(color-mixing-setup)=
 # Color Mixing Demonstration Setup Guide
 
 ## Introduction
 
-This is a guide to configuring a Jubilee to run the color mixing demo ([link to pozzorg color mixing demo repo goes here](#)).
+This is a guide to configuring a Jubilee to run [the color mixing demo](https://github.com/pozzo-research-group/jubilee_pipette_BOdemo).
 
 While this guide is specific to this experiment, many steps detailed here are transferable to other experiments. The related config files and Jupyter notebooks could be used as templates to set up new experiments.
 

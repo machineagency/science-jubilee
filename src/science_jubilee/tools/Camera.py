@@ -31,7 +31,7 @@ class Camera(Tool):
         self._camera_matrix = None
         self._dist_matrix = None
         # self.load_coefficients(
-        #     "/home/pi/POSE/science_jubilee/science_jubilee/tools/configs/calibration_checkerboard.yml"
+        #     "/home/pi/POSE/science-jubilee/science-jubilee/tools/configs/calibration_checkerboard.yml"
         # )
 
     def load_coefficients(self, path):

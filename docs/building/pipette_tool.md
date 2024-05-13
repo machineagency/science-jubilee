@@ -16,12 +16,12 @@ title: Pipette Tool
 
 ## Parts to Fabricate
 
-- Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/OT2_pipette/fabrication_files).
+- Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette/fabrication_files).
 
 ## Electronics
 
-- [Wiring Diagram](https://github.com/machineagency/science_jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT_Wiring_Diagram_V1.pdf)
+- [Wiring Diagram](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT_Wiring_Diagram_V1.pdf)
 
 ## Duet Configuration
 
-- Instructions [here](https://github.com/machineagency/science_jubilee/blob/main/tool_library/OT2_pipette/duet_configs/OT2_Pipette_Configuration.md)
+- Instructions [here](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/duet_configs/OT2_Pipette_Configuration.md)

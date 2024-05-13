@@ -20,4 +20,4 @@ The inoculation loop tool uses the existing [pen tool](https://jubilee3d.com/ind
 
 ## Assembly
 
-Find step-by-step build instructions [here](https://github.com/machineagency/science_jubilee/tree/main/docs/pdfs/inoculation_loop_tool_assembly.pdf)
+Find step-by-step build instructions [here](https://github.com/machineagency/science-jubilee/tree/main/docs/pdfs/inoculation_loop_tool_assembly.pdf)

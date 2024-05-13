@@ -7,7 +7,7 @@ title: Build Guides
 (build-guides)=
 # Build Guides
 
-To use `science_jubilee`, you'll need to build both the Jubilee motion platform as well as tools to use on the machine.
+To use `science-jubilee`, you'll need to build both the Jubilee motion platform as well as tools to use on the machine.
 
 ## Building a Jubilee
 

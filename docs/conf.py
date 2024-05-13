@@ -251,7 +251,7 @@ html_last_updated_fmt = "%b %d, %Y"
 # html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "science_jubilee-doc"
+htmlhelp_basename = "science-jubilee-doc"
 
 
 # -- Options for LaTeX output ------------------------------------------------
@@ -271,7 +271,7 @@ latex_documents = [
     (
         "index",
         "user_guide.tex",
-        "science_jubilee Documentation",
+        "science-jubilee Documentation",
         "Machine Agency",
         "manual",
     )

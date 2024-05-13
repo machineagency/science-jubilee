@@ -15,5 +15,5 @@ title: Side Camera Tool
 
 ## Parts to 3D Print
 
-- All parts to print can be found [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/camera_side/STLs).
-- The SolidWorks files can be found [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/camera_side/CADs).
+- All parts to print can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/camera_side/STLs).
+- The SolidWorks files can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/camera_side/CADs).

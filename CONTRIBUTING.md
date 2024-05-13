@@ -27,7 +27,7 @@
 
 # Contributing
 
-Welcome to `science_jubilee` contributor's guide.
+Welcome to `science-jubilee` contributor's guide.
 
 This document focuses on getting any potential contributor familiarized with
 the development processes, but [other kinds of contributions] are also appreciated.
@@ -43,7 +43,7 @@ behavior guidelines.
 
 ## Issue Reports
 
-If you experience bugs or general issues with `science_jubilee`, please have a look
+If you experience bugs or general issues with `science-jubilee`, please have a look
 on the [issue tracker].
 If you don't see anything useful there, please feel free to fire an issue report.
 
@@ -61,10 +61,10 @@ you help us to identify the root cause of the issue.
 
 ## Documentation Improvements
 
-You can help improve `science_jubilee` docs by making them more readable and coherent, or
+You can help improve `science-jubilee` docs by making them more readable and coherent, or
 by adding missing information and correcting mistakes.
 
-`science_jubilee` documentation uses [Sphinx] as its main documentation compiler.
+`science-jubilee` documentation uses [Sphinx] as its main documentation compiler.
 This means that the docs are kept in the same repository as the project code, and
 that any documentation update is done in the same way was a code contribution.
 
@@ -74,7 +74,7 @@ We are using [CommonMark] with [MyST] extensions.
 
    :::{tip}
       Please notice that the [GitHub web interface] provides a quick way of
-      propose changes in `science_jubilee`'s files. While this mechanism can
+      propose changes in `science-jubilee`'s files. While this mechanism can
       be tricky for normal code contributions, it works perfectly fine for
       contributing to the docs, and can be quite handy.
 
@@ -131,8 +131,8 @@ source <PATH TO VENV>/bin/activate
 or [Miniconda]:
 
 ```
-conda create -n science_jubilee python=3 six virtualenv pytest pytest-cov
-conda activate science_jubilee
+conda create -n science-jubilee python=3 six virtualenv pytest pytest-cov
+conda activate science-jubilee
 ```
 
 ### Clone the repository
@@ -145,8 +145,8 @@ conda activate science_jubilee
 3. Clone this copy to your local disk:
 
    ```
-   git clone git@github.com:YourLogin/science_jubilee.git
-   cd science_jubilee
+   git clone git@github.com:YourLogin/science-jubilee.git
+   cd science-jubilee
    ```
 
 4. You should run:
@@ -364,5 +364,5 @@ on [PyPI], the following steps can be used to release a new version for
 ```{todo} Please review and change the following definitions:
 ```
 
-[repository]: https://github.com/<USERNAME>/science_jubilee
-[issue tracker]: https://github.com/<USERNAME>/science_jubilee/issues
+[repository]: https://github.com/machineagency/science-jubilee
+[issue tracker]: https://github.com/machineagency/science-jubilee/issues

@@ -7,29 +7,29 @@ title: Code Contribution Guidelines
 
 ## Issues
 
-Most development starts with a GitHub Issue. See more about issues on the [Development page](https://machineagency.github.io/science_jubilee/development/index.html).
+Most development starts with a GitHub Issue. See more about issues on the [Development page](https://machineagency.github.io/science-jubilee/development/index.html).
 
-## Working on the `science_jubilee` Codebase
+## Working on the `science-jubilee` Codebase
 
 Once an issue has been discussed and assigned to you, you can begin implementing your changes! This involves 'forking' the repository (i.e., copying the repository to your personal GitHub account), making your changes, and then submitting a 'Pull Request' to add your functionality to the main repository. Here are the specific steps to follow to make sure this goes smoothly. We'll go into more detail on each of them here!
 
 ### Forking the Codebase
 
-The first step to work on the codebase is to fork the repository. A 'fork' will copy the repository to your personal GitHub account so you can make and test your changes without affecting the base `science_jubilee` repo. Then, we can set up our workspace to make changes.
+The first step to work on the codebase is to fork the repository. A 'fork' will copy the repository to your personal GitHub account so you can make and test your changes without affecting the base `science-jubilee` repo. Then, we can set up our workspace to make changes.
 
-1. **Fork the repository.** From the main `science_jubilee`, you'll see a 'Fork' button just above the 'About' section. Click on this button and follow any pop-ups that appear.
+1. **Fork the repository.** From the main `science-jubilee`, you'll see a 'Fork' button just above the 'About' section. Click on this button and follow any pop-ups that appear.
 2. **Clone your fork.** Once you create a fork, you can go to your fork's page on your own GitHub account. You can then clone (or download a copy) of your fork. To do so, click the green 'Code' button and copy the URL. Then, run the following command from the folder where you want to keep your repository:
 
 ```bash
 git clone <url>
 ```
 
-Replace `<url>` with the URL you just copied. After running this command, you should see all of the `science_jubilee` files on your computer.
+Replace `<url>` with the URL you just copied. After running this command, you should see all of the `science-jubilee` files on your computer.
 
-3. **Add the upstream repository.** In git, 'upstream' refers to the original repository. To make sure we can sync up with the base repository, we have to explicitly set `science_jubilee` as the upstream repository. To do this, run the following command from the folder where you cloned the repository:
+3. **Add the upstream repository.** In git, 'upstream' refers to the original repository. To make sure we can sync up with the base repository, we have to explicitly set `science-jubilee` as the upstream repository. To do this, run the following command from the folder where you cloned the repository:
 
 ```bash
-git remote add upstream https://github.com/machineagency/science_jubilee.git
+git remote add upstream https://github.com/machineagency/science-jubilee.git
 ```
 
 For more details on configuring a remote repository for a fork, you can take a look at the [GitHub Documentation page](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork).
@@ -42,7 +42,9 @@ git checkout -b <descriptive_branch_name>
 
 Replace `<descriptive_branch_name>` with your new name. For example, if you were adding a new camera tool, you might name your branch `new-camera-tool`.
 
-5. **Install the requirements.** You can now install the requirements to use `science_jubilee`. Take a look at the [Installation page](https://machineagency.github.io/science_jubilee/getting_started/installation.html#installation) for a reminder on how to do this.
+5. **Install the requirements.** You can now install the requirements to use `science-jubilee`. Take a look at <project:#installation> for a reminder on how to do this.
+
+<!-- the [Installation page](https://machineagency.github.io/science-jubilee/getting_started/installation.html#installation) -->
 
 You should now be set up to make your changes!
 

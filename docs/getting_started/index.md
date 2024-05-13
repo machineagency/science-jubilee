@@ -113,7 +113,7 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
 
         +++
 
-        .. button-ref:: color_mixing_setup
+        .. button-ref:: color-mixing-setup
             :ref-type: ref
             :click-parent:
             :color: secondary
@@ -128,4 +128,5 @@ primer
 machine_intro
 deck_guide
 pipette_guide
+color_mixing_setup
 ```

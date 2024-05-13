@@ -8,7 +8,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # this is the Ocean Optics SDK, which is (very unfortunately) not open-source
-from oceandirect.OceanDirectAPI import OceanDirectAPI
+try:
+    from oceandirect.OceanDirectAPI import OceanDirectAPI
+except ImportError:
+    raise ImportError(
+        "The Ocean Optics SDK is not installed. Please install it from the Ocean Insight website."
+    )
 
 from science_jubilee.labware.Labware import Labware, Location, Well
 from science_jubilee.tools.Tool import Tool, requires_active_tool

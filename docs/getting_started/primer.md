@@ -5,15 +5,13 @@ title: Science Jubilee Primer
 (primer)=
 # Science Jubilee Primer
 
-*Last Edited: Blair, 2023.11.13*
-
-This page provides an introduction to key concepts for using `science_jubilee`. This primer is by no means exhaustive, but provides helpful background information for newcomers to Jubilee. If you're already familiar with computer-controlled machines, or if you want to learn how to use the `science_jubilee` codebase, feel free to skip ahead to the [Machine Introduction](machine_intro.md).
+This page provides an introduction to key concepts for using `science-jubilee`. This primer is by no means exhaustive, but provides helpful background information for newcomers to Jubilee. If you're already familiar with computer-controlled machines, or if you want to learn how to use the `science-jubilee` codebase, feel free to skip ahead to the [Machine Introduction](machine_intro.md).
 
 ## GCode
 
 GCode (or 'geometry code') is the standard language used by CNC machines like Jubilee. We can use GCode to move the machine around! By default, the machine will use millimeter for its units. To move to the (x, y, z) position (100mm, 50mm, 200mm) using GCode, we can write:
 
-```plaintext
+```gcode
 G1 X100 Y50 Z200 ; move to the position (100, 50, 200)
 ```
 
@@ -38,7 +36,7 @@ The Z axis 0 position is the platform's highest position; the positive Z directi
 
 Our GCode movement commands can be interpreted as *absolute* or *relative* moves by the machine. In absolute positioning mode, the machine will move relative to the origin. In relative positioning mode, the machine will move relative to its last position. We can change our positioning mode using the `G90` command for absolute and `G91` for relative. For example, say we start at the origin (0,0,0). Consider the following move commands:
 
-```plaintext
+```gcode
 ; to start, we are at the origin (0,0,0)
 G90              ; use absolute positioning
 G1 X100 Y50 Z200 ; move to the absolute position (100, 50, 200)
@@ -52,7 +50,7 @@ In this example, the machine will end up at the position (200, 50, 200). Note th
 
 When you configure tools for use on the machine, each will have a unique number. We can swap between tools with T commands:
 
-```plaintext
+```gcode
 T1  ; pickup tool 1
 T2  ; return tool 1, pickup tool 2
 T2  ; does nothing, since tool 2 is already selected

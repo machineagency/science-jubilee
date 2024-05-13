@@ -27,7 +27,7 @@ alt: deck layout
 Orientation of slots on deck and labware in slots.
 ```
 
-To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the `decks/deck_definitions/` directory. The preferred method to do so accurately is with a camera tool; the [deck definition calibration notebook](https://github.com/machineagency/science_jubilee/blob/main/science_jubilee/calibration/LabAutomationDeckCalibration.ipynb) interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot.
+To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the `decks/deck_definitions/` directory. The preferred method to do so accurately is with a camera tool; the [deck definition calibration notebook](https://github.com/machineagency/science-jubilee/blob/main/science-jubilee/calibration/LabAutomationDeckCalibration.ipynb) interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot.
 
 ## Creating Labware Definitions
 

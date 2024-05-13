@@ -5,7 +5,7 @@ title: Building Science Jubilee Tools
 (building-science-jubilee-tools)=
 # Building Science Jubilee Tools
 
-All tools which are supported in `science_jubilee` are documented here. For existing tools, we link to documentation on the Jubilee project page and provide additional information where necessary.
+All tools which are supported in `science-jubilee` are documented here. For existing tools, we link to documentation on the Jubilee project page and provide additional information where necessary.
 
 ## Tool Prerequisites
 
@@ -68,3 +68,14 @@ Deck attachment to hold 6 standard microplates + disposal containers.
 Once you've built a tool, it needs to be calibrated for use on the machine. See here for guides and help on the tool calibration process.
 
 [Tool Postreqs](tool_postreqs)
+
+```{toctree}
+tool_prereqs
+pipette_tool
+inoculation_tool
+top_down_camera_tool
+side_camera_tool
+syringe_tool
+lab_automation_deck
+tool_postreqs
+```

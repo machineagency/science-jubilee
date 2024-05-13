@@ -28,9 +28,9 @@ For this solution, the following items are required:
 * 1x [4.7kΩ Resistor](https://www.adafruit.com/product/2783)
 
 Below is a schematics for the assembly:
-<img src="https://github.com/machineagency/science_jubilee/tree/main/tool_library/sonicator/schematics/RaspberryPi_Pico_Microcontroller_Schematics.png">
+<img src="https://github.com/machineagency/science-jubilee/tree/main/tool_library/sonicator/schematics/RaspberryPi_Pico_Microcontroller_Schematics.png">
 
 ### Raspberry Pi SBC and PCB Hat
 If you are interfacing your Science Jubilee using a Raspberry Pi singleboard computer, you will need to order and assemble the *sonicator PCB* hat. The instructions and necessary files can be found in the `pcb_hat` folder. The Sonicator Pi Hat will be attached to the Pi and connected to the Sonicator Control PCB.
-A schematics can be found [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/sonicator/schematics/RaspberryPi_PCB_Hat_Schematics.pdf)
+A schematics can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/sonicator/schematics/RaspberryPi_PCB_Hat_Schematics.pdf)
 This solution is the original imlementaiotn of this tool in combination with a Jubilee platform. This project was also known as the *Sonication Station*. The original repository is [here](https://github.com/machineagency/sonication_station).

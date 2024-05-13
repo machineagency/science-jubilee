@@ -15,8 +15,8 @@ There is also a lab automation deck documented [on the Jubilee Wiki](https://jub
 
 ## Parts to Fabricate
 
-- Design files for the deck can be found [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/bed_plate/fabrication_files).
+- Design files for the deck can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/bed_plate/fabrication_files).
 
 ## Duet Config Files
 
-- The Jubilee homing routine needs to be adjusted to probe points on the platform, rather than the deck attachment. Find the updated config files [here](https://github.com/machineagency/science_jubilee/tree/main/tool_library/bed_plate/duet_config).
+- The Jubilee homing routine needs to be adjusted to probe points on the platform, rather than the deck attachment. Find the updated config files [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/bed_plate/duet_config).
