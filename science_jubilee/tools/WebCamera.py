@@ -113,7 +113,7 @@ class Camera(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
 
-        picture_heigth = self.focus_height - abs(self.tool_offset)
+        picture_heigth = self.focus_height# - abs(self.tool_offset)
         self._machine.move_to(z = picture_heigth, wait = True)
         if light is True:
             self._machine.gcode(f'M42 P{self.light_pin} S{light_intensity}')
