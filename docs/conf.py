@@ -176,6 +176,14 @@ todo_emit_warnings = True
 # a list of builtin themes.
 html_theme = "pydata_sphinx_theme"
 
+html_context = {
+    # "github_url": "https://github.com", # or your GitHub Enterprise site
+    "github_user": "machineagency",
+    "github_repo": "science-jubilee",
+    "github_version": "main",
+    "doc_path": "docs",
+}
+
 # autoapi info
 autoapi_dirs = ["../src"]
 # autoapi_add_toctree_entry = False
