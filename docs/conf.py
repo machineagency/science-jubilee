@@ -108,7 +108,7 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = "science-jubilee"
+project = "Science Jubilee"
 copyright = "2023, Machine Agency"
 
 # The version info for the project you're documenting, acts as replacement for
@@ -184,6 +184,49 @@ html_context = {
     "doc_path": "docs",
 }
 
+html_theme_options = {
+    # "external_links": [
+    #     {
+    #         "url": "https://pydata.org",
+    #         "name": "PyData",
+    #     },
+    #     {
+    #         "url": "https://numfocus.org/",
+    #         "name": "NumFocus",
+    #     },
+    #     {
+    #         "url": "https://numfocus.org/donate",
+    #         "name": "Donate to NumFocus",
+    #     },
+    # ],
+    "header_links_before_dropdown": 4,
+    "icon_links": [
+        {
+            "name": "Twitter",
+            "url": "https://twitter.com/machine_agency",
+            "icon": "fa-brands fa-twitter",
+        },
+        {
+            "name": "GitHub",
+            "url": "https://github.com/machineagency/science-jubilee",
+            "icon": "fa-brands fa-github",
+        },
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/science-jubilee",
+            "icon": "fa-custom fa-pypi",
+        },
+    ],
+    # alternative way to set twitter and github header icons
+    # "github_url": "https://github.com/pydata/pydata-sphinx-theme",
+    # "twitter_url": "https://twitter.com/PyData",
+    "logo": {
+        "text": "Science Jubilee",
+        # "image_dark": "_static/logo-dark.svg",
+    },
+    "use_edit_page_button": True,
+}
+
 # autoapi info
 autoapi_dirs = ["../src"]
 # autoapi_add_toctree_entry = False
@@ -210,7 +253,7 @@ autoapi_dirs = ["../src"]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-# html_favicon = None
+html_favicon = "_static/logo.ico"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
