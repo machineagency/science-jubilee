@@ -68,6 +68,7 @@ To avoid multiple people working on the same thing, we use the issue to discuss 
 ```
 
 ```{toctree}
+:hidden:
 contributing_code
 contributing_docs
 contributing_tools

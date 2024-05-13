@@ -123,6 +123,7 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
 ```
 
 ```{toctree}
+:hidden:
 installation
 primer
 machine_intro

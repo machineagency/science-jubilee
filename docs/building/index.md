@@ -2,8 +2,6 @@
 title: Build Guides
 ---
 
-(last edit by Blair on 2023.11.10)
-
 (build-guides)=
 # Build Guides
 
@@ -22,6 +20,7 @@ Once you have a motion platform, you can add tools relevant to your application.
 [Laboratory Automation Tools](building_tools)
 
 ```{toctree}
+:hidden:
 building_a_jubilee
 building_tools
 ```
