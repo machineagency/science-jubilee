@@ -1,0 +1,22 @@
+:py:mod:`CalibrationControlPanel`
+=================================
+
+.. py:module:: CalibrationControlPanel
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   CalibrationControlPanel.make_control_panel
+
+
+
+.. py:function:: make_control_panel(m)
+
+
