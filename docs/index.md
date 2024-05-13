@@ -53,7 +53,7 @@ Welcome to the Science Jubilee docs! This website contains information for lab a
 
         +++
 
-        .. button-link:: https://science-jubilee.readthedocs.io/en/latest/autoapi/index.html
+        .. button-link:: autoapi/index.html
             :ref-type: ref
             :click-parent:
             :color: secondary
