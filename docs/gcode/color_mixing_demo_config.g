@@ -14,7 +14,7 @@ M553 P255.255.255.0       ; Netmask
 
 ; General setup
 ;-------------------------------------------------------------------------------
-M111 S0                    ; Debug off 
+M111 S0                    ; Debug off
 M929 P"eventlog.txt" S1    ; Start logging to file eventlog.txt
 
 ; General Preferences
@@ -26,7 +26,7 @@ M83                        ; ...but relative extruder moves
 
 ; Motor (Drive) to Axis Mapping
 ;-------------------------------------------------------------------------------
-M584 X1.0 Y1.1            ; Map Corexy's X,Y axes to 3HC board port's 0 and 1. 
+M584 X1.0 Y1.1            ; Map Corexy's X,Y axes to 3HC board port's 0 and 1.
 M584 U0.1                 ; Map U axis (toolchanger lock) do main board port 1.
 M584 Z0.2:0.3:0.4         ; Map 3 axes for Z to main board ports 2, 3, and 4.
 M584 V1.2 				  ; pipette plugged into driver 2 on the expansion board
@@ -37,9 +37,9 @@ M569 P1.0 S1 D3              ; Flip 3HC Motor 0 (corexy a) direction
 M569 P1.1 S1 D3             ; Flip 3HC Motor 1 (corexy b) direction
 
 M906 X{0.85*sqrt(2)*2500} ; LDO XY 2500mA RMS the TMC5160 driver on duet3
-M906 Y{0.85*sqrt(2)*2500} ; generates a sinusoidal coil current so we can 
+M906 Y{0.85*sqrt(2)*2500} ; generates a sinusoidal coil current so we can
                           ; multply by sqrt(2) to get peak used for M906
-                          ; Do not exceed 90% without heatsinking the XY 
+                          ; Do not exceed 90% without heatsinking the XY
                           ; steppers.
 
 M569 P0.2 S0 D3              ; Flip Mainboard Motor 2 (Front Left Z) direction.
@@ -73,7 +73,7 @@ M671 X297.5:2.5:150 Y313.5:313.5:-16.5 S10 ; Front Left: (297.5, 313.5)
 
 
 ; Steps/<unit> Configuration
-; XYZZZ are in steps/mm. U is in steps/degree. 
+; XYZZZ are in steps/mm. U is in steps/degree.
 ;-------------------------------------------------------------------------------
 
 M350 X1 Y1 Z1 U1   ; Disable microstepping to simplify calculations.
@@ -108,20 +108,20 @@ M203 X18000 Y18000 Z1600 U9000 V10000  ; Maximum axis speeds [mm/min]
 M566 X500 Y500 Z500 U50 V4000       ; Maximum jerk speeds [mm/min]
 
 
-; Endstops and Probes 
+; Endstops and Probes
 ;-------------------------------------------------------------------------------
 M574 X1 S1 P"^1.io0.in"  ; 3HC X homing position X1 = axis min, S1 = switch type
 M574 Y1 S1 P"^1.io1.in"  ; 3HC Y homing position Y1 = axis min, S1 = switch type
 M574 U1 S1 P"^0.io1.in"  ; Mainboard U homing position.
                          ; U1 = axis min, S1 = switch type
 
-M574 Z0                  ; Configure z switch as a Z probe, not as an endstop. 
+M574 Z0                  ; Configure z switch as a Z probe, not as an endstop.
 M574 V1 S1 P"^0.io3.in"  ; pipette homing endstop plugged into io3 on main board
 M574 Z1 P"^0.io2.in"  ; Pipette tip pick-up endstop plugged into io2 on main board
 M558 P8 C"io0.in" H20 F360 T6000 ; H = dive height
                                 ; F = probe speed
                                 ; T = travel speed
-								
+
 G31 K0 X0 Y0 Z-2        ; Set the limit switch as the "Control Point"
                         ; Offset it downwards slightly so we don't smear it along
                         ; the bed while traveling when z=0.
@@ -129,7 +129,7 @@ G31 K0 X0 Y0 Z-2        ; Set the limit switch as the "Control Point"
 ; Set axis software limits and min/max switch-triggering positions.
 ; Dimensions are adjusted such that (0,0) lies at the lower left corner
 ; of a centered 300x300mm square in the 305mmx305mm build plate.
-M208 X-13.75:313.75 Y-44:341 Z0:300 
+M208 X-13.75:313.75 Y-44:341 Z0:300
 M208 U0:200            ; Set Elastic Lock (U axis) max rotation angle
 M208 V0:450
 
@@ -148,7 +148,7 @@ M563 P0 S"Camera"              ; naming tool
 
 ; nominal offset
 ;G10 P0 X-1.4 Y49.88 Z-8.80			 ; setting tool offset- This is to change the Z-reference point to the tip of the tool
-	; X2.2 Y50.38									 ; instead of the Z-switch position 
+	; X2.2 Y50.38									 ; instead of the Z-switch position
 
 ; Pipette
 
@@ -162,18 +162,15 @@ M563 P2 S"Sonicator" 			 ; naming tool
 ; nominal offset
 ;G10 P2 X2.56 Y38.462 Z-148					 ; setting tool offset- This is to change the Z-reference point to the tip of the tool
 										 ; instead of the Z-switch position
-  
+
 ; Pen Setup
 ; ----------------------------------
 M563 P3 S"Spectrometer"              ; naming tool
 
 ; nominal offset
 ;G10 P3 X0.88 Y26.4 Z-52.55		 ; setting tool offset- This is to change the Z-reference point to the tip of the tool
-										 ; instead of the Z-switch position 
+										 ; instead of the Z-switch position
 
 
 M98  P"/sys/toffsets.g" ; Load tool offsets from the Control Point from ext file.
 M501                    ; Load saved parameters from config-override.g
-
-
-

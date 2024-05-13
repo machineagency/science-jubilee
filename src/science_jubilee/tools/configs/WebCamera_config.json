@@ -1,0 +1,10 @@
+{
+    "ip_address": "192.168.1.4",
+    "port": 5000,
+    "video_endpoint": "video_feed",
+    "still_endpoint": "picture",
+    "image_folder": "./sample_images",
+    "focus_height" : 100,
+    "light": "True",
+    "light_pin": "0"
+}

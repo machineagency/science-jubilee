@@ -1,0 +1,20 @@
+Adafruit-Blinka
+adafruit-mcp4725
+flask
+ipykernel
+Jinja2
+matplotlib
+# Requirements file for ReadTheDocs, check .readthedocs.yml.
+# To build the module reference correctly, make sure every external package
+# under `install_requires` in `setup.cfg` is also listed here!
+# sphinx_rtd_theme
+myst-parser[linkify]
+numpy
+opencv_contrib_python #==4.5.3.56
+picamera; platform_machine=='aarch64'
+pydata_sphinx_theme
+pyserial #==3.5
+requests
+sphinx>=3.2.1
+sphinx-autoapi
+sphinx-design

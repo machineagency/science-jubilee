@@ -16,11 +16,11 @@ Welcome to the Science Jubilee docs! This website contains information for lab a
         :class-card: intro-card
         :shadow: md
 
-        The getting started guides help you start using ``science_jubilee`` to control your machine, including installation, examples, and introduction to key concepts.
+        The getting started guides help you start using ``science-jubilee`` to control your machine, including installation, examples, and introduction to key concepts.
 
         +++
 
-        .. button-ref:: getting_started
+        .. button-ref:: getting-started
             :ref-type: ref
             :click-parent:
             :color: secondary
@@ -53,7 +53,7 @@ Welcome to the Science Jubilee docs! This website contains information for lab a
 
         +++
 
-        .. button-link:: https://machineagency.github.io/science_jubilee/autoapi/index.html
+        .. button-link:: https://science-jubilee.readthedocs.io/en/latest/autoapi/index.html
             :ref-type: ref
             :click-parent:
             :color: secondary

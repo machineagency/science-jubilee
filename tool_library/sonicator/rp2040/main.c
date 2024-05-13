@@ -1,5 +1,5 @@
 #include "pico/stdlib.h"
-#include <stdio.h> 
+#include <stdio.h>
 #include "hardware/i2c.h"
 #include <string.h>
 #include "pico/binary_info.h"
@@ -23,7 +23,7 @@ void initialize_pins() {
 
 void initialize_i2c() {
     // Initializes the MCP4725 DAC I2C pins
-        
+
     gpio_set_function(I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SCL_PIN);
@@ -37,13 +37,13 @@ void set_dac_value(float value) {
     uint16_t dac_value = (uint16_t)(value * 4095);
 
     // MCP4725 I2C write command
-    uint8_t write_mode = 0x00; // fast write mode for MCP4725 DAC 
+    uint8_t write_mode = 0x00; // fast write mode for MCP4725 DAC
     // MCP4725 I2C write command
     uint8_t data[2] = {write_mode| (uint8_t)((dac_value >> 8)), (uint8_t)(dac_value & 0x00FF)};
 
     // Write data to MCP4725
     i2c_write_timeout_us(i2c_type, MCP4725_ADDR, data, sizeof(data), false, I2C_DELAY);
-    
+
     printf("DAC value set to %f V\n",value*5);
     busy_wait_ms(50);
 }
@@ -86,27 +86,27 @@ void get_message(char* message) {
 }
 
 int main() {
-    
+
     stdio_init_all();
-    
+
     // Initialize USB CDC communication
     communication_init();
 
     // Initialize GPIO pins
-        
+
     initialize_pins();
 
     // Initialize I2C
     initialize_i2c();
-    
+
     // Make pin information available for picotool
     bi_decl(bi_program_description("Interface for QSonica Sonicator Board"));
     bi_decl(bi_1pin_with_name(SONICATOR_PIN, "Sonicator ON/OFF Pin"));
     bi_decl(bi_1pin_with_name(I2C_SDA_PIN, "I2C SDA Pin"));
     bi_decl(bi_1pin_with_name(I2C_SCL_PIN, "I2C SCL Pin"));
-        
+
     char message[MAX_MESSAGE_LENGTH];
-    
+
     while (1) {
         // Handle USB CDC communication
         while (stdio_usb_connected()) {
