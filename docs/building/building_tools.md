@@ -70,6 +70,8 @@ Once you've built a tool, it needs to be calibrated for use on the machine. See 
 [Tool Postreqs](tool_postreqs)
 
 ```{toctree}
+:hidden:
+
 tool_prereqs
 pipette_tool
 inoculation_tool
