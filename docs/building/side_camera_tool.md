@@ -5,7 +5,11 @@ title: Side Camera Tool
 (side-camera-tool)=
 # Side Camera Tool
 
-![Side Camera tool parked on a Jubilee](_static/side-camera.png){scale="25%"}
+```{figure} _static/side-camera.png
+:scale: 50 %
+
+Side Camera tool parked on a Jubilee.
+```
 
 ## Parts to Buy
 
