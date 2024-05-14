@@ -11,9 +11,11 @@ title: Tool Prerequisites
 
 Jubilee tools are parked on the rear rail of the machine. To hold the tool when it's not in use, any tool will need a parking post. Several sizes already exist to accommodate tools of varying widths. More info [here](https://jubilee3d.com/index.php?title=Parking_Post).
 
+```{figure}
 ![A Jubilee parking post](_static/parking-post.png){scale="50%"}
 
 Diagram of a Jubilee parking post.
+```
 
 ### Tool Wings
 
@@ -23,9 +25,11 @@ Each tool needs a way to rest on top of the pins of the parking post above. Whil
 
 Each tool has a tool plate which couples with Jubilee's toolchanger to be able to be picked up. This tool plate can be 3D printed + laser cut, or you can purchase aluminum toolplates.
 
-![Tools parked on a Jubilee](_static/tools.png){scale="10%"}
+```{figure} _static/tools.png
+:scale: 15 %
 
 Shown are a set of tools parked on a Jubilee; seen on the side of each tool frame are a set of tool wings resting on an accompanying parking post. The tool plates of each tool are visible; note the three threaded steel balls on each which will couple with toolchanger on pickup, and the white wedge plate (made of delrin) in the center.
+```
 
 ## Fabricating a Tool
 

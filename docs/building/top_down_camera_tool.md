@@ -5,7 +5,11 @@ title: Camera Tool
 (camera-tool)=
 # Camera Tool
 
-![Timelapse of duckweed growing](_static/duckweed.gif){scale="25%"}
+```{figure} _static/duckweed.gif
+:scale: 25 %
+
+Timelapse of duckweed growing.
+```
 
 A timelapse of duckweed frond growth, taken with the Jubilee camera tool.
 

@@ -5,9 +5,17 @@ title: Pipette Tool
 (pipette-tool)=
 # Pipette Tool
 
-![Front & back of the pipette tool](_static/pipette-flexure.jpg){scale="50%" alt="Front and back of the pipette tool."}
+```{figure} _static/pipette-flexure.jpg
+:scale: 50 %
 
-![Picking up a pipette tip](_static/pickup.gif){scale="40%" alt="Pipette tool picking up a tip"}
+Front and back of the pipette tool.
+```
+
+```{figure} _static/pickup.gif
+:scale: 40 %
+
+Pipette tool picking up a tip.
+```
 
 ## Parts to Buy
 
