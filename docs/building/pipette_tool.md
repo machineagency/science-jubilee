@@ -33,3 +33,16 @@ Pipette tool picking up a tip.
 ## Duet Configuration
 
 - Instructions [here](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/duet_configs/OT2_Pipette_Configuration.md)
+
+## Media
+
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between;">
+    <div style="flex: 1; margin: 10px;">
+        <iframe width="250" height="140" src="https://www.youtube.com/embed/meaXhH14zzY?si=4p9Iwl6hgjO9En3n" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <iframe width="250" height="140" src="https://www.youtube.com/embed/F8c2MbFglJU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+    <div style="flex: 1; margin: 10px;">
+        <iframe width="250" height="140" src="https://www.youtube.com/embed/0mGqOwAkS5k" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <iframe width="250" height="140" src="https://www.youtube.com/embed/pMmDV9pAfZU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+    </div>
+</div>
