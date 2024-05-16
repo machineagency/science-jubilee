@@ -5,7 +5,11 @@ title: Syringe Tool
 (syringe-tool)=
 # Syringe Tool
 
-![50 cc syringe parked on a Jubilee](_static/syringe.png){scale="25%"}
+```{figure} _static/syringe.png
+:scale: 25 %
+
+50 cc syringe parked on a Jubilee
+```
 
 See the [10cc Syringe tool](https://jubilee3d.com/index.php?title=Camera_Inspection_Tool) documented on the Jubilee project page. Here, we provide files to accommodate a larger 50cc syringe.
 

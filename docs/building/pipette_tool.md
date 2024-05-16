@@ -33,3 +33,28 @@ Pipette tool picking up a tip.
 ## Duet Configuration
 
 - Instructions [here](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/duet_configs/OT2_Pipette_Configuration.md)
+
+## Media
+
+<iframe width="708.75" height="398.25" src="https://www.youtube.com/embed/meaXhH14zzY?si=4p9Iwl6hgjO9En3n" title="Assembling the 3D printed only version of the OT2 pipette" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="354.375" height="630"
+src="https://www.youtube.com/embed/pMmDV9pAfZU"
+title="Assembling tool post"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen></iframe>
+
+<iframe width="354.375" height="630"
+src="https://www.youtube.com/embed/0mGqOwAkS5k"
+title="Arbor press"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen></iframe>
+
+<iframe width="354.375" height="630"
+src="https://www.youtube.com/embed/F8c2MbFglJU"
+title="First tool loaded"
+frameborder="0"
+allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+allowfullscreen></iframe>
