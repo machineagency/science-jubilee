@@ -8,13 +8,13 @@ title: Pipette Tool
 ```{figure} _static/pipette-flexure.jpg
 :scale: 50 %
 
-Front and back of the pipette tool.
+Back of the pipette tool showing the flexure mechanism. When the pipette experiences resistance (i.e., pressing it against a pipette tip to pick it up), the flexure mechanism compresses until an endstop is triggered.
 ```
 
 ```{figure} _static/pickup.gif
 :scale: 40 %
 
-Pipette tool picking up a tip.
+Pipette tool picking up a tip. When the flexure mechanism shown above reaches the endstop, the pipette tool considers the tip to have been picked up and resumes other tasks.
 ```
 
 ## Parts to Buy
