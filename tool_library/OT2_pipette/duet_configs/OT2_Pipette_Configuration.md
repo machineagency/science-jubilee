@@ -1,11 +1,11 @@
 # Opentrons OT-2: Pipette Tool G-code Configuration
 
 A relatively verbose summary of the duet configuration for an OT-2 toolhead.
-This lines should be added to the `config.g` on *your* machine.
+These lines should be added to the `config.g` on *your* machine.
 
 
 > Note:
-> 1. Anywhere you see `<>`, you should remove the greater than/less than signs and replace them with thecorrect information based on *your* machine.
+> 1. Anywhere you see `<>`, you should remove the greater than/less than signs and replace them with the correct information based on *your* machine.
 > 2. Be careful where you add the g-code lines in your `config.g` file as the order in which they are defined matters! You'll find information on where to add each one below.
 >
 >For more information about G-code, see the  [Duet G-code Documentation](https://docs.duet3d.com/en/User_manual/Reference/Gcodes) or the [RepRap G-code Wiki](https://reprap.org/wiki/G-code).
@@ -130,6 +130,6 @@ You are now done with updating your `config.g` file!
 
 The `homeall.g` macro is used to home each of the machine's configured axis at once. You can call the `homev.g` macro at the end of this file, and the pipette will home while sitting in its parking position.To do so, navigate to *System* (i.e., *sys/*), open `homeall.g`, and add the following line to the end:
 
-    M98 P”homev.g”
+    M98 P"homev.g"
 
 You are now done and your pipette should be configured!
