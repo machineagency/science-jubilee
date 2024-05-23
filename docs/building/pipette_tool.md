@@ -8,13 +8,13 @@ title: Pipette Tool
 ```{figure} _static/pipette-flexure.jpg
 :scale: 50 %
 
-Front and back of the pipette tool.
+Back of the pipette tool showing the flexure mechanism. When the pipette experiences resistance (i.e., pressing it against a pipette tip to pick it up), the flexure mechanism compresses until an endstop is triggered.
 ```
 
 ```{figure} _static/pickup.gif
 :scale: 40 %
 
-Pipette tool picking up a tip.
+Pipette tool picking up a tip. When the flexure mechanism shown above reaches the endstop, the pipette tool considers the tip to have been picked up and resumes other tasks.
 ```
 
 ## Parts to Buy
@@ -24,7 +24,14 @@ Pipette tool picking up a tip.
 
 ## Parts to Fabricate
 
-- Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette/fabrication_files).
+- Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette).
+
+## Assembly Instructions
+
+There are two version to choose from.
+
+- [Version using only 3D printed parts](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT2_Pipette_3D_only_assembly_instructions.pdf)
+- [Version using 3D printed parts and a laser-cut flexible delrin part](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT_laser_cut_assembly_instructions.pdf)
 
 ## Electronics
 
