@@ -31,6 +31,7 @@ Pipette tool picking up a tip. When the flexure mechanism shown above reaches th
 There are two version to choose from.
 
 - [Version using only 3D printed parts](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT2_Pipette_3D_only_assembly_instructions.pdf)
+  - [*Purchase this endstop](https://www.digikey.ca/en/products/detail/e-switch/SS0750301F020P1A/2639077)
 - [Version using 3D printed parts and a laser-cut flexible delrin part](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT_laser_cut_assembly_instructions.pdf)
 
 ## Electronics
