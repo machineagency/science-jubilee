@@ -36,7 +36,7 @@ There are two version to choose from.
 
 ## Electronics
 
-- [Wiring Diagram](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT_Wiring_Diagram_V1.pdf)
+- [Wiring Diagram](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT2_Wiring_Diagram.pdf)
 
 ## Duet Configuration
 
