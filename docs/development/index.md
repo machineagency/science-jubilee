@@ -72,5 +72,4 @@ To avoid multiple people working on the same thing, we use the issue to discuss 
 contributing_code
 contributing_docs
 contributing_tools
-modifying_docs
 ```
