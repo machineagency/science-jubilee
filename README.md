@@ -3,7 +3,7 @@
 
 <!-- [![Built Status](https://api.cirrus-ci.com/github/<USER>/science-jubilee.svg?branch=main)](https://cirrus-ci.com/github/<USER>/science-jubilee) -->
 [![ReadTheDocs](https://readthedocs.org/projects/science-jubilee/badge/?version=latest)](https://science-jubilee.readthedocs.io/en/stable/)
-[![Coveralls](https://img.shields.io/coveralls/github/machineagency/science-jubilee/main.svg)](https://coveralls.io/r/machineagency/science-jubilee)
+<!--- [![Coveralls](https://img.shields.io/coveralls/github/machineagency/science-jubilee/main.svg)](https://coveralls.io/r/machineagency/science-jubilee) --->
 [![PyPI-Server](https://img.shields.io/pypi/v/science-jubilee.svg)](https://pypi.org/project/science-jubilee/)
 <!-- [![Conda-Forge](https://img.shields.io/conda/vn/conda-forge/science-jubilee.svg)](https://anaconda.org/conda-forge/science-jubilee) -->
 [![Monthly Downloads](https://pepy.tech/badge/science-jubilee/month)](https://pepy.tech/project/science-jubilee)
