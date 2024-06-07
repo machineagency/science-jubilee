@@ -42,7 +42,7 @@ This guide assumes you have a few things:
 2. A set of metric hex L keys
 3. #2 phillips screwdriver
 4. Flush-cut clippers for zip ties 
-5. Most tool builds will require 3D printing parts on a filament printer. You will not need this for the motion platform build if you buy the full kit.
+5. Most tool builds will require parts to be 3D printed on a filament printer. You will not need this for the motion platform build if you buy the full kit.
 6. Most tool builds will also require making electrical connections through soldering and crimping. You will not need to do this for the motion platform build if you buy the full kit.
 
 
