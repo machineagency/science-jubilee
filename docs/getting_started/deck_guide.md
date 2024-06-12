@@ -5,11 +5,13 @@ title: Lab Automation Deck Tutorial
 (deck-guide)=
 # Lab Automation Deck Tutorial
 
-This guide walks you through the basics of using a lab automation deck in conjunction with labware. It assumes you have a lab automation deck installed on your machine.
+This guide walks you through the basics of using a lab automation deck in conjunction with labware. It assumes you have a lab automation deck installed on your machine. If you don't have a lab deck installed on your machine, check out the [deck build instructions](../building/lab_automation_deck.md)
+
+The lab automation 
 
 ## Creating a Deck Definition
 
-The standard lab automation deck consists of 6 slots (indices 0-5), and a number of optional garbage containers which can be positioned outside of the deck footprint:
+The standard lab automation deck consists of 6 slots that accept and [ANSI/SLAS](https://www.slas.org/education/ansi-slas-microplate-standards/) standard microplate, or any piece of labware that adheres to the footprint dimensions of this standard.  (indices 0-5), and a number of optional garbage containers which can be positioned outside of the deck footprint:
 
 ```{figure} _static/plate.png
 ---
@@ -27,7 +29,9 @@ alt: deck layout
 Orientation of slots on deck and labware in slots.
 ```
 
-To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the `decks/deck_definitions/` directory. The preferred method to do so accurately is with a camera tool; the [deck definition calibration notebook](https://github.com/machineagency/science-jubilee/blob/main/science-jubilee/calibration/LabAutomationDeckCalibration.ipynb) interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot.
+To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the `decks/deck_definitions/` directory. The preferred method to do so accurately is with a camera tool; the [deck definition calibration notebook](https://github.com/machineagency/science-jubilee/blob/main/src/science_jubilee/calibration/LabAutomationDeckCalibration.ipynb) interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot. Make sure to load the appropriate deck calibration file every time you set up an experiment (#TODO: Add a 'setting up an experiment' page that walks through how to set up with science-jubilee library).
+
+You should not need to re-do the deck calibration often during normal usage. You will need to re-do the calibration if you disassemble the lab automation deck assembly (ie remove the delrin mask from the aluminum bed plate). 
 
 ## Creating Labware Definitions
 
