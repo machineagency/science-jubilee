@@ -45,12 +45,27 @@ This guide assumes you have a few things:
 5. Most tool builds will require parts to be 3D printed on a filament printer. You will not need this for the motion platform build if you buy the full kit.
 6. Most tool builds will also require making electrical connections through soldering and crimping. You will not need to do this for the motion platform build if you buy the full kit.
 
+## 0. Things to be aware of if you are new to motion platforms
+
+Most of the hardware involved in Jubilee is pretty resilient and can handle a few mistakes in assembly and operation. However, there are some guidelines to follow to keep you and your Jubilee safe:
+
+1. Mind the mains AC terminals on the power supply (and the 24V as well). The Jubilee power supply requires you to make connections to your mains AC power at either 120 or 240V. This is dangerous and could kill you. Don't touch or modify power connections with the machine plugged in. There is a terminal guard for the power supply we reccomend printing and installing 
+
+# TODO: Find link to this guard and link here
+
+2. Don't plug/unplug stepper motor drivers with the Duet board powered on. This will likely damage your stepper drivers and fry your $$ board. Its good practice not to plug/unplug anything else with the board on, but definetley don't do it for stepper connectors. 
+
+3. Mind the belts and moving parts while the machine is in motion.
+
+
 
 ## 1. Assemble and configure the motion platform
 
 Estimated time: 8 hours - 5 working days
 
 ### Hardware assembly
+
+Find more details on building a science jubilee in our docs here: 
 
 This is a time consuming process, but it is well worth investing this time as this gets you familiar with the platform. Once you build it, you can understand issues and fix them. New developers in our research group are handed a partially disassembled Jubilee as their first task during the onboarding process. The build process is well documented on the [Jubilee3D wiki](https://jubilee3d.com/index.php?title=Assembly_Instructions). Most of the content for science-jubilee assumes you have a working motion platform and doesn't cover this step. 
 
@@ -64,9 +79,11 @@ You will need to set up configuration files on the duet board to connect to it. 
 
 Setting up g-code configuration files for Jubilee takes a fair amount of sorcery and dark magic. If possible, We recommend starting from our functional configuration file and modifying it to fit your needs. This config hasn't been shared yet. In the meantime DM one of us to get it. 
 
+#TODO Put these in a smart place and link here
+
 You will also need to set up your computer's network settings to access Jubilee over a direct ethernet connection. There is a great [write-up](https://jubilee3d.com/index.php?title=Connecting_to_Jubilee) of this process on the Jubilee wiki. 
 
-If you have done everything correctly, now you are ready to connect to the machine and home it for the first time! Open a web browser and enter the ip address you assigned Jubilee. In our config this is `192.168.1.2`. You should connect to the Duet Web Control interface. This is a GUI interface for controlling the Duet boards on Jubilee. It is useful for editing configuration files on the Duet board, making manual machine movements, debugging, and incident recovery. 
+If you have done everything correctly, now you are ready to connect to the machine and home it for the first time! Open a web browser and enter the ip address you assigned Jubilee. In our config this is `192.168.1.2`. You should be connected to the Duet Web Control interface. This is a GUI interface for controlling the Duet boards on Jubilee. It is useful for editing configuration files on the Duet board, making manual machine movements, debugging, and incident recovery. 
 
 ```{figure} _static/duet_web_control.png
 
@@ -75,18 +92,53 @@ Screenshot of duet web control dashboard.
 
 Now, you're ready to home the machine for the first time! Homing is a process the motion platform goes through to figure out where it is in space and make sure everything works. During the homing procedure, the machine will move each axis to it's 0 position (see [Jubilee coordinate system primer](primer.md)). You will need to home the machine every time you power it on. Before you proceed, make sure the bed is clear of everything, including the lab automation deck plate. To home the machine from the Duet Web Control interface, click the blue 'home all' button. The first time you home a new machine, expect something to go wrong. Watch the process carefully and keep a finger over the power switch if something goes wrong. There should be no crashing, shuddering, or grinding during this process.
 
+#### First-line troubleshooting
+
+- The duet board does not power on when you turn on the power switch, and you checked that the outlet you are using works
+    - There are some fuses that go into the power socket on the machine, where you plug the cable in
+    - Double check your wiring connections from the power supply to the duet boards
+
+- An axis does not move during homing
+    - Check that the stepper motor is wired correctly, ie that the 4 wires are in the correct order at both terminals (order will depend on your stepper motor and the driver on the duet)
+    - Check that the axis is configured correctly in the duet config. Is the connector plugged in where the config says it is supposed to be?
+
+- An axis moves while homing, but the motors do not stop when it hits it's endstop limit switch/ '0' point resulting in a 'crash' and grinding noise.
+    - Check that your limit switch is functioning:
+        1. Make sure it is plugged in to the I/O port that the config file is expecting for that axis
+        2. If the port is correct, check that limit switch is funtional with a multimeter on the continuity setting. The switch/circuit should be closed when the switch is not pressed and open when the switch is pressed.
+
+- The Z-axis goes through it's probing process, then makes a correction that worsens the bed leveling
+    - Check that the Z left, right, and back motor connections are not mixed up between the config.g file and the physical connections
 
 
-## 2. Install and calibrate the lab automation deck plate
 
 
-## 3. Build and install the tools you will be using 
 
-For this tutorial, we need an OT2 pipette tool and webcamera tool
+## 2. Build and install the tools you will be using 
+
+For this tutorial, we need an [OT2 Pipette Tool](../building/) and [Webcamera](https://github.com/machineagency/science-jubilee/tree/main/tool_library/webcamera) tool.
+
+
+Tool build documentation is a little scattered currently, so you may have to look in various places to get the information you need.
+
+### Building the pipette
+
+Most of the OT2 Pipette assembly documentation can be found in the github repo [tool_library](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette). If you are building from scratch, you have the choice of using either a 3D-printed flexure assembly or a delrin laser-cut flexure. We reccomend the delrin version if you have access to delrin and a laser cutter, but the 3D printed version is fine too. Just make sure to follow the appropriate mechanical assembly instructions. 
+
+
 
 1. See the individual build guides to build, wire, and configure these tools
 2. Set tool parking post positions and offsets for each tool
 3. Test that they work
+
+
+## 3. Install and calibrate the lab automation deck plate
+ 
+ The lab automation deck plate allows you to position labware on the Jubilee deck. It consists of a laser-cut delrin (plastic) mask that mounts to the Jubilee aluminum bed plate using either 3D printed clasps or direct screws, depending on the version. Once the lab automation deck plate is physically mounted, you will need to change the machine configuration files so that the z-axis homing probe pattern accounts for the openings in the delrin, and perform a calibration procedure to use the deck in science-jubilee. 
+
+ 1. Build the deck plate. Directions can be found [here](../building/lab_automation_deck.md)
+ 2. Verify that you followed the directions to update the machine config files in the docs linked in step 1.
+ 3. Create a calibration file for your new deck plate, following the procedure linked [here](./deck_guide.md). Note you need properly set up tools with tools offsets configured before you can do this. 
 
 # 4. Control the tools with science-jubilee
 
