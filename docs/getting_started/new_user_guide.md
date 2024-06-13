@@ -53,7 +53,7 @@ Most of the hardware involved in Jubilee is pretty resilient and can handle a fe
 
 # TODO: Find link to this guard and link here
 
-2. Don't plug/unplug stepper motor drivers with the Duet board powered on. This will likely damage your stepper drivers and fry your $$ board. Its good practice not to plug/unplug anything else with the board on, but definetley don't do it for stepper connectors. 
+2. Don't plug/unplug stepper motor drivers with the Duet board powered on. This will likely damage your stepper drivers and fry your $$ board. Its good practice not to plug/unplug anything else with the board on, but definetley don't do it for stepper connectors.
 
 3. Mind the belts and moving parts while the machine is in motion.
 
@@ -65,25 +65,25 @@ Estimated time: 8 hours - 5 working days
 
 ### Hardware assembly
 
-Find more details on building a science jubilee in our docs here: 
+Find more details on building a science jubilee in our docs here:
 
-This is a time consuming process, but it is well worth investing this time as this gets you familiar with the platform. Once you build it, you can understand issues and fix them. New developers in our research group are handed a partially disassembled Jubilee as their first task during the onboarding process. The build process is well documented on the [Jubilee3D wiki](https://jubilee3d.com/index.php?title=Assembly_Instructions). Most of the content for science-jubilee assumes you have a working motion platform and doesn't cover this step. 
+This is a time consuming process, but it is well worth investing this time as this gets you familiar with the platform. Once you build it, you can understand issues and fix them. New developers in our research group are handed a partially disassembled Jubilee as their first task during the onboarding process. The build process is well documented on the [Jubilee3D wiki](https://jubilee3d.com/index.php?title=Assembly_Instructions). Most of the content for science-jubilee assumes you have a working motion platform and doesn't cover this step.
 
 ### Wiring
 
-We have a wiring [quickstart diagram](https://github.com/machineagency/science-jubilee/blob/main/docs/pdfs/jubilee_wiring_colormix.pdf) to wire the boards for our 'default' lab automation configuration. Ignore the connections for the pipette and camera for now. This wiring setup is based off of the [duet3 mini wiring diagram](https://raw.githubusercontent.com/machineagency/jubilee/main/frame/assembly_instructions/wiring/duet3_mini/duet3_mini_frame_wiring.png) from the Jubilee wiki, but may differ slightly. 
+We have a wiring [quickstart diagram](https://github.com/machineagency/science-jubilee/blob/main/docs/pdfs/jubilee_wiring_colormix.pdf) to wire the boards for our 'default' lab automation configuration. Ignore the connections for the pipette and camera for now. This wiring setup is based off of the [duet3 mini wiring diagram](https://raw.githubusercontent.com/machineagency/jubilee/main/frame/assembly_instructions/wiring/duet3_mini/duet3_mini_frame_wiring.png) from the Jubilee wiki, but may differ slightly.
 
 ### Board provisioning and initial connection
 
 You will need to set up configuration files on the duet board to connect to it. First, you will need a bootable microSD card for your Duet. It probably came with a pre-configured SD card in the box. If not, follow the directions at [https://docs.duet3d.com/User_manual/RepRapFirmware/SD_card](https://docs.duet3d.com/User_manual/RepRapFirmware/SD_card) to set one up from scratch.
 
-Setting up g-code configuration files for Jubilee takes a fair amount of sorcery and dark magic. If possible, We recommend starting from our functional configuration file and modifying it to fit your needs. This config hasn't been shared yet. In the meantime DM one of us to get it. 
+Setting up g-code configuration files for Jubilee takes a fair amount of sorcery and dark magic. If possible, We recommend starting from our functional configuration file and modifying it to fit your needs. This config hasn't been shared yet. In the meantime DM one of us to get it.
 
 #TODO Put these in a smart place and link here
 
-You will also need to set up your computer's network settings to access Jubilee over a direct ethernet connection. There is a great [write-up](https://jubilee3d.com/index.php?title=Connecting_to_Jubilee) of this process on the Jubilee wiki. 
+You will also need to set up your computer's network settings to access Jubilee over a direct ethernet connection. There is a great [write-up](https://jubilee3d.com/index.php?title=Connecting_to_Jubilee) of this process on the Jubilee wiki.
 
-If you have done everything correctly, now you are ready to connect to the machine and home it for the first time! Open a web browser and enter the ip address you assigned Jubilee. In our config this is `192.168.1.2`. You should be connected to the Duet Web Control interface. This is a GUI interface for controlling the Duet boards on Jubilee. It is useful for editing configuration files on the Duet board, making manual machine movements, debugging, and incident recovery. 
+If you have done everything correctly, now you are ready to connect to the machine and home it for the first time! Open a web browser and enter the ip address you assigned Jubilee. In our config this is `192.168.1.2`. You should be connected to the Duet Web Control interface. This is a GUI interface for controlling the Duet boards on Jubilee. It is useful for editing configuration files on the Duet board, making manual machine movements, debugging, and incident recovery.
 
 ```{figure} _static/duet_web_control.png
 
@@ -114,7 +114,7 @@ Now, you're ready to home the machine for the first time! Homing is a process th
 
 
 
-## 2. Build and install the tools you will be using 
+## 2. Build and install the tools you will be using
 
 For this tutorial, we need an [OT2 Pipette Tool](../building/) and [Webcamera](https://github.com/machineagency/science-jubilee/tree/main/tool_library/webcamera) tool.
 
@@ -135,7 +135,7 @@ This tutorial uses the Webcamera tool. This is a raspberry pi camera tool that i
 
 ### Setting tool parking post positions and offsets
 
-After you have completed your tool assembly, you will need to set parking post positions and tool offsets. Parking post positions tell the Jubilee system where the parking posts for the tool are so it can be reliably picked up and parked. Tool offsets calibrate the positioning of the 'active point' of the tool. This allows each tool to move to the same place on the deck when we tell it to go to the same XYZ position as other tools. For the camera, the 'active point' is the center of the field of view, and for the OT2 Pipette tool it is the pipette tip. 
+After you have completed your tool assembly, you will need to set parking post positions and tool offsets. Parking post positions tell the Jubilee system where the parking posts for the tool are so it can be reliably picked up and parked. Tool offsets calibrate the positioning of the 'active point' of the tool. This allows each tool to move to the same place on the deck when we tell it to go to the same XYZ position as other tools. For the camera, the 'active point' is the center of the field of view, and for the OT2 Pipette tool it is the pipette tip.
 
 1. Follow the procedures on the Jubilee wiki to set the tool parking post positions for each tool you are using: [https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions](https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions)
 2. There are directions on the Jubilee wiki for [setting tool offsets](https://jubilee3d.com/index.php?title=Setting_Tool_Offsets). They provide a good overview of the procedure, but assume you are using a USB microscope to align the tools. I like to use the following, simpler procedure:
@@ -145,18 +145,18 @@ After you have completed your tool assembly, you will need to set parking post p
     - For each tool:
         - Pick up the tool
         - Position it so that the 'active point' is located over the X as precisely as you can
-        - Write down the position of the tool 
+        - Write down the position of the tool
         - Subtract the coordinates you wrote down for the z probe switch above from the position of the tool. This is your tool offset
         - Edit the tool offset in /sys/toffsets.g
         - Load the new tool offset with the gcode command `M98 P'toffsets.g`. The current tool position should update to match the z-probe position you wrote down
 
 ## 3. Install and calibrate the lab automation deck plate
  
- The lab automation deck plate allows you to position labware on the Jubilee deck. It consists of a laser-cut delrin (plastic) mask that mounts to the Jubilee aluminum bed plate using either 3D printed clasps or direct screws, depending on the version. Once the lab automation deck plate is physically mounted, you will need to change the machine configuration files so that the z-axis homing probe pattern accounts for the openings in the delrin, and perform a calibration procedure to use the deck in science-jubilee. 
+ The lab automation deck plate allows you to position labware on the Jubilee deck. It consists of a laser-cut delrin (plastic) mask that mounts to the Jubilee aluminum bed plate using either 3D printed clasps or direct screws, depending on the version. Once the lab automation deck plate is physically mounted, you will need to change the machine configuration files so that the z-axis homing probe pattern accounts for the openings in the delrin, and perform a calibration procedure to use the deck in science-jubilee.
 
  1. Build the deck plate. Directions can be found [here](../building/lab_automation_deck.md)
  2. Verify that you followed the directions to update the machine config files in the docs linked in step 1.
- 3. Create a calibration file for your new deck plate, following the procedure linked [here](./deck_guide.md). Note you need properly set up tools with tools offsets configured before you can do this. 
+ 3. Create a calibration file for your new deck plate, following the procedure linked [here](./deck_guide.md). Note you need properly set up tools with tools offsets configured before you can do this.
 
 # 4. Control the tools with science-jubilee
 
