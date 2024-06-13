@@ -1,9 +1,9 @@
 ---
-title: Getting Started as a New Jubilee Developer
+title: New User Guide
 ---
 
-# Getting Started as a New Jubilee Developer
-
+(new-user-guide)=
+# New User Guide
 This page provides a general overview of the Jubilee ecosystem with an eye towards getting a new contributor up to speed as a developer of Jubilee for science. This guide was developed as a resource to aid in the onboarding of new students in the Pozzo research group, but can serve as a useful reference for anyone new to Jubilee. If you are using a Jubilee as a tool in your research in collaboration with an established Jubilee user, following this guide verbatim may be unnecessarily involved. However if you are starting from scratch with Jubilee, you will need to follow all the steps here to get a functional experiment up and running. 
 
 ## What is Jubilee?
@@ -123,14 +123,32 @@ Tool build documentation is a little scattered currently, so you may have to loo
 
 ### Building the pipette
 
-Most of the OT2 Pipette assembly documentation can be found in the github repo [tool_library](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette). If you are building from scratch, you have the choice of using either a 3D-printed flexure assembly or a delrin laser-cut flexure. We reccomend the delrin version if you have access to delrin and a laser cutter, but the 3D printed version is fine too. Just make sure to follow the appropriate mechanical assembly instructions. 
+Most of the OT2 Pipette assembly documentation can be found in the github repo [tool_library](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette). If you are building from scratch, you have the choice of using either a 3D-printed flexure assembly or a delrin laser-cut flexure. We recommend the delrin version if you have access to delrin and a laser cutter, but the 3D printed version is fine too. Just make sure to follow the appropriate mechanical assembly instructions for the pipette.
+
+Currently, wiring directions are sparse. You will want to use the connector and wires mentioned in the OT2 pipette [readme](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette) and follow the [wiring diagram](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT2_Wiring_Diagram.pdf). Stay tuned for a more thorough set of documentation, and don't hesitate to reach out on the [lab automation discord](https://discord.com/invite/j9Bqv3djvN) if you get stuck.
 
 
+### Building the camera tool
 
-1. See the individual build guides to build, wire, and configure these tools
-2. Set tool parking post positions and offsets for each tool
-3. Test that they work
+This tutorial uses the Webcamera tool. This is a raspberry pi camera tool that is set up to serve images through an HTTP endpoint, which allows you to run the main logic of your experiment on a system that is not a raspberry pi. Follow the [documentation](https://github.com/machineagency/science-jubilee/tree/main/tool_library/webcamera) to build the tool.
 
+
+### Setting tool parking post positions and offsets
+
+After you have completed your tool assembly, you will need to set parking post positions and tool offsets. Parking post positions tell the Jubilee system where the parking posts for the tool are so it can be reliably picked up and parked. Tool offsets calibrate the positioning of the 'active point' of the tool. This allows each tool to move to the same place on the deck when we tell it to go to the same XYZ position as other tools. For the camera, the 'active point' is the center of the field of view, and for the OT2 Pipette tool it is the pipette tip. 
+
+1. Follow the procedures on the Jubilee wiki to set the tool parking post positions for each tool you are using: [https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions](https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions)
+2. There are directions on the Jubilee wiki for [setting tool offsets](https://jubilee3d.com/index.php?title=Setting_Tool_Offsets). They provide a good overview of the procedure, but assume you are using a USB microscope to align the tools. I like to use the following, simpler procedure:
+    - Place a piece of masking/label tape on the deck and draw an X on it with a fine point sharpie or other fine pen
+    - Position the z probe limit switch of the tool carriage over the "X" using the duet web interface jog controls
+    - Write down the XYZ coordinates of the X
+    - For each tool:
+        - Pick up the tool
+        - Position it so that the 'active point' is located over the X as precisely as you can
+        - Write down the position of the tool 
+        - Subtract the coordinates you wrote down for the z probe switch above from the position of the tool. This is your tool offset
+        - Edit the tool offset in /sys/toffsets.g
+        - Load the new tool offset with the gcode command `M98 P'toffsets.g`. The current tool position should update to match the z-probe position you wrote down
 
 ## 3. Install and calibrate the lab automation deck plate
  
@@ -142,7 +160,14 @@ Most of the OT2 Pipette assembly documentation can be found in the github repo [
 
 # 4. Control the tools with science-jubilee
 
+Learn how to use the tools you set up by exploring their respective tool operation guides:
+
+TODO: Write up operation guides for pipette and web camera
+
+To use smaller labware like tipracks and 96 well plates, you probably need to perform labware-specific calibrations for each piece of labware in each deck slot. See the [procedure](./deck_guide.md#Labware-Calibration) for this.
+
 
 # 5. Provision for and run the color mixing demonstration notebook
 
-- Update the color mixing docs to have good instructions for this part, cut out the general setup guidelines from there. 
+Now that you have a fully functioning Jubilee with tools attached and calibrated, you are ready to run an experiment! We will start with the color mixing demonstration. See the [color mixing demo getting started guide](./color_mixing_setup.md) for more details on this experiment.
+
