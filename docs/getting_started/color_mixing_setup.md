@@ -17,7 +17,7 @@ You can find the instructions for running the color mix demo along with the code
 
 ## Required Equipment
 
-To reproduce this tutorial exactly, you will need the following items. You should be able to substitute similar equipment with similar functionality, for example using a peristaltic pump dispensing tool instead of an OT2 pipette tool. 
+To reproduce this tutorial exactly, you will need the following items. You should be able to substitute similar equipment with similar functionality, for example using a peristaltic pump dispensing tool instead of an OT2 pipette tool.
 
 1. An assembled and provisioned Jubilee motion platform with a calibrated lab automation deck plate
 2. An OT2 Pipette tool and webcamera tool on your Jubilee, with tool offsets and tool-specific calibrations completed.

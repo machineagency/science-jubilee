@@ -4,19 +4,19 @@ title: New User Guide
 
 (new-user-guide)=
 # New User Guide
-This page provides a general overview of the Jubilee ecosystem with an eye towards getting a new contributor up to speed as a developer of Jubilee for science. This guide was developed as a resource to aid in the onboarding of new students in the Pozzo research group, but can serve as a useful reference for anyone new to Jubilee. If you are using a Jubilee as a tool in your research in collaboration with an established Jubilee user, following this guide verbatim may be unnecessarily involved. However if you are starting from scratch with Jubilee, you will need to follow all the steps here to get a functional experiment up and running. 
+This page provides a general overview of the Jubilee ecosystem with an eye towards getting a new contributor up to speed as a developer of Jubilee for science. This guide was developed as a resource to aid in the onboarding of new students in the Pozzo research group, but can serve as a useful reference for anyone new to Jubilee. If you are using a Jubilee as a tool in your research in collaboration with an established Jubilee user, following this guide verbatim may be unnecessarily involved. However if you are starting from scratch with Jubilee, you will need to follow all the steps here to get a functional experiment up and running.
 
 ## What is Jubilee?
 
 To lift directly from the Jubilee wiki, ["Jubilee is an extensible multi-tool motion platform capable of running G-code for low force automation applications."](https://jubilee3d.com/index.php?title=Main_Page). Jubilee is originally developed and configured as a tool-changing 3D printer. Tool changing 3D printers use multiple hot-swappable extruder heads to allow them to print with multiple colors or materials. Jubilee is a great platform for experimental automation because the tool changing capability makes it possible to run multi-step experimental workflows on a single platform without moving samples manually. The open, extensible nature of the platform also makes it reasonably straightforward to develop new tools or capabilities. However, because Jubilee is an open-source system, the user is responsible for many aspects of building and running the system. This lends Jubilee a steep learning curve compared to other automation platforms. This guide provides a pathway to flatten that learning curve.
 
-## Where to find help? 
+## Where to find help?
 
-Because Jubilee is many things to many people, information on the platform is spread across several locations. 
+Because Jubilee is many things to many people, information on the platform is spread across several locations.
 
-- The Jubilee wiki page [https://jubilee3d.com/index.php?title=Main_Page](https://jubilee3d.com/index.php?title=Main_Page) is the official website of the Jubilee project. You will find instructions for [building the core motion platform](https://jubilee3d.com/index.php?title=Assembly_Instructions) and configuring it as a 3D printer here. 
+- The Jubilee wiki page [https://jubilee3d.com/index.php?title=Main_Page](https://jubilee3d.com/index.php?title=Main_Page) is the official website of the Jubilee project. You will find instructions for [building the core motion platform](https://jubilee3d.com/index.php?title=Assembly_Instructions) and configuring it as a 3D printer here.
 - Jubilee as a 3D printer has a large and active community. The [Jubilee discord](https://discord.gg/RxMaGJdGH9) is the best spot to interact with this community. (Open a github issue on science_jubilee if this link is broken)
-- The people behind science-jubilee host an Open Source Lab Automation discord server. Join at [https://discord.gg/ubxU2rMJwN](https://discord.gg/ubxU2rMJwN). 
+- The people behind science-jubilee host an Open Source Lab Automation discord server. Join at [https://discord.gg/ubxU2rMJwN](https://discord.gg/ubxU2rMJwN).
 - Jubilee uses a commercial motion control board called Duet as its brains. For software, configuration, or wiring issues, start at the [Duet documentation](https://docs.duet3d.com/).
 
 
@@ -26,22 +26,22 @@ This guide assumes you have a few things:
 
 ### Hardware:
 
-1. A Jubilee motion platform, either assembled or still in the box (in the box is better!). You can purchase a Jubilee kit from [filastruder](https://www.filastruder.com/collections/jubilee/products/jubilee-motion-platform-kit) or assemble the requisite parts from the [bill of materials](https://jubilee3d.com/index.php?title=Getting_Parts). If it is an option, buying the Filastruder kit is likely to be the most cost effective option, doubly so if you value your time in any way. These directions assume you are running a Duet 3 mini ethernet main board and a Duet3 3HC expansion board, but other options will work too. 
+1. A Jubilee motion platform, either assembled or still in the box (in the box is better!). You can purchase a Jubilee kit from [filastruder](https://www.filastruder.com/collections/jubilee/products/jubilee-motion-platform-kit) or assemble the requisite parts from the [bill of materials](https://jubilee3d.com/index.php?title=Getting_Parts). If it is an option, buying the Filastruder kit is likely to be the most cost effective option, doubly so if you value your time in any way. These directions assume you are running a Duet 3 mini ethernet main board and a Duet3 3HC expansion board, but other options will work too.
 2. A [lab automation bed plate](https://github.com/machineagency/science-jubilee/tree/main/tool_library/bed_plate).
 3. Hardware to run the color mixing demo. This includes an [Opentrons pipette tool](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette) or other liquid handling tool as well as a downward-facing camera such as the [webcamera tool](https://github.com/machineagency/science-jubilee/tree/main/tool_library/webcamera).
-4. An ethernet cable and means to plug it into your computer. Modern laptops will probably require and adapter. 
+4. An ethernet cable and means to plug it into your computer. Modern laptops will probably require and adapter.
 
 ### Software:
 
 1. A computer with python installed, preferably via a conda environment
-2. A science-jubilee duet configuration fileset. 
+2. A science-jubilee duet configuration fileset.
 
 ### Tools:
 
 1. A set of precision screwdrivers with hex and torx bits. We like the [Mako driver kit](https://www.ifixit.com/products/mako-driver-kit-64-precision-bits) from iFixit.
 2. A set of metric hex L keys
 3. #2 phillips screwdriver
-4. Flush-cut clippers for zip ties 
+4. Flush-cut clippers for zip ties
 5. Most tool builds will require parts to be 3D printed on a filament printer. You will not need this for the motion platform build if you buy the full kit.
 6. Most tool builds will also require making electrical connections through soldering and crimping. You will not need to do this for the motion platform build if you buy the full kit.
 
@@ -49,7 +49,7 @@ This guide assumes you have a few things:
 
 Most of the hardware involved in Jubilee is pretty resilient and can handle a few mistakes in assembly and operation. However, there are some guidelines to follow to keep you and your Jubilee safe:
 
-1. Mind the mains AC terminals on the power supply (and the 24V as well). The Jubilee power supply requires you to make connections to your mains AC power at either 120 or 240V. This is dangerous and could kill you. Don't touch or modify power connections with the machine plugged in. There is a terminal guard for the power supply we reccomend printing and installing 
+1. Mind the mains AC terminals on the power supply (and the 24V as well). The Jubilee power supply requires you to make connections to your mains AC power at either 120 or 240V. This is dangerous and could kill you. Don't touch or modify power connections with the machine plugged in. There is a terminal guard for the power supply we reccomend printing and installing
 
 # TODO: Find link to this guard and link here
 
@@ -151,7 +151,7 @@ After you have completed your tool assembly, you will need to set parking post p
         - Load the new tool offset with the gcode command `M98 P'toffsets.g`. The current tool position should update to match the z-probe position you wrote down
 
 ## 3. Install and calibrate the lab automation deck plate
- 
+
  The lab automation deck plate allows you to position labware on the Jubilee deck. It consists of a laser-cut delrin (plastic) mask that mounts to the Jubilee aluminum bed plate using either 3D printed clasps or direct screws, depending on the version. Once the lab automation deck plate is physically mounted, you will need to change the machine configuration files so that the z-axis homing probe pattern accounts for the openings in the delrin, and perform a calibration procedure to use the deck in science-jubilee.
 
  1. Build the deck plate. Directions can be found [here](../building/lab_automation_deck.md)

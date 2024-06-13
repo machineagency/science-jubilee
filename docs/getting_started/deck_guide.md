@@ -7,7 +7,7 @@ title: Lab Automation Deck Tutorial
 
 This guide walks you through the basics of using a lab automation deck in conjunction with labware. It assumes you have a lab automation deck installed on your machine. If you don't have a lab deck installed on your machine, check out the [deck build instructions](../building/lab_automation_deck.md)
 
-The lab automation 
+The lab automation
 
 ## Creating a Deck Definition
 
@@ -31,7 +31,7 @@ Orientation of slots on deck and labware in slots.
 
 To use the lab automation deck, we need to set the offsets for each of the 6 slots, as well as any off-deck containers, and place the definition in the `decks/deck_definitions/` directory. The preferred method to do so accurately is with a camera tool; the [deck definition calibration notebook](https://github.com/machineagency/science-jubilee/blob/main/src/science_jubilee/calibration/LabAutomationDeckCalibration.ipynb) interactively guides you through this process. If you do not have a camera tool, this can also be done using any other tool that extends into the build volume such that you can accurately align the tool tip to a corner of each slot. Make sure to load the appropriate deck calibration file every time you set up an experiment (#TODO: Add a 'setting up an experiment' page that walks through how to set up with science-jubilee library).
 
-You should not need to re-do the deck calibration often during normal usage. You will need to re-do the calibration if you disassemble the lab automation deck assembly (ie remove the delrin mask from the aluminum bed plate). 
+You should not need to re-do the deck calibration often during normal usage. You will need to re-do the calibration if you disassemble the lab automation deck assembly (ie remove the delrin mask from the aluminum bed plate).
 
 ## Creating Labware Definitions
 
@@ -45,10 +45,10 @@ Due to tolerances in the deck plate, labware, and their interface, you will like
 
 **Note: This calibration will assume your wells are evenly spaced on your labware. If this is not the case, do not use this calibration. You instead may need to manually set a position for each individual well or adjust your deck definition coordinates**
 
-1. Place your labware in the selected location on the deck plate. 
+1. Place your labware in the selected location on the deck plate.
 2. Pick up a tool that has had its offsets correctly set. An OT2 pipette tool or other 'probe' tool is preferred for this step
 3. Using the Duet Web Control interface jog controls, place the tool over the 'A1' well on the first piece of labware. Align the tool as precisely as you can, then write down the XY coordinates
-4. Repeat step 3 for the ("first row, last column") and ("last row, last column") wells on the same piece of labware. In the example labware shown in the deck schematic above, this would be the 'A12' and 'H12' wells. 
+4. Repeat step 3 for the ("first row, last column") and ("last row, last column") wells on the same piece of labware. In the example labware shown in the deck schematic above, this would be the 'A12' and 'H12' wells.
 5. Repeat steps 3-4 for each of the labware items that need calibration.
 5. When setting up the experiment in your python code, apply the recorded manual offset values to each piece of labware. Example code:
 
@@ -57,7 +57,7 @@ tiprack = jubilee.load_labware('opentrons_96_tiprack_300uL.json', 0) #Load an op
 tiprack.manual_offset([[<A1 X coord., A1 Y coord>], [<A12 X coord, A12 Y coord>], [<H12 X coord, H12 Y coord>]], save=True)
 ```
 
-The `save` keyword argument is optional. If True, the offsets will save to the labware definition json file, allowing you to load them directly from the file next time you use the labware. 
+The `save` keyword argument is optional. If True, the offsets will save to the labware definition json file, allowing you to load them directly from the file next time you use the labware.
 
 ## Using a Lab Automation Deck + Labware
 
