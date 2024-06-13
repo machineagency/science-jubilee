@@ -39,6 +39,26 @@ Each piece of labware requires a labware definition in `labware/labware_definiti
 
 In general, labware is saved in the format `<brand>_<number_of_wells>_<labware_type>_<well_volume>_<extra_identifiers>.json`. For example, a Corning 96 well plate has the name `corning_96_wellplate_360ul_flat.json`; an OpenTrons pipette tip rack is named `opentrons_96_tiprack_300ul.json`. We recommend following this convention for specificity and for sharing experimental workflows.
 
+## Labware Calibration
+
+Due to tolerances in the deck plate, labware, and their interface, you will likely need to perform a manual offset calibration to get good location accuracy. This is mostly the case for smaller labware items like 96 well tipracks and well plates. Do this calibration after you have performed a deck definition calibration (described above) and selected a labware layout for your experiment. This calibration will correct for any translational or rotational deviations from the deck plate calibration.
+
+**Note: This calibration will assume your wells are evenly spaced on your labware. If this is not the case, do not use this calibration. You instead may need to manually set a position for each individual well or adjust your deck definition coordinates**
+
+1. Place your labware in the selected location on the deck plate. 
+2. Pick up a tool that has had its offsets correctly set. An OT2 pipette tool or other 'probe' tool is preferred for this step
+3. Using the Duet Web Control interface jog controls, place the tool over the 'A1' well on the first piece of labware. Align the tool as precisely as you can, then write down the XY coordinates
+4. Repeat step 3 for the ("first row, last column") and ("last row, last column") wells on the same piece of labware. In the example labware shown in the deck schematic above, this would be the 'A12' and 'H12' wells. 
+5. Repeat steps 3-4 for each of the labware items that need calibration.
+5. When setting up the experiment in your python code, apply the recorded manual offset values to each piece of labware. Example code:
+
+```
+tiprack = jubilee.load_labware('opentrons_96_tiprack_300uL.json', 0) #Load an opentrons 300uL tiprack into deck slot 0
+tiprack.manual_offset([[<A1 X coord., A1 Y coord>], [<A12 X coord, A12 Y coord>], [<H12 X coord, H12 Y coord>]], save=True)
+```
+
+The `save` keyword argument is optional. If True, the offsets will save to the labware definition json file, allowing you to load them directly from the file next time you use the labware. 
+
 ## Using a Lab Automation Deck + Labware
 
 We can use our deck + labware definitions in code. First, we need to import relevant modules:
