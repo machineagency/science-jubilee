@@ -170,4 +170,3 @@ To use smaller labware like tipracks and 96 well plates, you probably need to pe
 # 5. Provision for and run the color mixing demonstration notebook
 
 Now that you have a fully functioning Jubilee with tools attached and calibrated, you are ready to run an experiment! We will start with the color mixing demonstration. See the [color mixing demo getting started guide](./color_mixing_setup.md) for more details on this experiment.
-

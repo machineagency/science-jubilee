@@ -26,5 +26,3 @@ To reproduce this tutorial exactly, you will need the following items. You shoul
 5. A 12 scintillation vial holder labware, printable from the [Pozzo group labware repo](https://github.com/pozzo-research-group/Automation-Hardware/tree/master/Vial%20Holders/20mlscintillation_12_wellplate_18000ul).
 6. Opentrons tiprack, with tips, for your pipette tool
 7. 5 20cc scintillation vials for holding paint stocks
-
-
