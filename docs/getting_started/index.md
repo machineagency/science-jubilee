@@ -57,6 +57,23 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
 
             Primer
 
+    .. grid-item-card:: New User Guide
+        :class-card: intro-card
+        :shadow: md
+
+        A complete start-to-finish walkthrough on running an experiment on Jubilee, starting with purchasing a machine.
+
+        +++
+
+        .. button-ref:: new-user-guide
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            New User Guide
+
+
     .. grid-item-card:: Intro to the Machine Driver
         :class-card: intro-card
         :shadow: md
@@ -126,6 +143,7 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
 :hidden:
 installation
 primer
+new_user_guide
 machine_intro
 deck_guide
 pipette_guide

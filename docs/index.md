@@ -117,7 +117,7 @@ We hope that `science-jubilee` helps you add to this list--if you're using Jubil
 
 ## Join the Community!
 
-- Whether you've built a Jubilee or are just interested in what sorts of things other people are up to, we encourage you to [join the Jubilee Builders & Extenders Discord](https://discord.gg/jubilee)! There's a large community of Jubilee builders doing all sorts of things there; you might be particularly interested in the `#lab-automation` channel.
+- Whether you've built a Jubilee or are just interested in what sorts of things other people are up to, we encourage you to [join the Jubilee Builders & Extenders Discord](https://discord.gg/RxMaGJdGH9)! There's a large community of Jubilee builders doing all sorts of things there; you might be particularly interested in the `#lab-automation` channel.
 - For a more focused discussion, you can also join our [Open Source Lab Automation Discord](https://discord.com/invite/j9Bqv3djvN)!
 
 :::{toctree}
