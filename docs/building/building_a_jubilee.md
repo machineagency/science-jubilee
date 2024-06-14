@@ -36,17 +36,25 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
 - SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)]
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
-- M3 Hex Nut Driver [[Filastruder](https://www.filastruder.com/products/5-5mm-nut-driver?variant=17989593104455)], [[US Amazon](https://www.amazon.com/gp/product/B00G2DNXV2/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
 - Thin flathead screwdriver (*for replacing the default soldering tip with the heatset insert tip*) and Phillips-head screwdriver (*for (un)screwing terminal plugs on the power supply*) [[US Amazon, 6-piece set](https://www.amazon.com/Magnetic-Screwdriver-Professional-Screwdrivers-Improvement/dp/B08XY5C41N/) (untested)]
 
 ### Already included in kit
 Certain tools are already included in the Filastruder kit. This information is included for your reference.
-- Ball screw hex keys (1.5 mm, 2.0 mm, 2.5 mm, 3.0 mm) (alternatives: [[1.5 mm, US McMaster-Carr](https://www.mcmaster.com/5497a51)] [[2.0 mm, US McMaster-Carr](https://www.mcmaster.com/5497a52)], [[2.5 mm, US McMaster-Carr](https://www.mcmaster.com/5497a53)], [[3.0 mm, US McMaster-Carr](https://www.mcmaster.com/5497a54)], NOTE: the ones from the kit do not include a grip handle)
-- 2-pack of 4-inch Quick-Grip Clamps (NOTE: the ones from the kit might have been slightly too small; however one from [US Amazon](https://www.amazon.com/IRWINQUICK-GRIPOne-Handed-Micro-Clamp-Pack-1964747/dp/B00004SBCO) should be OK)
-- Blue medium strength threadlock (alternative: [Vibra-Tite](https://www.amazon.com/Permatex-24200-Medium-Strength-Threadlocker/dp/B0002UEMZ2))
-- M3/M4 Heatset Insert Installation Tip (alternative: [[US McMaster-Carr](https://www.mcmaster.com/92160a115)])
-- Precision 25-50-75 blocks (alternative: [[US Amazon](https://www.amazon.com/BL-25-50-75-Pair-Precision-Steel-Blocks/dp/B002HIYZJU)])
+- Hex key 1.5 mm (not ball end) (alternative: [[1.5 mm ball end hex key, US McMaster-Carr](https://www.mcmaster.com/5497a51)])
+- Ball end hex keys (2.0 mm, 2.5 mm, 3.0 mm) (alternatives: [[2.0 mm, US McMaster-Carr](https://www.mcmaster.com/5497a52)], [[2.5 mm, US McMaster-Carr](https://www.mcmaster.com/5497a53)], [[3.0 mm, US McMaster-Carr](https://www.mcmaster.com/5497a54)], NOTE: the ones from the kit do not include a grip handle)
+- 2-pack of 4-inch Quick-Grip Clamps (NOTE: you will need to remove the pin on the end of the bar; alternative [US Amazon](https://www.amazon.com/IRWINQUICK-GRIPOne-Handed-Micro-Clamp-Pack-1964747/dp/B00004SBCO) (no modification required))
+- Threadlocker Blue (2.5 mL) (alternative: [Vibra-Tite](https://www.amazon.com/Permatex-24200-Medium-Strength-Threadlocker/dp/B0002UEMZ2))
+- M3-M4 Heatset Insert Installation Tip (alternative: [[US McMaster-Carr](https://www.mcmaster.com/92160a115)])
+- Set of 2 25-50-75mm machinist blocks (alternative: [[US Amazon](https://www.amazon.com/BL-25-50-75-Pair-Precision-Steel-Blocks/dp/B002HIYZJU)])
+- M3 Hex Nut Driver (alternatives: [[Filastruder](https://www.filastruder.com/products/5-5mm-nut-driver?variant=17989593104455)], [[US Amazon](https://www.amazon.com/gp/product/B00G2DNXV2/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)])
+
+100-pack of 2.5mm (0.1in.) thick zip ties
+M3-M4 heat set Insert Installation Tip for soldering irons
+M3 hex nut driver
+Set of 2 25-50-75mm machinist blocks
+4-in. bar clamps
+Threadlocker Blue (2.5mL)
 
 ### Additional Notes
 
@@ -55,7 +63,7 @@ You will also need a flat surface during assembly, ideally one that is somewhat 
 (assembly-instructions)=
 ## Assembly Instructions
 
-The instructions must be completed sequentially from Section 1 to Section 3. Instructions in the same section don’t explicitly depend on each other, so they can be done at the same time with a friend. In total, plan for ~30 hours within a week to complete a first-time build.
+The instructions must be completed sequentially from Section 1 to Section 3. Instructions in the same section don’t explicitly depend on each other, so they can be done at the same time with a friend. In total, plan for ~30 hours within a full week to complete a first-time build.
 
 ```{tip}
 We recommend isolating the build window to within a week and building with no more than two or three individuals in total. This will help reduce the startup cost of picking up where you left off and minimize issues that might come up from poor understanding of the full system. Ideally, all individuals should be involved from the beginning of the process.
