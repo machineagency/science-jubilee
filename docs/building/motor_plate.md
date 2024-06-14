@@ -37,4 +37,3 @@ title: Aluminum Motor Plate Assembly
 
 ## Page 11
 [![Page11](_static/motor_plate10.png)](_static/outer_frame10.png)
-

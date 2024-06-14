@@ -34,7 +34,7 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 ### To buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
-- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)] 
+- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)]
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
 - M3 Hex Nut Driver [[Filastruder](https://www.filastruder.com/products/5-5mm-nut-driver?variant=17989593104455)], [[US Amazon](https://www.amazon.com/gp/product/B00G2DNXV2/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
