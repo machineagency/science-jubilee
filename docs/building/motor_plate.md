@@ -1,9 +1,9 @@
 ---
-title: Aluminum Motor Plate Assembly 
+title: Aluminum Motor Plate Assembly
 ---
 
 (motor-plate)=
-# Aluminum Motor Plate Assembly 
+# Aluminum Motor Plate Assembly
 
 ### Page 1
 [![Page1](_static/motor_plate0.png)](_static/outer_frame0.png)
