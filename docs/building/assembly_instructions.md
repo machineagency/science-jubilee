@@ -24,4 +24,3 @@ The instructions must be completed sequentially from Section 1 to Section 3. Ins
     - [CoreXY Frame Assembly](./corexy.md)
 - Section 3
     - [Z Axis Assembly](./z_axis.md)
-

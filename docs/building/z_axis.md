@@ -73,5 +73,3 @@ title: Z Axis Assembly
 
 ### Page 23
 [![Page23](_static/z_axis22.png)](_static/z_axis22.png)
-
-

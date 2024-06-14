@@ -13,4 +13,3 @@ Here are some useful how-to links, relevant to various assembly steps!
 * Tip: print this [Fastener Reference Sheet](https://docs.google.com/viewer?url=https://github.com/machineagency/jubilee/raw/main/frame/assembly_instructions/vitamin_reference_sheet.pdf) at 100% scale for an easy sanity check.
 
 [Next-->](./heatset_inserts.md)
-
