@@ -31,6 +31,8 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 
 ## Tools
 
+You will need to procure some tools on your own, but some are already available in the Filastruder kit.
+
 ### To buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
@@ -38,8 +40,8 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
 - Thin flathead screwdriver (*for replacing the default soldering tip with the heatset insert tip*) and Phillips-head screwdriver (*for (un)screwing terminal plugs on the power supply*) [[US Amazon, 6-piece set](https://www.amazon.com/Magnetic-Screwdriver-Professional-Screwdrivers-Improvement/dp/B08XY5C41N/) (untested)]
-- 4" reusable cable ties [[US Amazon](https://www.amazon.ca/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ52WJZY/?th=1)]
-- 8" reusable cable ties [[US Amazon](https://www.amazon.ca/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ4W5VN5/?th=1)]
+- 4" reusable cable ties [[US Amazon](https://www.amazon.com/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ52WJZY/?th=1)]
+- 8" reusable cable ties [[US Amazon](https://www.amazon.com/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ4W5VN5/?th=1)]
 
 ### Already included in kit
 Certain tools are already included in the Filastruder kit. This information is included for your reference.
