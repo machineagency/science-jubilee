@@ -109,7 +109,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Science Jubilee"
-copyright = "2023, Machine Agency"
+copyright = "2024, Machine Agency"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
