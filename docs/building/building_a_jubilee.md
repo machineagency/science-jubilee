@@ -38,6 +38,8 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
 - Thin flathead screwdriver (*for replacing the default soldering tip with the heatset insert tip*) and Phillips-head screwdriver (*for (un)screwing terminal plugs on the power supply*) [[US Amazon, 6-piece set](https://www.amazon.com/Magnetic-Screwdriver-Professional-Screwdrivers-Improvement/dp/B08XY5C41N/) (untested)]
+- 4" reusable cable ties [[US Amazon](https://www.amazon.ca/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ52WJZY/?th=1)]
+- 8" reusable cable ties [[US Amazon](https://www.amazon.ca/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ4W5VN5/?th=1)]
 
 ### Already included in kit
 Certain tools are already included in the Filastruder kit. This information is included for your reference.
@@ -48,13 +50,7 @@ Certain tools are already included in the Filastruder kit. This information is i
 - M3-M4 Heatset Insert Installation Tip (alternative: [[US McMaster-Carr](https://www.mcmaster.com/92160a115)])
 - Set of 2 25-50-75mm machinist blocks (alternative: [[US Amazon](https://www.amazon.com/BL-25-50-75-Pair-Precision-Steel-Blocks/dp/B002HIYZJU)])
 - M3 Hex Nut Driver (alternatives: [[Filastruder](https://www.filastruder.com/products/5-5mm-nut-driver?variant=17989593104455)], [[US Amazon](https://www.amazon.com/gp/product/B00G2DNXV2/ref=ppx_yo_dt_b_asin_title_o01_s00?ie=UTF8&psc=1)])
-
-100-pack of 2.5mm (0.1in.) thick zip ties
-M3-M4 heat set Insert Installation Tip for soldering irons
-M3 hex nut driver
-Set of 2 25-50-75mm machinist blocks
-4-in. bar clamps
-Threadlocker Blue (2.5mL)
+- 100-pack of 2.5mm (0.1in.) thick zip ties
 
 ### Additional Notes
 
