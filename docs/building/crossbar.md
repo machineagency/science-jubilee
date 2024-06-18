@@ -5,6 +5,9 @@ title: Aluminum Crossbar Assembly
 (crossbar)=
 # Aluminum Crossbar Assembly
 
+## Video
+_Video editing in progress!_
+
 ## 041 Aluminum Crossbar Assembly
 [![Page1](_static/crossbar0.png)](_static/crossbar0.png)
 

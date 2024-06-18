@@ -5,6 +5,9 @@ title: Duet Electronics Panel Assembly
 (panel)=
 # Duet Electronics Panel Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Duet 2 Electronics Panel Assembly
 [![Page1](_static/panel0.png)](_static/panel0.png)
 

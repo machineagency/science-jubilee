@@ -5,6 +5,9 @@ title: CoreXY Frame Assembly
 (corexy)=
 # CoreXY Frame Assembly
 
+## Video
+_Video editing in progress!_
+
 ## XY Frame Assembly
 [![Page1](_static/corexy0.png)](_static/corexy0.png)
 

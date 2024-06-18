@@ -5,6 +5,9 @@ title: Lower Frame Assembly
 (lower-frame)=
 # Lower Frame Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Lower Frame Assembly
 [![Page1](_static/lower_frame0.png)](_static/lower_frame0.png)
 

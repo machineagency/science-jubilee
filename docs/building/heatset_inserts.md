@@ -5,6 +5,11 @@ title: Heatset Insert Installation
 (heatset-inserts)=
 # Heatset Insert Installation
 
+## Video
+Heat set inserts start at 2:17 of this video!
+```{youtube} TstW4cVs-m8
+```
+
 ## Parts with Heat Set Inserts
 [![Page1](_static/inserts_0.png)](_static/inserts_0.png)
 

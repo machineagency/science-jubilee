@@ -5,6 +5,10 @@ title: Double Pulley Corner Plate Assembly
 (corner-plate)=
 # Double Pulley Corner Plate Assembly
 
+## Video
+```{youtube} YDzGue4y-to
+```
+
 ## Double Pulley Corner Plate Assembly
 [![Page1](_static/corner_plate0.png)](_static/corner_plate0.png)
 

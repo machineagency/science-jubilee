@@ -5,6 +5,9 @@ title: Aluminum Motor Plate Assembly
 (motor-plate)=
 # Aluminum Motor Plate Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Machined Motor Plate Assembly
 [![Page1](_static/motor_plate0.png)](_static/outer_frame0.png)
 

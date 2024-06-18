@@ -5,6 +5,10 @@ title: Outer Frame Assembly and Alignment
 (outer-frame)=
 # Outer Frame Assembly and Alignment
 
+## Video
+```{youtube} F9muWrowDzE
+```
+
 ## Outer Frame Assembly/Alignment
 [![Page1](_static/outer_frame0.png)](_static/outer_frame0.png)
 

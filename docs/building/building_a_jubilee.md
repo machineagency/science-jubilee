@@ -7,6 +7,11 @@ title: Science Jubilee Build Instructions
 
 So, you're ready to build a Science Jubilee! This guide is a complete set of instructions to get you set up and running, from hardware and tools to building and software setup.
 
+To supplement the text, we also have an ongoing series of build along videos. Check out the intro here:
+
+```{youtube} 8JUbr9aU8eQ
+```
+
 ## Hardware
 
 The parts to build a Jubilee have been consolidated into [a kit by Filastruder](https://www.filastruder.com/collections/jubilee/products/jubilee-motion-platform-kit). No royalties are provided to Machine Agency for these sales, but Filastruder works with Machine Agency to ensure the parts are of suitable quality and tolerance.
@@ -24,6 +29,11 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 | Electronics Expansion | `+1 3HC Expansion (up to 5 tools total)` |
 
 **NOTE: You will also need to purchase [a Raspberry Pi 5 kit](https://www.raspberrypi.com/products/raspberry-pi-5/?variant=raspberry-pi-5-desktop-kit-us) separately**[^duet].
+
+Check out the Sourcing video to to see how to order the kit:
+
+```{youtube} or2Qg8UBInM
+```
 
 [^prints]: Luke's Laboratory also sells [a set of Jubilee 3D printed parts](https://lukeslabonline.com/products/jubilee-printed-parts-kit-asa?variant=40134863651001) in case the 3D printed parts are out of stock on Filastruder. This is the recommended option for Science Jubilee, and the build instructions here are based on the specific configuration in the kit. No royalties are given to us; however, Filastruder and Lukes Laboratory work with us to ensure the parts are of suitable quality and tolerance to meet the needs of a Jubilee build.
 [^heater]: `None` assumes you don't plan to use it as an FDM 3D printer or perform experiments with the entire bed heated; otherwise, you can choose `120v, 750W Keenovo Heater w/ 150C Thermal Cutoff & SSR` (assumes North America).

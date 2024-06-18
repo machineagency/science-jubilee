@@ -5,6 +5,9 @@ title: Magnetic Build Plate Assembly
 (build_plate)=
 # Magnetic Build Plate Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Build Plate Assembly
 [![Page1](_static/build_plate0.png)](_static/build_plate0.png)
 

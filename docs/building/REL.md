@@ -5,6 +5,9 @@ title: Toolchanger Remote Elastic Lock Assembly
 (REL)=
 # Toolchanger Remote Elastic Lock Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Remote Elastic Lock Assembly
 [![Page1](_static/REL0.png)](_static/REL0.png)
 

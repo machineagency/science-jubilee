@@ -5,6 +5,9 @@ title: Z Axis Assembly
 (z-axis)=
 # Z Axis Assembly
 
+## Video
+_Video editing in progress!_
+
 ## Z Axis Assembly
 [![Page1](_static/z_axis0.png)](_static/z_axis0.png)
 
