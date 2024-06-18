@@ -5,23 +5,23 @@ title: Double Pulley Corner Plate Assembly
 (corner-plate)=
 # Double Pulley Corner Plate Assembly
 
-## Page 1
+## Double Pulley Corner Plate Assembly
 [![Page1](_static/corner_plate0.png)](_static/corner_plate0.png)
 
-## Page 2
+## Left Corner Generic Pulley Assembly
 [![Page2](_static/corner_plate1.png)](_static/corner_plate1.png)
 
-## Page 3
+## Left Corner Gates Pulley Assembly
 [![Page3](_static/corner_plate2.png)](_static/corner_plate2.png)
 
-## Page 4
+## Left Corner Pulley Assembly
 [![Page4](_static/corner_plate3.png)](_static/corner_plate3.png)
 
-## Page 5
+## Right Corner Generic Pulley Assembly
 [![Page5](_static/corner_plate4.png)](_static/corner_plate4.png)
 
-## Page 6
+## Right Corner Gates Pulley Assembly
 [![Page6](_static/corner_plate5.png)](_static/corner_plate5.png)
 
-## Page 7
+## Right Corner Pulley Assembly
 [![Page7](_static/corner_plate6.png)](_static/corner_plate6.png)

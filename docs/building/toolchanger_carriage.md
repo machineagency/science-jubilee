@@ -5,23 +5,23 @@ title: Toolchanger Carriage Assembly
 (toolchanger_carriage)=
 # Toolchanger Carriage Assembly
 
-## Page 1
+## Toolchanger Carriage Assembly
 [![Page1](_static/tc_carriage0.png)](_static/tc_carriage0.png)
 
-## Page 2
+## Coupling Plate Assembly
 [![Page2](_static/toolchanger_carriage1.png)](_static/toolchanger_carriage1.png)
 
-## Page 3
+## Pulley Assembly
 [![Page3](_static/toolchanger_carriage2.png)](_static/toolchanger_carriage2.png)
 
-## Page 4
+## Twist Lock Assembly
 [![Page4](_static/toolchanger_carriage3.png)](_static/toolchanger_carriage3.png)
 
-## Page 5
+## Wiring Installation
 [![Page5](_static/toolchanger_carriage4.png)](_static/toolchanger_carriage4.png)
 
-## Page 6
+## Carriage Back Plate Assembly
 [![Page6](_static/toolchanger_carriage5.png)](_static/toolchanger_carriage5.png)
 
-## Page 7
+## Carriage Center Assembly
 [![Page7](_static/toolchanger_carriage6.png)](_static/toolchanger_carriage6.png)

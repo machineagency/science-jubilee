@@ -5,20 +5,20 @@ title: Duet Electronics Panel Assembly
 (panel)=
 # Duet Electronics Panel Assembly
 
-## Page 1
+## Duet 2 Electronics Panel Assembly
 [![Page1](_static/panel0.png)](_static/panel0.png)
 
-## Page 2
+## Duet 2 Standoff Installation
 [![Page2](_static/panel1.png)](_static/panel1.png)
 
-## Page 3
+## Mounting Screw Installation
 [![Page3](_static/panel2.png)](_static/panel2.png)
 
-## Page 4
+## Duet2 and Duex5 Installation
 [![Page4](_static/panel3.png)](_static/panel3.png)
 
-## Page 5
+## SSR Installation
 [![Page5](_static/panel4.png)](_static/panel4.png)
 
-## Page 6
+## PSU Installation
 [![Page6](_static/panel5.png)](_static/panel5.png)

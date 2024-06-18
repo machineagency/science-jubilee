@@ -5,17 +5,17 @@ title: Heatset Insert Installation
 (heatset-inserts)=
 # Heatset Insert Installation
 
-## Page 1
+## Parts with Heat Set Inserts
 [![Page1](_static/inserts_0.png)](_static/inserts_0.png)
 
-## Page 2
+## Part Inspection
 [![Page2](_static/inserts_1.png)](_static/inserts_1.png)
 
-## Page 3
+## The Plate Press Technique Overview
 [![Page3](_static/inserts_2.png)](_static/inserts_2.png)
 
-## Page 4
+## M4 Insert Installations
 [![Page4](_static/inserts_3.png)](_static/inserts_3.png)
 
-## Page 5
+## M3 Insert Installations
 [![Page5](_static/inserts_4.png)](_static/inserts_4.png)
