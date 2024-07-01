@@ -44,10 +44,29 @@ To use `science-jubilee`, you'll need to build both the Jubilee motion platform 
             :expand:
 
             Laboratory Automation Tools
+
+
+    .. grid-item-card:: Traveling with Jubilee
+        :class-card: intro-card
+        :shadow: md
+
+        Tips on packing a Jubilee for travel and customs considerations.
+
+        +++
+
+        .. button-ref:: jubilee-travel
+            :ref-type: ref
+            :click-parent:
+            :color: secondary
+            :expand:
+
+            Jubilee Travel
+
 ```
 
 ```{toctree}
 :hidden:
 building_a_jubilee
 building_tools
+jubilee_travel
 ```
