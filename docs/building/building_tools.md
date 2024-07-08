@@ -157,7 +157,6 @@ Once you've built a tool, it needs to be calibrated for use on the machine. See 
 ```{toctree}
 :hidden:
 
-tool_prereqs
 pipette_tool
 inoculation_tool
 top_down_camera_tool
