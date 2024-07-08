@@ -29,7 +29,7 @@ _Video editing in progress!_
 ## Internal Extrusion Alignment
 [![Page7](_static/lower_frame6.png)](_static/lower_frame6.png)
 
-## Z Plate Locating 
+## Z Plate Locating
 [![Page8](_static/lower_frame7.png)](_static/lower_frame7.png)
 
 ## Z Plate Tightening

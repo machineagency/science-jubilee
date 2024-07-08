@@ -92,4 +92,3 @@ title: Outer Frame Assembly and Alignment
 
 ## Outer Frame Loose Assembly 8/8
 [![Page27](_static/outer_frame27.png)](_static/outer_frame27.png)
-
