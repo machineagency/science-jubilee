@@ -16,7 +16,7 @@ All tools which are supported in `science-jubilee` are documented here. For exis
 
 ### Parking Post
 
-Jubilee tools are parked on the rear rail of the machine. To hold the tool when it's not in use, any tool will need a parking post. Several sizes already exist to accommodate tools of varying widths. More info [here](https://jubilee3d.com/index.php?title=Parking_Post).
+Jubilee tools are parked on the rear rail of the machine. To hold the tool when it's not in use, any tool will need a parking post. Several sizes already exist to accommodate tools of varying widths.
 
 ```{figure} _static/parking-post.png
 :scale: 50 %
@@ -166,3 +166,8 @@ lab_automation_deck
 designing_custom_tools
 tool_postreqs
 ```
+
+## Additional Resources
+
+- [https://jubilee3d.com Tool info](https://jubilee3d.com/index.php?title=Tools)
+- [https://jubilee3d.com Parking Post info](https://jubilee3d.com/index.php?title=Parking_Post)
