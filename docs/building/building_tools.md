@@ -80,4 +80,5 @@ side_camera_tool
 syringe_tool
 lab_automation_deck
 tool_postreqs
+custom_tools
 ```
