@@ -61,7 +61,7 @@ allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; pic
 allowfullscreen></iframe>
 
 <iframe width="354.375" height="630"
-src="https://www.youtube.com/embed/F8c2MbFglJU"
+src="https://www.youtube.com/embed/F8c2MbFglJU?mute=1"
 title="First tool loaded"
 frameborder="0"
 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
