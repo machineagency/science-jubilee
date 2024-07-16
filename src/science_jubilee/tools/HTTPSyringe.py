@@ -26,13 +26,13 @@ class HTTPSyringe(Tool):
         # get config things from HTTP interface
         config_r = requests.get(url+'/get_config')
 
-        config = config_r.json
+        config = config_r.json()
 
-        super().__init(index, **config, url = url)
+        super().__init__(index, **config, url = url)
 
         status_r = requests.get(url + '/get_status')
 
-        status = status_r.json
+        status = status_r.json()
 
         self.syringe_loaded = status['syringe_loaded']
         self.remaining_volume = status['remaining_volume']
@@ -46,6 +46,40 @@ class HTTPSyringe(Tool):
 
         return cls(index, **kwargs)
     
+    def status(self):
+        """
+        Fetch and update status
+        """
+
+        r  = requests.get(self.url + '/get_status')
+        status = r.json()
+
+        self.syringe_loaded = status['syringe_loaded']
+        self.remaining_volume = status['remaining_volume']
+
+        return status
+
+
+    def load_syringe(self, volume, pulsewidth):
+        """
+        Configure a syringe after physically loading it
+
+        volume: Current loaded volume in syringe
+        pulsewidth: current pulsewidth position of servo
+        """
+
+        data = {}
+        data['volume'] = volume
+        data['pulsewidth'] = pulsewidth
+
+        requests.post(self.url + '/load_syringe', json = data)
+
+        status = self.status()
+
+        print(f'Loaded syringe, remaining volume {status["remaining_volume"]} uL')
+
+        return
+
     @requires_active_tool
     def _aspirate(self, vol):
 
@@ -59,7 +93,7 @@ class HTTPSyringe(Tool):
 
         status_r = requests.get(self.url+'/get_status')
 
-        status_dict = status_r.json
+        status_dict = status_r.json()
 
         self.remaining_volume = status_dict['remaining_volume']
 
@@ -76,7 +110,7 @@ class HTTPSyringe(Tool):
         assert r.status_code == 200, f'Error in dispense request: {r.content}'
 
         status_r = requests.get(self.url+ '/get_status')
-        status_dict = status_r.json
+        status_dict = status_r.json()
         self.remaining_volume = status_dict['remaining_volume']
         return
     
@@ -107,8 +141,8 @@ class HTTPSyringe(Tool):
             pass
 
         self._machine.safe_z_movement()
-        self._machine.move_to(x=x, y=y)
-        self._machine.move_to(z=z)
+        self._machine.move_to(x=x, y=y, wait = True)
+        self._machine.move_to(z=z, wait = True)
         self._dispense(vol)
 
     
@@ -134,9 +168,26 @@ class HTTPSyringe(Tool):
             pass
 
         self._machine.safe_z_movement()
-        self._machine.move_to(x=x, y=y)
-        self._machine.move_to(z=z)
+        self._machine.move_to(x=x, y=y, wait = True)
+        self._machine.move_to(z=z, wait= True)
         self._aspirate(vol)
+
+
+    def set_pulsewidth(self, pulsewidth):
+        """
+        Manually move the servo actuator to a new location by setting the new pulsewidth.
+
+        Does not update volume, use carefully 
+        """
+
+        assert pulsewidth > self.full_position
+        assert pulsewidth < self.empty_position
+
+        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth})
+
+        status = self.status()
+
+        return 
 
 
 
