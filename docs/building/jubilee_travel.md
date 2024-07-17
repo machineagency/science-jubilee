@@ -8,7 +8,7 @@ title: Notes on traveling with Jubilee
 Updated by Brenden Pelkie, July 1 2024
 
 
-We have traveled internationally from the US to Mexico, Canada, and the EU with our Jubilee experimental automation platform. These are some lessons learned and best practices we have settled on. This is written from the perspective of traveling with a Jubilee system, but many of these considerations apply to any experiment automation equipment.
+We have traveled internationally from the US to Mexico, Canada, and the EU with our Jubilee experimental automation platform. These are some lessons learned and best practices we have settled on. This is written from the perspective of traveling with a Jubilee system, but many of these considerations apply to any experiment automation equipment. This write-up is US-centric, but the ATA Carnet discussion is applicable internationally and the rest of the information should raise considerations for travel from other countries. 
 
 ## Export Control
 
