@@ -51,7 +51,7 @@ class HTTPSyringe(Tool):
         Fetch and update status
         """
 
-        r  = requests.get(self.url + '/get_status')
+        r  = requests.post(self.url + '/get_status', json = {'name':self.name})
         status = r.json()
 
         self.syringe_loaded = status['syringe_loaded']
@@ -71,6 +71,7 @@ class HTTPSyringe(Tool):
         data = {}
         data['volume'] = volume
         data['pulsewidth'] = pulsewidth
+        data['name'] = self.name
 
         requests.post(self.url + '/load_syringe', json = data)
 
@@ -87,11 +88,11 @@ class HTTPSyringe(Tool):
 
         assert vol < self.capacity - self.remaining_volume, f'Error: Syringe {self.name} available volume is {self.capacity - self.remaining_volume} uL, {vol} mL aspiration requested'
 
-        r = requests.post(self.url+ '/aspirate', json = {'volume':vol})
+        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name})
 
         assert r.status_code == 200, f'Error in aspirate request: {r.content}'
 
-        status_r = requests.get(self.url+'/get_status')
+        status_r = requests.post(self.url+'/get_status', json = {'name':self.name})
 
         status_dict = status_r.json()
 
@@ -105,11 +106,11 @@ class HTTPSyringe(Tool):
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be flaot or int'
         assert vol < self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
 
-        r = requests.post(self.url+ '/dispense', json = {'volume':vol})
+        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name})
 
         assert r.status_code == 200, f'Error in dispense request: {r.content}'
 
-        status_r = requests.get(self.url+ '/get_status')
+        status_r = requests.post(self.url+ '/get_status', json = {'name':self.name})
         status_dict = status_r.json()
         self.remaining_volume = status_dict['remaining_volume']
         return
@@ -183,7 +184,7 @@ class HTTPSyringe(Tool):
         assert pulsewidth > self.full_position
         assert pulsewidth < self.empty_position
 
-        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth})
+        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name})
 
         status = self.status()
 
