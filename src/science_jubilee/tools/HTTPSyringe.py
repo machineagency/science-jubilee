@@ -18,19 +18,22 @@ from science_jubilee.tools.Tool import (
 
 class HTTPSyringe(Tool):
 
-    def __init__(self, index, url):
+    def __init__(self, index, name, url):
         """
         HTTP Syringe is digital syringe for Jubilee
         
         """
+
+        self.name = name
+        self.index = index
         # get config things from HTTP interface
-        config_r = requests.get(url+'/get_config')
+        config_r = requests.post(url+'/get_config', json = {'name':name})
 
         config = config_r.json()
 
         super().__init__(index, **config, url = url)
 
-        status_r = requests.get(url + '/get_status')
+        status_r = requests.post(url + '/get_status', json = {'name':name})
 
         status = status_r.json()
 
