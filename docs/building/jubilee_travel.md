@@ -43,8 +43,16 @@ _[[Source](https://jubilee3d.com/index.php?title=Specs#/media/File:Jubilee_overa
 
 ### Jubilee in assembled state (untested)
 1. [Pelican 0370](https://www.pelican.com/us/en/product/cases/cube-case/protector/0370/) (tight tolerance in longest dimension, likely to the point of needing to remove the Pelican foam, heavy)
-2. [Outdoor Square Cushion/Cover Storage Bag](https://www.amazon.com/gp/product/B0BC8PTRHR/) (ample space, but requires significant custom padding/foam)
+2. [Outdoor Square Cushion/Cover Storage Bag](https://www.amazon.com/gp/product/B0BC8PTRHR/) (ample space, but requires significant custom padding/foam and at least one heavy duty cardboard insert at the bottom)
 3. Custom ATA case 23" W x 28" D x 26" H (including foam). Standard Duty 3/8" Plywood. 2" foam all sides. (needs to be verified). E.g., [through Roadcases](https://www.roadcases.com/custom-quote-pull-along-case/) or a local ATA manufacturer. Note that lead times can be long (weeks).
+4. Corrugated box [28" x 28" x 28"](https://www.uline.com/Product/Detail/S-4433/Corrugated-Boxes-200-Test/28-x-28-x-28-Corrugated-Boxes) (no hand holes)
+
+Perhaps also:
+1. Corrugated box [26" x 26" x 26"](https://www.uline.com/Product/Detail/S-4190/Corrugated-Boxes-200-Test/26-x-26-x-26-Corrugated-Boxes) (no hand holes)
+2. Double-walled corrugated box [25" x 25" x 25"](https://www.uline.com/Product/Detail/S-22118/Heavy-Duty-Boxes/25-x-25-x-25-275-lb-Double-Wall-Corrugated-Boxes) (no hand holes)
+3. [Triple-wall cardboard 24" x 24" x 24"](https://www.uline.com/Product/Detail/S-13331/Bulk-Cargo/24-x-24-x-24-1100-lb-Triple-Wall-Boxes) (no hand holes)
+4. [Triple-wall cardboard 30" x 30" x 30"](https://www.uline.com/Product/Detail/S-11301/Bulk-Cargo/30-x-30-x-30-1100-lb-Triple-Wall-Boxes) (no hand holes)
+5. Corrugated Boxes with hand holes [24" x 24" x 24"](https://www.uline.com/Product/Detail/S-14213/Moving-Boxes/24-x-24-x-24-Corrugated-Boxes-with-Hand-Holes)
 
 ### Jubilee in height-reduced state
 1. [Pelican 1640](https://www.pelican.com/us/en/product/cases/transport-case/protector/1640/)
