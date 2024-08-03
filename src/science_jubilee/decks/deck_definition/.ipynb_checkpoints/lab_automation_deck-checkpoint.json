@@ -1,0 +1,64 @@
+{
+    "bedType": "Lab Automation Plate",
+    "deckSlots": {
+        "total": 6,
+        "type": "SLAS Standard Labware"
+    },
+    "slots": {
+        "0": {
+            "offset": [
+                14.9,
+                4.4
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "1": {
+            "offset": [
+                157.0,
+                5.8
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "2": {
+            "offset": [
+                14.3,
+                100.8
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "3": {
+            "offset": [
+                154.6,
+                100.1
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "4": {
+            "offset": [
+                17.1,
+                201.1
+            ],
+            "has_labware": false,
+            "labware": null
+        },
+        "5": {
+            "offset": [
+                157.0,
+                201.9
+            ],
+            "has_labware": false,
+            "labware": null
+        }
+    },
+    "offsetFrom": {
+        "corner": "Bottom Left"
+    },
+    "material": {
+        "Deck": "Aluminum",
+        "mask": "Delrin"
+    }
+}

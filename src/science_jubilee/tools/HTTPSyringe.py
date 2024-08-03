@@ -14,6 +14,8 @@ from science_jubilee.tools.Tool import (
     requires_active_tool,
 )
 
+import time
+
 
 
 class HTTPSyringe(Tool):
@@ -175,6 +177,40 @@ class HTTPSyringe(Tool):
         self._machine.move_to(x=x, y=y, wait = True)
         self._machine.move_to(z=z, wait= True)
         self._aspirate(vol)
+
+    @requires_active_tool
+    def mix(
+            self, 
+            vol: float,
+            n_mix: int,
+            location: Union[Well, Tuple, Location],
+            t_hold: int = 1,
+    ):
+        """
+        Mixes n times with volume vol
+        """
+        x, y, z = Labware._getxyz(location)
+
+        if type(location) == Well:
+            self.current_well = location
+        elif type(location) == Location:
+            self.current_well = location._labware
+        else:
+            pass
+
+        self._machine.safe_z_movement()
+        self._machine.move_to(x=x, y=y, wait = True)
+        self._machine.move_to(z=z, wait= True)
+
+        for _ in range(n_mix):
+            print('aspirate')
+            self._aspirate(vol)
+            time.sleep(t_hold)
+            print('dispense')
+            self._dispense(vol)
+            time.sleep(t_hold)
+
+
 
 
     def set_pulsewidth(self, pulsewidth):
