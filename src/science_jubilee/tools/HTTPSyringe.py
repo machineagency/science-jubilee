@@ -3,6 +3,7 @@ import logging
 import os
 from itertools import dropwhile, takewhile
 from typing import Iterator, List, Tuple, Union
+import numpy as np
 
 import requests
 
@@ -82,13 +83,13 @@ class HTTPSyringe(Tool):
         return
 
     @requires_active_tool
-    def _aspirate(self, vol):
+    def _aspirate(self, vol, wiper):
 
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be float or int'
 
         assert vol < self.capacity - self.remaining_volume, f'Error: Syringe {self.name} available volume is {self.capacity - self.remaining_volume} uL, {vol} mL aspiration requested'
 
-        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name})
+        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name, 'wiper':wiper})
 
         assert r.status_code == 200, f'Error in aspirate request: {r.content}'
 
@@ -101,12 +102,12 @@ class HTTPSyringe(Tool):
         return
     
     @requires_active_tool
-    def _dispense(self, vol):
+    def _dispense(self, vol, wiper):
         
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be flaot or int'
         assert vol < self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
 
-        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name})
+        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name, 'wiper':wiper})
 
         assert r.status_code == 200, f'Error in dispense request: {r.content}'
 
@@ -118,7 +119,10 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def dispense(
-        self, vol: float, location: Union[Well, Tuple, Location]
+        self, 
+        vol: float, 
+        location: Union[Well, Tuple, Location],
+        s: float = 1.0
     ):
         """Moves the pipette to the specified location and dispenses the desired volume of liquid
 
@@ -129,6 +133,8 @@ class HTTPSyringe(Tool):
         :raises ToolStateError: If the pipette does not have a tip attached
         """
         x, y, z = Labware._getxyz(location)
+
+        wiper = self.fraction_to_wiper(s)
 
         if type(location) == Well:
             self.current_well = location
@@ -144,12 +150,15 @@ class HTTPSyringe(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait = True)
         self._machine.move_to(z=z, wait = True)
-        self._dispense(vol)
+        self._dispense(vol, wiper)
 
     
     @requires_active_tool
     def aspirate(
-        self, vol: float, location: Union[Well, Tuple, Location]
+        self, 
+        vol: float, 
+        location: Union[Well, Tuple, Location],
+        s: float = 1
     ):
         """Moves the pipette to the specified location and aspirates the desired volume of liquid
 
@@ -161,6 +170,8 @@ class HTTPSyringe(Tool):
         """
         x, y, z = Labware._getxyz(location)
 
+        wiper = self.fraction_to_wiper(s)
+
         if type(location) == Well:
             self.current_well = location
         elif type(location) == Location:
@@ -171,7 +182,7 @@ class HTTPSyringe(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait = True)
         self._machine.move_to(z=z, wait= True)
-        self._aspirate(vol)
+        self._aspirate(vol, wiper)
 
 
     def set_pulsewidth(self, pulsewidth):
@@ -189,6 +200,14 @@ class HTTPSyringe(Tool):
         status = self.status()
 
         return 
+    
+    def fraction_to_wiper(self, fraction):
+        """
+        convert 0-1 speed value fraction to 0-127 wiper value
+        """
+        assert (0 <= fraction) and (fraction <= 127), "Speed must be in range 0-1"
+
+        return int(np.ceil(fraction*127))
 
 
 
