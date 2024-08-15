@@ -196,11 +196,14 @@ class HTTPSyringe(Tool):
             n_mix: int,
             location: Union[Well, Tuple, Location],
             t_hold: int = 1,
+            s: float = 1
     ):
         """
         Mixes n times with volume vol
         """
         x, y, z = Labware._getxyz(location)
+
+        wiper = self.fraction_to_wiper(s)
 
         if type(location) == Well:
             self.current_well = location
@@ -214,17 +217,15 @@ class HTTPSyringe(Tool):
         self._machine.move_to(z=z, wait= True)
 
         for _ in range(n_mix):
-            print('aspirate')
-            self._aspirate(vol)
+            self._aspirate(vol, wiper)
             time.sleep(t_hold)
-            print('dispense')
-            self._dispense(vol)
+            self._dispense(vol, wiper)
             time.sleep(t_hold)
 
 
 
 
-    def set_pulsewidth(self, pulsewidth):
+    def set_pulsewidth(self, pulsewidth, s: float = 1):
         """
         Manually move the servo actuator to a new location by setting the new pulsewidth.
 
@@ -234,7 +235,9 @@ class HTTPSyringe(Tool):
         assert pulsewidth > self.full_position
         assert pulsewidth < self.empty_position
 
-        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name})
+        wiper = self.fraction_to_wiper(s)
+
+        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name, 'wiper':wiper})
 
         status = self.status()
 
