@@ -442,7 +442,7 @@ class Machine:
         self.deck = deck
         return deck
 
-    def gcode(self, cmd: str = "", timeout=None, response_wait: float = 30):
+    def gcode(self, cmd: str = "", timeout=None, response_wait: float = 60):
         """Send a G-Code command to the Machine and return the response.
 
         :param cmd: The G-Code command to send, defaults to ""
@@ -724,7 +724,7 @@ class Machine:
         z: float = None,
         e: float = None,
         v: float = None,
-        s: float = 6000,
+        s: float = 15000,
         param: str = None,
         wait: bool = False,
     ):
@@ -755,7 +755,7 @@ class Machine:
         dz: float = 0,
         de: float = 0,
         dv: float = 0,
-        s: float = 6000,
+        s: float = 15000,
         param: str = None,
         wait: bool = False,
     ):

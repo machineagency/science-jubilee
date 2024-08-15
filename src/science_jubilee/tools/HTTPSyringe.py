@@ -109,7 +109,7 @@ class HTTPSyringe(Tool):
     def _dispense(self, vol):
         
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be flaot or int'
-        assert vol < self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
+        assert vol <= self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
 
         r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name})
 
