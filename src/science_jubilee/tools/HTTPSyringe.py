@@ -88,13 +88,13 @@ class HTTPSyringe(Tool):
         return
 
     @requires_active_tool
-    def _aspirate(self, vol):
+    def _aspirate(self, vol, s):
 
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be float or int'
 
         assert vol < self.capacity - self.remaining_volume, f'Error: Syringe {self.name} available volume is {self.capacity - self.remaining_volume} uL, {vol} mL aspiration requested'
 
-        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name})
+        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name, 'speed':s})
 
         assert r.status_code == 200, f'Error in aspirate request: {r.content}'
 
@@ -107,12 +107,12 @@ class HTTPSyringe(Tool):
         return
     
     @requires_active_tool
-    def _dispense(self, vol):
+    def _dispense(self, vol, s):
         
         assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be flaot or int'
         assert vol <= self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
 
-        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name})
+        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name, 'speed':s})
 
         assert r.status_code == 200, f'Error in dispense request: {r.content}'
 
@@ -127,7 +127,7 @@ class HTTPSyringe(Tool):
         self, 
         vol: float, 
         location: Union[Well, Tuple, Location],
-        s: float = 1.0
+        s: int = 100
     ):
         """Moves the pipette to the specified location and dispenses the desired volume of liquid
 
@@ -135,7 +135,10 @@ class HTTPSyringe(Tool):
         :type vol: float
         :param location: The location to dispense the liquid into.
         :type location: Union[Well, Tuple, Location]
+        :param s: Speed at which to dispense. Best effort compliance based on constraints of system. uL/S
+        :type s: int
         :raises ToolStateError: If the pipette does not have a tip attached
+
         """
         x, y, z = Labware._getxyz(location)
 
@@ -162,7 +165,7 @@ class HTTPSyringe(Tool):
         self, 
         vol: float, 
         location: Union[Well, Tuple, Location],
-        s: float = 1
+        s: int = 100
     ):
         """Moves the pipette to the specified location and aspirates the desired volume of liquid
 
@@ -170,6 +173,8 @@ class HTTPSyringe(Tool):
         :type vol: float
         :param location: The location from where to aspirate the liquid from.
         :type location: Union[Well, Tuple, Location]
+        :param s: Speed at which to aspirate. Best effort compliance based on constraints of system. uL/S.
+        :type s: int
         :raises ToolStateError: If the pipette does not have a tip attached
         """
         x, y, z = Labware._getxyz(location)
@@ -195,10 +200,21 @@ class HTTPSyringe(Tool):
             n_mix: int,
             location: Union[Well, Tuple, Location],
             t_hold: int = 1,
-            s: float = 1
+            s: int = 100
     ):
         """
         Mixes n times with volume vol
+
+        :param vol: Volume to aspirate/dispense in mixing. uL
+        :type vol: float
+        :param n_mix: Number of times to aspirate/dispense in mixing.
+        :type n_mix: int
+        :param location: The location from where to mix
+        :type location: Union[Well, Tuple, Location]
+        :param t_hold: Hold time at top and bottom of mix cycle to allow liquid to 'catch up'. Units seconds
+        :type t_hold: int
+        :param s: Speed at which to mix in uL/S. Best effort compliance.
+        :type s: int
         """
         x, y, z = Labware._getxyz(location)
 
@@ -214,25 +230,30 @@ class HTTPSyringe(Tool):
         self._machine.move_to(z=z, wait= True)
 
         for _ in range(n_mix):
-            self._aspirate(vol)
+            self._aspirate(vol, s)
             time.sleep(t_hold)
-            self._dispense(vol)
+            self._dispense(vol, s)
             time.sleep(t_hold)
 
 
 
 
-    def set_pulsewidth(self, pulsewidth, s: float = 1):
+    def set_pulsewidth(self, pulsewidth: int, s: int = 100):
         """
         Manually move the servo actuator to a new location by setting the new pulsewidth.
 
         Does not update volume, use carefully 
+
+        :param pulsewidth: The servo motor pulsewidth to set the servo to. Read up on servo positioning for this to make sense. Ranges from 1000-2000 with a stricter range of accessible values for each syringe tool.
+        :type pulsewidth: int
+        :param s: Speed of movement in uL/S. 
+        :type s: int
         """
 
         assert pulsewidth > self.full_position
         assert pulsewidth < self.empty_position
 
-        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name})
+        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name, 'speed':s})
 
         status = self.status()
 
