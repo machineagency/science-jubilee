@@ -22,17 +22,41 @@ Back of the pipette tool showing the flexure mechanism. When the pipette experie
 
 Pipette tool picking up a tip. When the flexure mechanism shown above reaches the endstop, the pipette tool considers the tip to have been picked up and resumes other tasks.
 ```
+## Tool versions
+
+There are two versions of the Jubilee pipette tool. One uses a flexure that is laser cut from Delrin. The other uses a 3D printed flexure mechanism. The laser-cut Delrin flexure can be purchased from SendCutSend for around $10 USD. It is cleaner and simpler to assemble, so we recommend using this version. If you can't procure or fabricate the laser cut flexure piece, the 3D printed version works great too!
+
+## Skills and capabilities needed
+
+- 3D printing
+- Soldering 
 
 ## Parts to Buy
 
 - OT-2 Pipette (tested with gen1 and gen2)
 - See the shopping list for tool parts [here](https://docs.google.com/spreadsheets/d/1Bp4ZdpHsX01EHIsc5mqbzi92CpQlax4KNS-QtPmUZUM/edit#gid=1582949094).
+    - Corrections:
+          - Add 10-pin ribbon cable: 28AWG, 10 conductor ribbon cable, 3 feet, digikey option: https://www.digikey.com/en/products/detail/assmann-wsw-components/AWG28-10-G-1-300/21997415
+          - Add FC-10P connector for ribbon cable, one option: https://www.amazon.com/Antrader-FC-10P-2-54mm-Connector-50-Pack/dp/B07DVZBQ67?th=1
+          - Add 1/2in cable sleeve: https://www.amazon.com/Keco-100ft-Expandable-Braided-Sleeving/dp/B07K1XJNJN/ref=sr_1_10?crid=3PYOZ19GJFUXA&dib=eyJ2IjoiMSJ9.5CSsgeWmvO7VHn5FTz1tkMUth9Jvols3h8BDPqynXi2vm2_xcC6zEWUeoUwPqdaSfF2SQ6M5RmD6xeVeNz__tOWAP_qH6D26BtBo1i_vnrLg_ZlktzW4mR1FPZLfwjbpNgQhLkotDcup90P8qi43fyXAirzu_7Egcxttwacw57bRCuXWXs7jlRSKm0vubLLGiOzH704gADBpSGHGL2hqNP0y4_gN4IgAzaoo-yOfFIz4J634VOnOOINLubbSm5Zn1AZcg_CmdLxrRqjRqHoqi8_joils3HdSwdNobSQIbLQ.G2PCs4fmd-_s7oQNYSGAi_AhF_mQsUXrQ9i6m1V8Gy0&dib_tag=se&keywords=cable%2Bsleeve&qid=1724264681&s=electronics&sprefix=cable%2Bslee%2Celectronics%2C139&sr=1-10&th=1
+          - Add 22g hookup wire, something like 40 ft of it
+          - Specify separate limit switch for 3D printed flexure version 
 
-## Parts to Fabricate
+
+## Parts to Fabricate 
 
 - Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette).
 
+Cool addition: link to pre-configured SendCutSend part users can buy without setting up. 
+
 ## Assembly Instructions
+
+### Wiring harness assembly
+
+You will want your wiring harness to be long enough to provide sufficient slack for tool movement when routed down the front of the jubilee, below the machine, and to the back panel. 6-8 feet of wire length should allow for this. 
+
+1. Solder your limit switch to sufficiently long lengths of hookup wire
+2. 
 
 There are two version to choose from.
 
