@@ -30,14 +30,27 @@ Extrusion Anodization Color| `Purple` or `Blue` |
 
 **NOTE: You will also need to purchase [a Raspberry Pi 5 kit](https://www.raspberrypi.com/products/raspberry-pi-5/?variant=raspberry-pi-5-desktop-kit-us) separately**[^duet].
 
-Check out the Sourcing video to to see how to order the kit:
 
+Check out the Sourcing video to to see how to order the kit:
 ```{youtube} or2Qg8UBInM
 ```
 
 [^prints]: Luke's Laboratory also sells [a set of Jubilee 3D printed parts](https://lukeslabonline.com/products/jubilee-printed-parts-kit-asa?variant=40134863651001) in case the 3D printed parts are out of stock on Filastruder. This is the recommended option for Science Jubilee, and the build instructions here are based on the specific configuration in the kit. No royalties are given to us; however, Filastruder and Lukes Laboratory work with us to ensure the parts are of suitable quality and tolerance to meet the needs of a Jubilee build.
 [^heater]: `None` assumes you don't plan to use it as an FDM 3D printer or perform experiments with the entire bed heated; otherwise, you can choose `120v, 750W Keenovo Heater w/ 150C Thermal Cutoff & SSR` (assumes North America).
 [^duet]: Both the Ethernet and WiFi version can be controlled via a Raspberry Pi (e.g., RPi 4B, RPi 5) by directly connecting to the Duet 3 Mini, which we recommend. This allows you to connect to a variety of WiFi networks (e.g., WPA2-Personal, WPA2-Enterprise), which means connecting to networks such as Eduroam is supported. By contrast, the `Duet 3 Mini WiFi + 3HC` (without a Raspberry Pi connected) can only connect to 2.4 GHz WPA2-personal networks, which means 5G networks and networks like Eduroam typical of academic, government, and industry settings are not supported. While both the Ethernet and WiFi `Duet 3 Mini + 3HC` versions can be used with a Raspberry Pi, we recommend the Ethernet version primarily because it can simplify troubleshooting if you have any issues with the Raspberry Pi Duet 3 Mini firmware. Aside: For laboratory automation in general, you may consider [implementing a standalone IoT network](https://github.com/sparks-baird/self-driving-lab-demo/discussions/83) to support microcontrollers such as the Raspberry Pi Pico W, which can be used within custom Jubilee tools.
+
+### Recommended upgrades
+
+Mandala Rose Works produces aluminum upgrades for several components on Jubilee. Replacing stock PLA 3D printed parts with their aluminum counterparts can increase the reliability and solvent compatibility of the motion platform. These upgrades are listed in order of their priority in our view. If you plan to use the OT2 pipette tool on your Jubilee, you should purchase the aluminum Z yokes. 
+
+| Part | Link | Reason to upgrade |
+| --- | --- | ---|
+| Z yokes | https://mandalaroseworks.com/products/jubilee-machined-yokes | Allows use of a zip tie or pony clamp to prevent bed-tip issues |
+| Front Corner Brackets | https://mandalaroseworks.com/products/jubilee-front-corner-brackets | Improved durability of bracket. Note: requires 6 M5x25mm screws to install |
+| CoreXY Stepper mounts | https://mandalaroseworks.com/products/jubilee-aluminum-stepper-mounts | Improved pulley alignment and durability. Note hardware requirements listed at link |
+| Z motor mount plates | https://mandalaroseworks.com/products/jubilee-machined-zplates | Improved solvent resistance. Looks cool |
+| Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice | 
+
 
 ## Tools
 
