@@ -143,6 +143,9 @@ After you have completed your tool assembly, you will need to set parking post p
     - Position the z probe limit switch of the tool carriage over the "X" using the duet web interface jog controls
     - Write down the XYZ coordinates of the X
     - For each tool:
+:::{warning}
+Make sure to drop the bed z height so that the tool will clear the bed when picked up. This will not happen automatically becuase you have not set the tool offsets yet!
+:::
         - Pick up the tool
         - Position it so that the 'active point' is located over the X as precisely as you can
         - Write down the position of the tool
