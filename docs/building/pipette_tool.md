@@ -8,7 +8,7 @@ title: Pipette Tool
 The pipette tool mounts an [Opentrons OT2 pipette](https://opentrons.com/products/single-channel-electronic-pipette-p20) to Jubilee to perform liquid handling with disposable pipette tips. Opentrons OT2 pipettes are available in three volume ranges (up to 20 uL, up to 300 uL, and up to 1000 uL) and have a form factor that is amenable to integrating with Jubilee. Many automation-focused labs already have an OT2 and hence OT2 pipettes. This tool provides a way to repurpose them on Jubilee. Compared to syringe-based liquid handling tools, these pipettes avoid the possibility of sample cross contamination and provides options for greater accuracy and precision at low transfer volumes. The tool consists of a mounting bracket to attach the pipette to a tool changer plate, a flexure mechanism that enables pipette tip pickups, and a wiring harness to control the pipette's internal motor. We have been able to reproduce the accuracy and precision values [published by Opentrons](https://opentrons.com.cn/wp-content/uploads/2023/11/Opentrons-Pipettes-White-Paper.pdf) for their pipettes after performing a gravimetric calibration. Choose the OT2 pipette tool if you need disposable pipette tips for your workflow or you need the pipette's accuracy at low volumes. Consider other liquid handling tools if the cost of the pipette is prohibitive, you need access to a wider range of volumes, or you are purchasing pipettes from scratch. While this is an effective pipette tool, due to the high cost and limited feature set of OT2 pipettes we don't recommend that new users purchase them specifically for working with Jubilee. New users should consider a syringe based tool as a starting point. If you do need a true disposable tip pipette, the [Open Lab Automata project](https://www.openlabautomata.xyz/) is developing an open hardware option - keep an eye on them for progress updates. We also are considering alternative commercial solutions and are happy to discuss these more if they are of interest to you.
 
 :::{danger}
-Using an OT2 pipette on Jubilee is obviously outside the design and support scope of Opentrons, so do so at your own risk. The Jubilee project further does not guarantee the safety or reliability of the OT2 piptte tool adaptation (or any other component of the Jubilee platform). There is a risk of destroying a pipette with an incorrectly configured machine (ask me how I know this...) so move slow and verify everything is set up correctly. 
+Using an OT2 pipette on Jubilee is obviously outside the design and support scope of Opentrons, so do so at your own risk. The Jubilee project further does not guarantee the safety or reliability of the OT2 piptte tool adaptation (or any other component of the Jubilee platform). There is a risk of destroying a pipette with an incorrectly configured machine (ask me how I know this...) so move slow and verify everything is set up correctly.
 :::
 
 ```{figure} _static/pipette-flexure.jpg
@@ -29,7 +29,7 @@ There are two versions of the Jubilee pipette tool. One uses a flexure that is l
 ## Skills and capabilities needed
 
 - 3D printing
-- Soldering 
+- Soldering
 
 ## Parts to Buy
 
@@ -41,11 +41,11 @@ There are two versions of the Jubilee pipette tool. One uses a flexure that is l
           - Add FC-10P connector for ribbon cable, one option: https://www.amazon.com/Antrader-FC-10P-2-54mm-Connector-50-Pack/dp/B07DVZBQ67?th=1
           - Add 1/2in cable sleeve: https://www.amazon.com/Keco-100ft-Expandable-Braided-Sleeving/dp/B07K1XJNJN/ref=sr_1_10?crid=3PYOZ19GJFUXA&dib=eyJ2IjoiMSJ9.5CSsgeWmvO7VHn5FTz1tkMUth9Jvols3h8BDPqynXi2vm2_xcC6zEWUeoUwPqdaSfF2SQ6M5RmD6xeVeNz__tOWAP_qH6D26BtBo1i_vnrLg_ZlktzW4mR1FPZLfwjbpNgQhLkotDcup90P8qi43fyXAirzu_7Egcxttwacw57bRCuXWXs7jlRSKm0vubLLGiOzH704gADBpSGHGL2hqNP0y4_gN4IgAzaoo-yOfFIz4J634VOnOOINLubbSm5Zn1AZcg_CmdLxrRqjRqHoqi8_joils3HdSwdNobSQIbLQ.G2PCs4fmd-_s7oQNYSGAi_AhF_mQsUXrQ9i6m1V8Gy0&dib_tag=se&keywords=cable%2Bsleeve&qid=1724264681&s=electronics&sprefix=cable%2Bslee%2Celectronics%2C139&sr=1-10&th=1
           - Add 22g hookup wire, something like 40 ft of it
-          - Specify separate limit switch for 3D printed flexure version 
+          - Specify separate limit switch for 3D printed flexure version
           - add duet board connector housings
 
 
-## Parts to Fabricate 
+## Parts to Fabricate
 
 - Pipette tool frame SolidWorks file and correctly sized parking posts can be found [here](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette).
 
@@ -54,7 +54,7 @@ There are two versions of the Jubilee pipette tool. One uses a flexure that is l
 
 ### Wiring Harness Assembly
 
-You will want your wiring harness to be long enough to provide sufficient slack for tool movement when routed down the front of the jubilee, below the machine, and to the back panel. 8 feet of wire length should allow for this. 
+You will want your wiring harness to be long enough to provide sufficient slack for tool movement when routed down the front of the jubilee, below the machine, and to the back panel. 8 feet of wire length should allow for this.
 
 1. Solder your limit switch to sufficiently long lengths of hookup wire
 2. Cut a 7.5 foot length of 10 conductor ribbon cable
@@ -87,7 +87,7 @@ Use electrical tape to tape the loose ends of the wires together to make routing
 ```{figure} _static/ribbon_to_hookup_wiring.png
 :scale: 75 %
 ```
-6. Terminate the 4 stepper motor hookup wires with appropriate crimps for the driver you will be using. If you are attaching the stepper motor to a driver on a duet expansion board as the rest of the instructions will do, use a VH crimp. See [prerequisite knowledge](prerequisite_knowledge.md) for more on this. 
+6. Terminate the 4 stepper motor hookup wires with appropriate crimps for the driver you will be using. If you are attaching the stepper motor to a driver on a duet expansion board as the rest of the instructions will do, use a VH crimp. See [prerequisite knowledge](prerequisite_knowledge.md) for more on this.
 7. Terminate the 4 limit switch wires (2 for the external limit switch and two for the internal limit switch) with molex KK254 connectors.
 8. Place the terminated stepper motor wires in a JST VH 4 pin housing. When viewed from the contact side of the connector with the wires entering from the left, the order from top to bottom should be (in terms of color/ribbon cable position): [Blue/4, Red/3, Green/1, Black/2].
 
@@ -117,7 +117,7 @@ The following Duet configuration guidelines will assume that you wire your new p
 | External (pipette tip pickup) limit switch | IO2 on board 0 |
 | Internal (V axis) limit switch | IO3 on board 0 |
 
-See the [default wiring instructions](wiring.md) for illustrations. 
+See the [default wiring instructions](wiring.md) for illustrations.
 
 ## Duet Configuration
 These lines should be added to the `config.g` on *your* machine.
@@ -264,15 +264,15 @@ The **first time** you home the pipette, you must check the direction that the m
 During a homing step, it shold move towards the *endstop*. If it is moviong in the wrong direction (i.e., downwards), **manually** engage the endstop (i.e., click it!) and change the `S` parameter on this line from 0 to 1. Try again and make sure the motor moves in the expected direction.
 :::
 
-Set the [parking post positions](parking_posts.md) and [tool offset](tool_offsets.md) as described elsewhere in the documentation. 
+Set the [parking post positions](parking_posts.md) and [tool offset](tool_offsets.md) as described elsewhere in the documentation.
 
 ## Using the pipette tool
 
 :::{danger}
-The first time you use your new pipette tool, you should test the pipette tip pickup limit switch functionality. The pipette tool relies on the triggering of an endstop to detect a pipette tip pickup and stop bed movement. An incorrectly wired or configured endstop can lead to the bed continuing to move upwards after the pipette and tip rack have made contact, potentially destroying your pipette. Test this functionality by dropping the bed substantially in z, then having the pipette move to pickup a tip. While the bed is moving up, grab the pipette and pull it up. The endstop should trigger, stopping the bed and registering a tip pickup. If the bed keeps moving, cut the power and investigate. 
+The first time you use your new pipette tool, you should test the pipette tip pickup limit switch functionality. The pipette tool relies on the triggering of an endstop to detect a pipette tip pickup and stop bed movement. An incorrectly wired or configured endstop can lead to the bed continuing to move upwards after the pipette and tip rack have made contact, potentially destroying your pipette. Test this functionality by dropping the bed substantially in z, then having the pipette move to pickup a tip. While the bed is moving up, grab the pipette and pull it up. The endstop should trigger, stopping the bed and registering a tip pickup. If the bed keeps moving, cut the power and investigate.
 :::
 
-Link to pipette usage example notebook: 
+Link to pipette usage example notebook:
 
 To use a pipette in the science-jubilee python interface, start by setting up your Jubilee and loading labware as in the getting started notebook.
 
@@ -308,10 +308,10 @@ Use one of the pipette commands to handle liquid. Depending on the command, tip 
 volume = 50 # uL
 source_location = stock_solutions['A1']
 well_location = samples['A1']
-pipette.transfer(volume, 
-                 source_location, 
-                 well_location, 
-                 blowout = True, 
+pipette.transfer(volume,
+                 source_location,
+                 well_location,
+                 blowout = True,
                  new_tip='once')
 ```
 
