@@ -56,7 +56,7 @@ Mandala Rose Works produces aluminum upgrades for several components on Jubilee.
 
 You will need to procure some tools on your own, but some are already available in the Filastruder kit.
 
-### To buy
+### To Buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
 - SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)]
@@ -138,6 +138,7 @@ In addition to the pdf instructions, we created a [YouTube playlist for certain 
 
 - [Jubilee Wiki](https://jubilee3d.com/index.php?title=Main_Page). This is the main documentation hub for the Jubilee project. We encourage you to look through the resources organized on the left-hand sidebar--there's a lot of info there! While not all pages on the wiki will be relevant for lab automation, many help demonstrate Jubilee functionality.
 - [Jubilee Discord](https://discord.gg/jubilee). The Jubilee Builders and Extenders Discord is actively used by the Jubilee Community. If you have a question about a build step or troubleshooting your machine, this is a great place to get help! Discussion is organized by topic--you may be interested in the `#lab-automation` channel, for example.
+- [Lab Automation Discord](https://discord.gg/ubxU2rMJwN). The open lab automation discord is a focused on lab automation with a heavy Jubilee bent. This is the best spot to ask questions about Jubilee's capabilities with regard to your science.
 - [Sourcing parts independently](https://jubilee3d.com/index.php?title=Getting_Parts). If you'd prefer to source parts yourselves rather than buy a kit from Filastruder, https://jubilee3d.com has a section with a shopping list and other recommendations.
 - [(Original) Jubilee Assembly Instructions](https://jubilee3d.com/index.php?title=Assembly_Instructions). These are the original Jubilee build instructions from which the Science Jubilee build instructions are based on.
 
