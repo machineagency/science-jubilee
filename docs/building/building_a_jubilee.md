@@ -41,7 +41,7 @@ Check out the Sourcing video to to see how to order the kit:
 
 ### Recommended upgrades
 
-Mandala Rose Works produces aluminum upgrades for several components on Jubilee. Replacing stock PLA 3D printed parts with their aluminum counterparts can increase the reliability and solvent compatibility of the motion platform. These upgrades are listed in order of their priority in our view. If you plan to use the OT2 pipette tool on your Jubilee, you should purchase the aluminum Z yokes. 
+Mandala Rose Works produces aluminum upgrades for several components on Jubilee. Replacing stock PLA 3D printed parts with their aluminum counterparts can increase the reliability and solvent compatibility of the motion platform. These upgrades are listed in order of their priority in our view. If you plan to use the OT2 pipette tool on your Jubilee, you should purchase the aluminum Z yokes.
 
 | Part | Link | Reason to upgrade |
 | --- | --- | ---|
@@ -49,7 +49,7 @@ Mandala Rose Works produces aluminum upgrades for several components on Jubilee.
 | Front Corner Brackets | https://mandalaroseworks.com/products/jubilee-front-corner-brackets | Improved durability of bracket. Note: requires 6 M5x25mm screws to install |
 | CoreXY Stepper mounts | https://mandalaroseworks.com/products/jubilee-aluminum-stepper-mounts | Improved pulley alignment and durability. Note hardware requirements listed at link |
 | Z motor mount plates | https://mandalaroseworks.com/products/jubilee-machined-zplates | Improved solvent resistance. Looks cool |
-| Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice | 
+| Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice |
 
 
 ## Tools
