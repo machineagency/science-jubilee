@@ -43,7 +43,7 @@ Check out the Sourcing video to to see how to order the kit:
 
 You will need to procure some tools on your own, but some are already available in the Filastruder kit.
 
-### To buy
+### To Buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
 - SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)]
