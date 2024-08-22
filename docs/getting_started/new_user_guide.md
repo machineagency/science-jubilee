@@ -49,9 +49,7 @@ This guide assumes you have a few things:
 
 Most of the hardware involved in Jubilee is pretty resilient and can handle a few mistakes in assembly and operation. However, there are some guidelines to follow to keep you and your Jubilee safe:
 
-1. Mind the mains AC terminals on the power supply (and the 24V as well). The Jubilee power supply requires you to make connections to your mains AC power at either 120 or 240V. This is dangerous and could kill you. Don't touch or modify power connections with the machine plugged in. There is a terminal guard for the power supply we reccomend printing and installing
-
-# TODO: Find link to this guard and link here
+1. Mind the mains AC terminals on the power supply (and the 24V as well). The Jubilee power supply requires you to make connections to your mains AC power at either 120 or 240V. This is dangerous and could kill you. Don't touch or modify power connections with the machine plugged in. There are printable terminal guard designs for the power supply we reccomend printing and installing, such as [this one](https://www.printables.com/model/329847-lrs-350-24-terminal-cover-voron-edition).
 
 2. Don't plug/unplug stepper motor drivers with the Duet board powered on. This will likely damage your stepper drivers and fry your $$ board. Its good practice not to plug/unplug anything else with the board on, but definetley don't do it for stepper connectors.
 
@@ -123,9 +121,7 @@ Tool build documentation is a little scattered currently, so you may have to loo
 
 ### Building the pipette
 
-Most of the OT2 Pipette assembly documentation can be found in the github repo [tool_library](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette). If you are building from scratch, you have the choice of using either a 3D-printed flexure assembly or a delrin laser-cut flexure. We recommend the delrin version if you have access to delrin and a laser cutter, but the 3D printed version is fine too. Just make sure to follow the appropriate mechanical assembly instructions for the pipette.
-
-Currently, wiring directions are sparse. You will want to use the connector and wires mentioned in the OT2 pipette [readme](https://github.com/machineagency/science-jubilee/tree/main/tool_library/OT2_pipette) and follow the [wiring diagram](https://github.com/machineagency/science-jubilee/blob/main/tool_library/OT2_pipette/assembly_docs/OT2_Wiring_Diagram.pdf). Stay tuned for a more thorough set of documentation, and don't hesitate to reach out on the [lab automation discord](https://discord.com/invite/j9Bqv3djvN) if you get stuck.
+Follow the [OT2 Pipette tool documentation](../building/pipette_tool.md) for the pipette build guide.
 
 
 ### Building the camera tool
@@ -137,15 +133,18 @@ This tutorial uses the Webcamera tool. This is a raspberry pi camera tool that i
 
 After you have completed your tool assembly, you will need to set parking post positions and tool offsets. Parking post positions tell the Jubilee system where the parking posts for the tool are so it can be reliably picked up and parked. Tool offsets calibrate the positioning of the 'active point' of the tool. This allows each tool to move to the same place on the deck when we tell it to go to the same XYZ position as other tools. For the camera, the 'active point' is the center of the field of view, and for the OT2 Pipette tool it is the pipette tip.
 
-1. Follow the procedures on the Jubilee wiki to set the tool parking post positions for each tool you are using: [https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions](https://jubilee3d.com/index.php?title=Setting_Tool_Parking_Positions)
+
+
+1. Follow the [parking post position procedure](../building/parking_posts.md) to set the tool parking post positions for each tool you are using.
+
+:::{warning}
+Make sure to drop the bed z height so that the tool will clear the bed when picked up. This will not happen automatically becuase you have not set the tool offsets yet!
+:::
 2. There are directions on the Jubilee wiki for [setting tool offsets](https://jubilee3d.com/index.php?title=Setting_Tool_Offsets). They provide a good overview of the procedure, but assume you are using a USB microscope to align the tools. I like to use the following, simpler procedure:
     - Place a piece of masking/label tape on the deck and draw an X on it with a fine point sharpie or other fine pen
     - Position the z probe limit switch of the tool carriage over the "X" using the duet web interface jog controls
     - Write down the XYZ coordinates of the X
     - For each tool:
-:::{warning}
-Make sure to drop the bed z height so that the tool will clear the bed when picked up. This will not happen automatically becuase you have not set the tool offsets yet!
-:::
         - Pick up the tool
         - Position it so that the 'active point' is located over the X as precisely as you can
         - Write down the position of the tool
