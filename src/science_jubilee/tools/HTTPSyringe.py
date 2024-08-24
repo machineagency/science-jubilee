@@ -1,10 +1,11 @@
 import json
 import logging
 import os
+import time
 from itertools import dropwhile, takewhile
 from typing import Iterator, List, Tuple, Union
-import numpy as np
 
+import numpy as np
 import requests
 
 from science_jubilee.labware.Labware import Labware, Location, Well
@@ -15,33 +16,30 @@ from science_jubilee.tools.Tool import (
     requires_active_tool,
 )
 
-import time
-
-
 
 class HTTPSyringe(Tool):
 
     def __init__(self, index, name, url):
         """
         HTTP Syringe is digital syringe for Jubilee
-        
+
         """
 
         self.name = name
         self.index = index
         # get config things from HTTP interface
-        config_r = requests.post(url+'/get_config', json = {'name':name})
+        config_r = requests.post(url + "/get_config", json={"name": name})
 
         config = config_r.json()
 
-        super().__init__(index, **config, url = url)
+        super().__init__(index, **config, url=url)
 
-        status_r = requests.post(url + '/get_status', json = {'name':name})
+        status_r = requests.post(url + "/get_status", json={"name": name})
 
         status = status_r.json()
 
-        self.syringe_loaded = status['syringe_loaded']
-        self.remaining_volume = status['remaining_volume']
+        self.syringe_loaded = status["syringe_loaded"]
+        self.remaining_volume = status["remaining_volume"]
 
         return
 
@@ -51,20 +49,19 @@ class HTTPSyringe(Tool):
             kwargs = json.load(f)
 
         return cls(index, **kwargs)
-    
+
     def status(self):
         """
         Fetch and update status
         """
 
-        r  = requests.post(self.url + '/get_status', json = {'name':self.name})
+        r = requests.post(self.url + "/get_status", json={"name": self.name})
         status = r.json()
 
-        self.syringe_loaded = status['syringe_loaded']
-        self.remaining_volume = status['remaining_volume']
+        self.syringe_loaded = status["syringe_loaded"]
+        self.remaining_volume = status["remaining_volume"]
 
         return status
-
 
     def load_syringe(self, volume, pulsewidth):
         """
@@ -75,11 +72,11 @@ class HTTPSyringe(Tool):
         """
 
         data = {}
-        data['volume'] = volume
-        data['pulsewidth'] = pulsewidth
-        data['name'] = self.name
+        data["volume"] = volume
+        data["pulsewidth"] = pulsewidth
+        data["name"] = self.name
 
-        requests.post(self.url + '/load_syringe', json = data)
+        requests.post(self.url + "/load_syringe", json=data)
 
         status = self.status()
 
@@ -90,44 +87,52 @@ class HTTPSyringe(Tool):
     @requires_active_tool
     def _aspirate(self, vol, s):
 
-        assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be float or int'
+        assert isinstance(vol, float) or isinstance(
+            vol, int
+        ), "Vol must be float or int"
 
-        assert vol < self.capacity - self.remaining_volume, f'Error: Syringe {self.name} available volume is {self.capacity - self.remaining_volume} uL, {vol} mL aspiration requested'
+        assert (
+            vol < self.capacity - self.remaining_volume
+        ), f"Error: Syringe {self.name} available volume is {self.capacity - self.remaining_volume} uL, {vol} mL aspiration requested"
 
-        r = requests.post(self.url+ '/aspirate', json = {'volume':vol, 'name':self.name, 'speed':s})
+        r = requests.post(
+            self.url + "/aspirate", json={"volume": vol, "name": self.name, "speed": s}
+        )
 
-        assert r.status_code == 200, f'Error in aspirate request: {r.content}'
+        assert r.status_code == 200, f"Error in aspirate request: {r.content}"
 
-        status_r = requests.post(self.url+'/get_status', json = {'name':self.name})
+        status_r = requests.post(self.url + "/get_status", json={"name": self.name})
 
         status_dict = status_r.json()
 
-        self.remaining_volume = status_dict['remaining_volume']
+        self.remaining_volume = status_dict["remaining_volume"]
 
         return
-    
+
     @requires_active_tool
     def _dispense(self, vol, s):
-        
-        assert isinstance(vol, float) or isinstance(vol, int), 'Vol must be flaot or int'
-        assert vol <= self.remaining_volume, f'Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested'
 
-        r = requests.post(self.url+ '/dispense', json = {'volume':vol, 'name':self.name, 'speed':s})
+        assert isinstance(vol, float) or isinstance(
+            vol, int
+        ), "Vol must be flaot or int"
+        assert (
+            vol <= self.remaining_volume
+        ), f"Error: Syringe {self.name} remaining volume is {self.remaining_volume} uL, but {vol} uL dispense requested"
 
-        assert r.status_code == 200, f'Error in dispense request: {r.content}'
+        r = requests.post(
+            self.url + "/dispense", json={"volume": vol, "name": self.name, "speed": s}
+        )
 
-        status_r = requests.post(self.url+ '/get_status', json = {'name':self.name})
+        assert r.status_code == 200, f"Error in dispense request: {r.content}"
+
+        status_r = requests.post(self.url + "/get_status", json={"name": self.name})
         status_dict = status_r.json()
-        self.remaining_volume = status_dict['remaining_volume']
+        self.remaining_volume = status_dict["remaining_volume"]
         return
-    
 
     @requires_active_tool
     def dispense(
-        self, 
-        vol: float, 
-        location: Union[Well, Tuple, Location],
-        s: int = 100
+        self, vol: float, location: Union[Well, Tuple, Location], s: int = 100
     ):
         """Moves the pipette to the specified location and dispenses the desired volume of liquid
 
@@ -142,7 +147,6 @@ class HTTPSyringe(Tool):
         """
         x, y, z = Labware._getxyz(location)
 
-
         if type(location) == Well:
             self.current_well = location
             if z == location.z:
@@ -155,17 +159,13 @@ class HTTPSyringe(Tool):
             pass
 
         self._machine.safe_z_movement()
-        self._machine.move_to(x=x, y=y, wait = True)
-        self._machine.move_to(z=z, wait = True)
-        self._dispense(vol)
+        self._machine.move_to(x=x, y=y, wait=True)
+        self._machine.move_to(z=z, wait=True)
+        self._dispense(vol, s)
 
-    
     @requires_active_tool
     def aspirate(
-        self, 
-        vol: float, 
-        location: Union[Well, Tuple, Location],
-        s: int = 100
+        self, vol: float, location: Union[Well, Tuple, Location], s: int = 100
     ):
         """Moves the pipette to the specified location and aspirates the desired volume of liquid
 
@@ -179,8 +179,6 @@ class HTTPSyringe(Tool):
         """
         x, y, z = Labware._getxyz(location)
 
-
-
         if type(location) == Well:
             self.current_well = location
         elif type(location) == Location:
@@ -189,18 +187,18 @@ class HTTPSyringe(Tool):
             pass
 
         self._machine.safe_z_movement()
-        self._machine.move_to(x=x, y=y, wait = True)
-        self._machine.move_to(z=z, wait= True)
-        self._aspirate(vol)
+        self._machine.move_to(x=x, y=y, wait=True)
+        self._machine.move_to(z=z, wait=True)
+        self._aspirate(vol, s)
 
     @requires_active_tool
     def mix(
-            self, 
-            vol: float,
-            n_mix: int,
-            location: Union[Well, Tuple, Location],
-            t_hold: int = 1,
-            s: int = 100
+        self,
+        vol: float,
+        n_mix: int,
+        location: Union[Well, Tuple, Location],
+        t_hold: int = 1,
+        s: int = 100,
     ):
         """
         Mixes n times with volume vol
@@ -226,8 +224,8 @@ class HTTPSyringe(Tool):
             pass
 
         self._machine.safe_z_movement()
-        self._machine.move_to(x=x, y=y, wait = True)
-        self._machine.move_to(z=z, wait= True)
+        self._machine.move_to(x=x, y=y, wait=True)
+        self._machine.move_to(z=z, wait=True)
 
         for _ in range(n_mix):
             self._aspirate(vol, s)
@@ -235,34 +233,26 @@ class HTTPSyringe(Tool):
             self._dispense(vol, s)
             time.sleep(t_hold)
 
-
-
-
     def set_pulsewidth(self, pulsewidth: int, s: int = 100):
         """
         Manually move the servo actuator to a new location by setting the new pulsewidth.
 
-        Does not update volume, use carefully 
+        Does not update volume, use carefully
 
         :param pulsewidth: The servo motor pulsewidth to set the servo to. Read up on servo positioning for this to make sense. Ranges from 1000-2000 with a stricter range of accessible values for each syringe tool.
         :type pulsewidth: int
-        :param s: Speed of movement in uL/S. 
+        :param s: Speed of movement in uL/S.
         :type s: int
         """
 
         assert pulsewidth > self.full_position
         assert pulsewidth < self.empty_position
 
-        r = requests.post(self.url + '/set_pulsewidth', json = {'pulsewidth':pulsewidth, 'name':self.name, 'speed':s})
+        r = requests.post(
+            self.url + "/set_pulsewidth",
+            json={"pulsewidth": pulsewidth, "name": self.name, "speed": s},
+        )
 
         status = self.status()
 
-        return 
-    
-
-
-
-
-
-
-
+        return
