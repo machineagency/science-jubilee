@@ -198,7 +198,8 @@ class HTTPSyringe(Tool):
         n_mix: int,
         location: Union[Well, Tuple, Location],
         t_hold: int = 1,
-        s: int = 100,
+        s_aspirate: int = 100,
+        s_dispense: int = 100
     ):
         """
         Mixes n times with volume vol
@@ -228,9 +229,11 @@ class HTTPSyringe(Tool):
         self._machine.move_to(z=z, wait=True)
 
         for _ in range(n_mix):
-            self._aspirate(vol, s)
+            print(f'aspirating {vol} uL')
+            self._aspirate(vol, s_aspirate)
             time.sleep(t_hold)
-            self._dispense(vol, s)
+            print(f'dispensing {vol} uL')
+            self._dispense(vol, s_dispense)
             time.sleep(t_hold)
 
     def set_pulsewidth(self, pulsewidth: int, s: int = 100):
