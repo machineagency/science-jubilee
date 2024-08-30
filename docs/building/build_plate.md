@@ -8,6 +8,20 @@ title: Magnetic Build Plate Assembly
 ## Video
 _Video editing in progress!_
 
+## Note for automation users
+
+The following directions have you attach a bed heater and magnetic build plate to the bed. If you do not plan to print with your Jubilee, skip these steps for now. You will not need the these components for most science automation tasks and they may get in the way of the [lab automation deck mounting](lab_automation_deck.md).
+
+:::{tip}
+Unless you plan to print with your Jubilee or otherwise know you need the bed heater or build plate, complete these sections and skip the rest:
+
+- Kinematic Ball Installation
+- Spring Anchor creation 1 & 2 (optional, see [lab automation deck retention](lab_automation_deck.md#retention-options))
+- Spring Anchor Installation (optional)
+- Lab automation deck installation
+
+:::
+
 ## Build Plate Assembly
 [![Page1](_static/build_plate0.png)](_static/build_plate0.png)
 
@@ -46,3 +60,8 @@ _Video editing in progress!_
 
 ## Grounding Wire Installation
 [![Page13](_static/build_plate12.png)](_static/build_plate12.png)
+
+## Lab Automation Deck Installation
+See the [lab automation deck](lab_automation_deck.md) documentation to select, procure, and install a lab automation deck template. 
+
+

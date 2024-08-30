@@ -52,6 +52,10 @@ Mandala Rose Works produces aluminum upgrades for several components on Jubilee.
 | Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice |
 
 
+### Automation specific components
+
+If you are using Jubilee for lab automation with SLAS wellplate form-factor labware, you will need a [lab automation deck template](lab_automation_deck.md)
+
 ## Tools
 
 You will need to procure some tools on your own, but some are already available in the Filastruder kit.
