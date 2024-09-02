@@ -9,6 +9,7 @@ import warnings
 from functools import wraps
 from pathlib import Path
 from typing import Union
+import logging
 
 import requests  # for issuing commands
 from requests.adapters import HTTPAdapter, Retry
@@ -175,6 +176,7 @@ class Machine:
         )
 
         requests_session.mount("http://", HTTPAdapter(max_retries=retries))
+        requests_session.headers["Connection"] = "close"
         self.session = requests_session
 
         if deck_config is not None:
@@ -442,7 +444,7 @@ class Machine:
         self.deck = deck
         return deck
 
-    def gcode(self, cmd: str = "", timeout=None, response_wait: float = 30):
+    def gcode(self, cmd: str = "", timeout=None, response_wait: float = 60):
         """Send a G-Code command to the Machine and return the response.
 
         :param cmd: The G-Code command to send, defaults to ""
@@ -474,30 +476,46 @@ class Machine:
                 # Paraphrased from Duet HTTP-requests page:
                 # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
                 # and the response is available at `rr_reply`.
-                reply_count = self.session.get(
+                reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
-                ).json()["result"]["reply"]
+                )
+                logging.debug(f'MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}')
+
+                reply_count = reply_response.json()["result"]["reply"]
                 buffer_response = self.session.get(
                     f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout
                 )
+                logging.debug(f'GCODE response, status: {buffer_response.status_code}, headers:{buffer_response.headers}, content:{buffer_response.content}')
                 # wait for a response code to be appended
                 # TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds.
                 tic = time.time()
+                try_count = 0
                 while True:
                     try:
-                        new_reply_count = self.session.get(
+                        new_reply_response = self.session.get(
                             f"http://{self.address}/rr_model?key=seqs"
-                        ).json()["result"]["reply"]
+                        )
+
+                        logging.debug(f'MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}')
+                        new_reply_count = new_reply_response.json()["result"]["reply"]
+
                         if new_reply_count != reply_count:
                             response = self.session.get(
                                 f"http://{self.address}/rr_reply"
-                            ).text
+                            )
+
+                            logging.debug(f'REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}')
+
+                            response = response.text
                             break
                         elif time.time() - tic > response_wait:
                             response = None
                             break
+                        time.sleep(self.delay_time(try_count))
+                        try_count += 1
                     except Exception as e:
-                        print("Connection error, sleeping 1 second")
+                        print(f"Connection error ({e}), sleeping 1 second")
+                        logging.debug(f'Error in gcode reply wait loop: {e}')
                         time.sleep(2)
                         continue
 
@@ -506,6 +524,23 @@ class Machine:
                 response = None
         # TODO: handle this with logging. Also fix so all output goes to logs
         return response
+
+
+    def delay_time(self, n):
+        """
+        Calculate delay time for next request. dumb hard code for now, could be fancy exponential backoff
+        """
+        if n == 0:
+            return 0
+        if n < 10:
+            return 0.1
+        if n < 20:
+            return 0.2
+        if n < 30:
+            return 0.3
+        else:
+            return 1
+
 
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""
