@@ -17,9 +17,13 @@ This approach uses the contact between the tool balls and the kinematic coupling
 
 ### Implementing tool ball contact sensor
 
+```{warning}
+This feature is in early development. You may run into unexpected issues. 
+```
+
 #### Parts required:
 1. Jubilee [carriage coupler plate ](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchange_carriage/carriage_coupler_plate.STL) printed part. Follow the main [Jubilee printing instructions.](https://jubilee3d.com/index.php?title=3D_Printed_Parts#Default_Print_Settings)
-2. Threaded dowel pins, M3x4mmx20mm. You need 6 of these per Jubilee We use these ones: https://www.aliexpress.us/item/3256805293246699.html
+2. Threaded dowel pins, M3x4mmx20mm. You need 6 of these per Jubilee We use [these ones](https://www.aliexpress.us/item/3256805293246699.html).
 3. M3x4mm buttonhead screws, quantity 6
 4. [M3 solder lug](https://www.digikey.com/en/products/detail/keystone-electronics/7328/316697?s=N4IgTCBcDaIMwDYC0B2OYAcSByAREAugL5A), quantity 6. These are the same part used in the toolchanger REL mechanism so you might have some spares. 
 5. Hookup wire, 22 or 24 gauge
@@ -30,7 +34,7 @@ This approach uses the contact between the tool balls and the kinematic coupling
 1. Arbor press or other means of inserting dowel pins
 2. [Tool carriage pin insertion fixture](https://github.com/machineagency/jubilee/blob/main/tools/assembly_fixtures/coupling_plate_pin_insertion_fixture.STL) (print)
 3. Soldering station (soldering iron, solder, etc)
-4. Wire crimping tool (ex [Engineer PA-09](https://www.amazon.com/ENGINEER-AWG32-AWG20-Connectors-Oil-Resistant-PA-09/dp/B002AVVO7K?th=1)
+4. Wire crimping tool (ex [Engineer PA-09](https://www.amazon.com/ENGINEER-AWG32-AWG20-Connectors-Oil-Resistant-PA-09/dp/B002AVVO7K?th=1))
 5. Wire strippers
 6. Assorted hex drivers 
 
