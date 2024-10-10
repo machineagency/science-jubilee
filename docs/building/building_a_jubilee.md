@@ -130,6 +130,13 @@ corexy
 z_axis
 ```
 
+```{toctree}
+:caption: Enhancements
+:maxdepth: 1
+
+tool_crash_detection
+```
+
 ### Videos
 
 In addition to the pdf instructions, we created a [YouTube playlist for certain steps of the build process](https://www.youtube.com/watch?v=8JUbr9aU8eQ) that may be of help.
