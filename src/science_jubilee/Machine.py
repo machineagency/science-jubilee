@@ -112,6 +112,8 @@ class Machine:
         address: str = None,
         deck_config: str = None,
         simulated: bool = False,
+        crash_detection: bool = False,
+        crash_handler = None
     ):
         """Initialize the Machine object.
 
@@ -125,6 +127,10 @@ class Machine:
         :type deck_config: str, optional
         :param simulated: Whether to simulate the machine, defaults to False
         :type simulated: bool, optional
+        :param crash_detection: Whether to monitor for tool changer crash detection. See science-jubilee docs for more. Default to False (no detection)
+        :type crash_detection: bool
+        :param crash_handler: Function to call when crash is detected. See docs
+        :type crash_handler: None or function
 
         :raises MachineStateError: If the machine is not in the correct state to perform the requested action. This is a user error, not a machine error.
         :raises MachineConfigurationError: If the machine does nto support the indicated configuration, e.g., a tool index is already in use.
@@ -151,6 +157,10 @@ class Machine:
         self.model_update_timestamp = 0
         self.command_ws = None
         self.wake_time = None  # Next scheduled time that the update thread updates.
+
+        #crash detection
+        self.crash_detection = crash_detection
+        self.crash_handler = crash_handler
 
         self._absolute_positioning = True
         self._absolute_extrusion = (
@@ -514,7 +524,13 @@ class Machine:
                                 f"REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}"
                             )
 
+
                             response = response.text
+
+                            # crash detection monitoring happens here
+                            if self.crash_detection:
+                                if response == 'crash detected':
+                                    handler_response = self.crash_handler.handle_crash()
                             break
                         elif time.time() - tic > response_wait:
                             response = None
