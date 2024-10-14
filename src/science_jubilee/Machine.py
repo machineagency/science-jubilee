@@ -19,7 +19,7 @@ from science_jubilee.tools.Tool import Tool
 
 # TODO: Figure out how to print error messages from the Duet.
 
-
+logger = logging.getLogger(__name__)
 # copied from machine agency version, may not be needed here
 
 
@@ -483,6 +483,7 @@ class Machine:
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
+            
                 # Paraphrased from Duet HTTP-requests page:
                 # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
                 # and the response is available at `rr_reply`.
@@ -510,7 +511,7 @@ class Machine:
                             f"http://{self.address}/rr_model?key=seqs"
                         )
 
-                        logging.debug(
+                        logger.debug(
                             f"MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}"
                         )
                         new_reply_count = new_reply_response.json()["result"]["reply"]
@@ -520,16 +521,18 @@ class Machine:
                                 f"http://{self.address}/rr_reply"
                             )
 
-                            logging.debug(
+                            logger.debug(
                                 f"REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}"
                             )
 
 
                             response = response.text
+                            print(f'Response: |{response}|')
 
                             # crash detection monitoring happens here
                             if self.crash_detection:
-                                if response == 'crash detected':
+                                if 'crash detected' in response:
+                                    logger.error('Jubilee crash detected')
                                     handler_response = self.crash_handler.handle_crash()
                             break
                         elif time.time() - tic > response_wait:
@@ -783,7 +786,7 @@ class Machine:
         v: float = None,
         s: float = 6000,
         param: str = None,
-        wait: bool = False,
+        wait: bool = True,
     ):
         """Move to an absolute X/Y/Z/E/V position.
 
@@ -814,7 +817,7 @@ class Machine:
         dv: float = 0,
         s: float = 6000,
         param: str = None,
-        wait: bool = False,
+        wait: bool = True,
     ):
         """Move relative to the current position
 
