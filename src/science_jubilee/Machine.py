@@ -3,13 +3,13 @@
 # import websocket # for reading the machine model
 
 import json
+import logging
 import os
 import time
 import warnings
 from functools import wraps
 from pathlib import Path
 from typing import Union
-import logging
 
 import requests  # for issuing commands
 from requests.adapters import HTTPAdapter, Retry
@@ -479,13 +479,17 @@ class Machine:
                 reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
                 )
-                logging.debug(f'MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}')
+                logging.debug(
+                    f"MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}"
+                )
 
                 reply_count = reply_response.json()["result"]["reply"]
                 buffer_response = self.session.get(
                     f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout
                 )
-                logging.debug(f'GCODE response, status: {buffer_response.status_code}, headers:{buffer_response.headers}, content:{buffer_response.content}')
+                logging.debug(
+                    f"GCODE response, status: {buffer_response.status_code}, headers:{buffer_response.headers}, content:{buffer_response.content}"
+                )
                 # wait for a response code to be appended
                 # TODO: Implement retry backoff for managing long-running operations to avoid too many requests error. Right now this is handled by the generic exception catch then sleep. Real fix is some sort of backoff for things running longer than a few seconds.
                 tic = time.time()
@@ -496,7 +500,9 @@ class Machine:
                             f"http://{self.address}/rr_model?key=seqs"
                         )
 
-                        logging.debug(f'MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}')
+                        logging.debug(
+                            f"MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}"
+                        )
                         new_reply_count = new_reply_response.json()["result"]["reply"]
 
                         if new_reply_count != reply_count:
@@ -504,7 +510,9 @@ class Machine:
                                 f"http://{self.address}/rr_reply"
                             )
 
-                            logging.debug(f'REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}')
+                            logging.debug(
+                                f"REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}"
+                            )
 
                             response = response.text
                             break
@@ -515,7 +523,7 @@ class Machine:
                         try_count += 1
                     except Exception as e:
                         print(f"Connection error ({e}), sleeping 1 second")
-                        logging.debug(f'Error in gcode reply wait loop: {e}')
+                        logging.debug(f"Error in gcode reply wait loop: {e}")
                         time.sleep(2)
                         continue
 
@@ -524,7 +532,6 @@ class Machine:
                 response = None
         # TODO: handle this with logging. Also fix so all output goes to logs
         return response
-
 
     def delay_time(self, n):
         """
@@ -540,7 +547,6 @@ class Machine:
             return 0.3
         else:
             return 1
-
 
     def _set_absolute_positioning(self):
         """Set absolute positioning for all axes except extrusion"""

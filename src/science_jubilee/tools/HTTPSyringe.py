@@ -199,7 +199,7 @@ class HTTPSyringe(Tool):
         location: Union[Well, Tuple, Location],
         t_hold: int = 1,
         s_aspirate: int = 100,
-        s_dispense: int = 100
+        s_dispense: int = 100,
     ):
         """
         Mixes n times with volume vol
@@ -226,7 +226,9 @@ class HTTPSyringe(Tool):
 
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
-        self._aspirate(500, s_aspirate) #pre-aspirate 500 uL then blow this out at the end to avoid holding onto extra solution 
+        self._aspirate(
+            500, s_aspirate
+        )  # pre-aspirate 500 uL then blow this out at the end to avoid holding onto extra solution
         self._machine.move_to(z=z, wait=True)
 
         for _ in range(n_mix):
