@@ -690,7 +690,6 @@ class Labware(WellSet):
             # in this case, plate is rotated down
             theta = -1 * theta
 
-
         # apply offset to all wells in the labware object
 
         for well in self:
