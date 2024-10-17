@@ -113,7 +113,7 @@ class Machine:
         deck_config: str = None,
         simulated: bool = False,
         crash_detection: bool = False,
-        crash_handler = None
+        crash_handler=None,
     ):
         """Initialize the Machine object.
 
@@ -158,7 +158,7 @@ class Machine:
         self.command_ws = None
         self.wake_time = None  # Next scheduled time that the update thread updates.
 
-        #crash detection
+        # crash detection
         self.crash_detection = crash_detection
         self.crash_handler = crash_handler
 
@@ -483,7 +483,7 @@ class Machine:
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
-            
+
                 # Paraphrased from Duet HTTP-requests page:
                 # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
                 # and the response is available at `rr_reply`.
@@ -525,12 +525,11 @@ class Machine:
                                 f"REPLY response, status: {response.status_code}, headers:{response.headers}, content:{response.content}"
                             )
 
-
                             response = response.text
                             # crash detection monitoring happens here
                             if self.crash_detection:
-                                if 'crash detected' in response:
-                                    logger.error('Jubilee crash detected')
+                                if "crash detected" in response:
+                                    logger.error("Jubilee crash detected")
                                     handler_response = self.crash_handler.handle_crash()
                             break
                         elif time.time() - tic > response_wait:
