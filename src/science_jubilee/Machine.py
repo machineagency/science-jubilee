@@ -527,8 +527,6 @@ class Machine:
 
 
                             response = response.text
-                            print(f'Response: |{response}|')
-
                             # crash detection monitoring happens here
                             if self.crash_detection:
                                 if 'crash detected' in response:
