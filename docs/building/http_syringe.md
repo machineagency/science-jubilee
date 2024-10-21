@@ -27,6 +27,8 @@ This Jubilee adaptation of the tool uses a single control box to manage several 
 
 ### For each tool
 
+You will need one set of these parts for each indivdual tool you want to build.
+
 #### Parts to purchase
 
 | Description | Quantity per tool | Vendor 1 | Est. total cost |
@@ -50,37 +52,39 @@ Tips: We use a variety of blunt-tip luer lock tips with our syringe tools. We li
 
 #### Parts to print
 
-Shared between 1cc and 10cc tool:
+##### Shared between 1cc and 10cc tool:
 
 | Part Name | Quantity | Link | Print notes |
 | --- | --- |--- |---|
-| Tool platform upper | 1 | tbd | |
-| Tool Template assembly | 1 | tbd | |
+| Tool platform upper | 1 | [platform_upper v5.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/shared/platform_upper%20v5.stl) | |
+| Tool Template assembly | 1 | [tool_template_assembly v1.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/shared/tool_template_assembly%20v1.stl) | |
 | Left tool wing | 1 | [left_tool_wing_v2.STL](https://github.com/machineagency/jubilee/blob/main/tools/jubilee_tools/tool_template/fabrication_exports/3d_printed_parts/left_tool_wing_v2.STL) | |
 | Right tool wing |1 | [right_tool_wing_v2.STL](https://github.com/machineagency/jubilee/blob/main/tools/jubilee_tools/tool_template/fabrication_exports/3d_printed_parts/right_tool_wing_v2.STL)| |
 
-For 1cc tool:
+##### For 1cc tool:
 
 | Part Name | Quantity | Link | Print notes |
 | --- | --- |--- |---|
-| Tool platform lower 1cc | 1 | tbd | |
-| Barrell cover 1cc | 1 | tbd | |
-| Plunger holder 1cc | 1 | tbd | Mind your supports and print orientation |
-| Plunger holder clamp 1cc | 1 | tbd | Mind your supports and print orientation |
+| Tool platform lower 1cc | 1 | [platform_bottom_1cc v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/platform_bottom_1cc%20v2.stl) | |
+| Barrel cover 1cc | 1 | [cover_1cc v3.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/cover_1cc%20v3.stl) | |
+| Plunger holder 1cc | 1 | [holder_1cc v7.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/holder_1cc%20v7.stl) | Mind your supports and print orientation |
+| Plunger holder clamp 1cc | 1 | [holder_clamp v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/holder_clamp%20v2.stl) | Mind your supports and print orientation |
 
 
-For 10cc tool:
+##### For 10cc tool:
 
 | Part Name | Quantity | Link | Print notes |
 | --- | --- |--- |---|
-| Tool platform lower 10cc | 1 | tbd | |
-| Barrell cover 10cc | 1 | tbd | |
-| Plunger holder 10cc | 1 | tbd | Mind your supports and print orientation |
-| Plunger holder clamp 0cc | 1 | tbd | Mind your supports and print orientation |
+| Tool platform lower 10cc | 1 | [platform_bottom_10cc v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/10cc_tool/stl/platform_bottom_10cc%20v2.stl) | Should be printed flat side down |
+| Barrel cover 10cc | 1 | [cover_10cc v4.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/10cc_tool/stl/cover_10cc%20v4.stl) | |
+| Plunger holder 10cc | 1 | [holder_10cc v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/10cc_tool/stl/holder_10cc%20v2.stl) | Mind your supports and print orientation |
+| Plunger holder clamp 0cc | 1 | [holder_clamp v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/10cc_tool/stl/holder_clamp%20v2.stl) | Mind your supports and print orientation |
 
 
 
-### Control hardware (one set per Jubilee)
+### Control hardware
+
+You will need one control module for each Jubilee you want to use the HTTP syringe tool on.
 
 #### Parts to buy
 
@@ -98,8 +102,8 @@ This control support module is designed to fit onto the [Autonomous Formulation 
 
 | Part Name | Quantity | Link | Print notes |
 | --- | --- |--- |---|
-|Control support module | 1 | tbd | |
-| Lid | 1 | tbd | |
+|Control support module | 1 | [module_main v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/control_box/stl/module_main%20v2.stl) | |
+| Lid | 1 | [module_lid v3.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/control_box/stl/module_lid%20v3.stl) | |
 
 ## Assembly Instructions
 
@@ -113,4 +117,4 @@ to come !
 
 #### License
 
-The original Digital Pipette tool, and this derivative work, are licesned under [CC4.0](https://creativecommons.org/licenses/by/4.0/)
+The original Digital Pipette tool, and this derivative work, are licensed under [CC4.0](https://creativecommons.org/licenses/by/4.0/)
