@@ -162,6 +162,7 @@ inoculation_tool
 top_down_camera_tool
 side_camera_tool
 syringe_tool
+http_syringe
 lab_automation_deck
 designing_custom_tools
 tool_postreqs
