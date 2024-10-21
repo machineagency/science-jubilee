@@ -1,6 +1,4 @@
-exclude: |
-  '^docs/conf.py'
-  '\.step$'
+exclude: '^docs/conf.py'
 
 
 repos:
