@@ -1,5 +1,5 @@
 <!--
-  Thanks for contibuting! Please use this pull request (PR) template.
+  Thanks for contributing! Please use this pull request (PR) template.
 
 
  In the description field of this PR, tag the issue you are fixing (e.g. #XXXX). If this PR addresses the issue but doesn't completely resolve it (ie the issue should remain open after your PR is merged), please say so.-->
