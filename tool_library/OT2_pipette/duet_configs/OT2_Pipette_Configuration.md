@@ -17,7 +17,7 @@ ___
 This command defines a new axis for the pipette motor and tells the Duet which board driver number you're using.
 We use the *V* axis here; however, if it is already in use on your machine, you can also use *W/A/B/C*. Each driver on the Duet boards are labeled (e.g., `driver_0`,`driver_1`, etc.). Add the driver number (`n`) here and preped it with `1.n` if you are using an expansion board.
 
-This G-code line shuold be placed the `M584` commands for your other axes in your `config.g` file. It has to come before all the other `M codes` we’ll add next.
+This G-code line should be placed the `M584` commands for your other axes in your `config.g` file. It has to come before all the other `M codes` we’ll add next.
 
 > **Example**:
 >
@@ -75,7 +75,7 @@ Add these commands alongside the other `M92` and `M350` commands in your `config
     M203 V10000
     M566 V4000
 
-These commands set the max acceleration (`M201`), speed (`M203`) and jerk (`M566``) for the V axis.
+These commands set the max acceleration (`M201`), speed (`M203`) and jerk (`M566`) for the V axis.
 Add these command alongside the M201/203/566 commands in your configuration file.
 
 ## 6. Configure Endstop
@@ -104,7 +104,7 @@ This command actually defines your tool. The tool number should be set based on 
     M574 Z1 P"^<your_pin_name>"
 
 This command is to define the external endstop for picking up pipette tips.
-In this case,  it will be an enstop for the *Z axis* instead of the pipette axis (*V*). Similarly to section 6, the carat ("^")and the quotes (" ") are necessary in thsi line as well.
+In this case,  it will be an enstop for the *Z axis* instead of the pipette axis (*V*). Similarly to section 6, the carat ("^")and the quotes (" ") are necessary in this line as well.
 Again, pins are named as follows `<board_index>.<pin>.in`.
 Add this command alongside the other `M574` commands
 
@@ -124,11 +124,11 @@ You are now done with updating your `config.g` file!
     G90              ; absolute moves
     G1 V0.5 F600     ; move to a position of 0.5 to start
 
-**Remember**: The *first time* you home the pipette, you should check the direction of the mototr movement and ensure the draft shaft is moving upwards towardsthe endstop. If you notice the pipette tip ejector starts to engage, then manually stop the motion by pressing the endstop twice (to account for both searches for the endstop in the homing routine), and flip the direction of the motor (see step 2.)
+**Remember**: The *first time* you home the pipette, you should check the direction of the motor movement and ensure the drive shaft is moving upwards towards the endstop. If you notice the pipette tip ejector starts to engage, then manually stop the motion by pressing the endstop twice (to account for both searches for the endstop in the homing routine), and flip the direction of the motor (see step 2.)
 
 ## 9. Add V Homing to `homeall.g`
 
-The `homeall.g` macro is used to home each of the machine's configured axis at once. You can call the `homev.g` macro at the end of this file, and the pipette will home while sitting in its parking position.To do so, navigate to *System* (i.e., *sys/*), open `homeall.g`, and add the following line to the end:
+The `homeall.g` macro is used to home each of the machine's configured axis at once. You can call the `homev.g` macro at the end of this file, and the pipette will home while sitting in its parking position. To do so, navigate to *System* (i.e., *sys/*), open `homeall.g`, and add the following line to the end:
 
     M98 P"homev.g"
 
