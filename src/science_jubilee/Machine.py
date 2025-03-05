@@ -213,9 +213,11 @@ class Machine:
             # TODO: This should handle a response from self.gcode of 'None' gracefully.
             max_tries = 50
             for i in range(max_tries):
+                print(i)
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
+                print('response in connect: ', response)
                 if len(response) == 0:
                     continue
                 else:
@@ -240,6 +242,8 @@ class Machine:
             # TODO: recover absolute/relative from object model instead of enforcing it here.
             self._set_absolute_positioning()
         except json.decoder.JSONDecodeError as e:
+            print(response)
+            print(e)
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError(
@@ -526,6 +530,7 @@ class Machine:
                             )
 
                             response = response.text
+                            print('response text in gcode: ',response)
                             # crash detection monitoring happens here
                             if self.crash_detection:
                                 if "crash detected" in response:
@@ -903,7 +908,7 @@ class Machine:
         :rtype: int
         """
         if type(tool_item) == int:
-            assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            assert tool_item in set(self.tools.keys()), f"Tool {tool_item} not loaded"
             return tool_item
         elif type(tool_item) == str:
             assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
@@ -934,7 +939,9 @@ class Machine:
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
         tool.post_load()
-        tool.tool_offset = self.tool_z_offsets[idx]
+
+        if tool.index is not None:
+            tool.tool_offset = self.tool_z_offsets[idx]
 
     def reload_tool(self, tool: Tool = None):
         """Update a tool which has already been loaded."""
@@ -1009,8 +1016,9 @@ class Machine:
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         current_tool_index = self.active_tool_index
-        self.tools[current_tool_index]["tool"].is_active_tool = False
-        self._active_tool_index = -1
+        if current_tool_index != -1:
+            self.tools[current_tool_index]["tool"].is_active_tool = False
+            self._active_tool_index = -1
 
     def get_position(self):
         """Get the current position of the machine control point in mm.

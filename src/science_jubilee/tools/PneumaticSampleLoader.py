@@ -1,7 +1,15 @@
 from typing import Optional
-from science_jubilee.machine import Machine
+from science_jubilee import Machine
 import json
 import time
+import requests
+from science_jubilee.tools import Tool
+from science_jubilee.tools.Tool import (
+    Tool,
+    ToolConfigurationError,
+    ToolStateError,
+    requires_active_tool,
+)
 
 class PneumaticSampleLoader(Tool):
     """
@@ -15,7 +23,7 @@ class PneumaticSampleLoader(Tool):
 
         """
         self.name = name
-        self.url = url
+        self.url = url+':'+port
         self.port = port
         self.safe_position = safe_position
         self.cell_location = cell_location
@@ -24,9 +32,12 @@ class PneumaticSampleLoader(Tool):
         self.password = password
 
         self.arm_down_delay = 10
-        self.status = self.get_status()
 
         self.login()
+        self.update_status()
+        self.index = None
+
+
 
 
 
@@ -44,7 +55,7 @@ class PneumaticSampleLoader(Tool):
 
         return cls(index, **kwargs)
 
-    @requires_active_tool
+    #@requires_active_tool
     def load_sample(self, tool, sample_location: str, volume) -> bool:
         """
         Load a sample into the sample cell using pneumatic pressure.
@@ -57,26 +68,21 @@ class PneumaticSampleLoader(Tool):
             bool: True if sample was loaded successfully, False otherwise.
         """
 
-        # Check that cell is in state rinsed
-        if self.get_cell_state() != "RINSED":
-            raise ValueError("Cell is not in state rinsed")
-        
-        # move jubilee to safe position
-        self.machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
+        self.prepare_cell()
 
-        # raise arm
-        self.prepare_load()
+        #verify arm is raised
+        if self.arm_state != "UP":
+            raise ValueError("Arm is not raised")
 
         # sample transfer
-        current_tool = self.machine.active_tool_index
-        if self.machine._get_tool_index(current_tool) != current_tool:
-            machine.park_tool()
-            machine.pickup_tool(tool)
+        if self._machine.active_tool_index != tool.index:
+            self._machine.park_tool()
+            self._machine.pickup_tool(tool)
 
         tool.aspirate(volume, sample_location)
         tool.dispense(volume, self.cell_location)
 
-        self.machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
+        self._machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
 
         self._load_sample(volume)
 
@@ -100,24 +106,53 @@ class PneumaticSampleLoader(Tool):
         
         self._rinse_cell()
 
+    def prepare_cell(self):
+        """
+        Prepare the cell for loading - raise arm and make sure it is clean
+        """
+        if self.get_cell_state() != "RINSED":
+            self.rinse_cell()
+
+        self._machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
+
+        self._prepare_load()
+
+        self.update_status()
+
 
     def _prepare_load(self):
         """
         Raise the arm of the pneumatic sample loader.
         """
 
-        task = {'task': 'prepareLoad'}
+        task = {'task_name': 'prepareLoad'}
         task_id = self.enqueue(task)
+
+        while self.get_cell_state() != "READY":
+            time.sleep(1)
+
+        return
 
     def _load_sample(self, volume):
 
-        task = {'task': 'loadSample', 'volume': volume}
+        task = {'task_name': 'loadSample', 'sampleVolume': volume}
 
         task_id = self.enqueue(task)
+
+        while self.get_cell_state() != "LOADED":
+            time.sleep(1)
+
+        return
 
     def _rinse_cell(self):
-        task = {'task': 'rinseCell'}
+        task = {'task_name': 'rinseCell'}
         task_id = self.enqueue(task)
+
+        #block until rinse is done 
+        while self.get_cell_state() != "RINSED":
+            time.sleep(1)
+
+        return
 
 
     def update_status(self) -> dict:
@@ -129,7 +164,9 @@ class PneumaticSampleLoader(Tool):
                  and current pressure settings.
         """
         # Get status from HTTP endpoint
-        r = requests.post(self.url + "/driver_status", headers=self.auth_header)
+        r = requests.get(self.url + "/driver_status", headers=self.auth_header)
+        print('status r code', r.status_code)
+        print('status: ', r.content)
         status_str = r.content.decode("utf-8")
         
 
@@ -146,7 +183,7 @@ class PneumaticSampleLoader(Tool):
         """
         self.update_status()
         return self.cell_state
-    def parse_state(self, status_str: str) -> tuple[str, str]:
+    def parse_state(self, status_list: str) -> tuple[str, str]:
         """
         Parse the state and arm state from a status string.
         
@@ -159,8 +196,6 @@ class PneumaticSampleLoader(Tool):
         """
         try:
             # Convert string to list using json.loads
-            status_list = json.loads(status_str)
-            
             cell_state = "UNKNOWN"
             arm_state = "UNKNOWN"
             
@@ -177,7 +212,7 @@ class PneumaticSampleLoader(Tool):
             print("Error parsing status string")
             return "UNKNOWN", "UNKNOWN"
 
-        def enqueue(self, task: dict):
+    def enqueue(self, task: dict):
             """
             Enqueue a task to be executed by the pneumatic sample loader.
 
@@ -190,3 +225,21 @@ class PneumaticSampleLoader(Tool):
                 raise Exception(f"Error enqueuing task: {r.json()}")
 
             return r.content.decode("utf-8")
+
+    def unpause_queue(self):
+
+        r = requests.post(self.url + "/pause", headers=self.auth_header, json={"state": False})
+
+        if r.status_code != 200:
+            raise Exception(f"Error unpausing queue: {r.json()}")
+
+        return
+
+    def pause_queue(self):
+
+        r = requests.post(self.url + "/pause", headers=self.auth_header, json={"state": True})
+
+        if r.status_code != 200:
+            raise Exception(f"Error pausing queue: {r.json()}")
+
+        return
