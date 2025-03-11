@@ -5,12 +5,12 @@
 import json
 import logging
 import os
+import re
 import time
 import warnings
 from functools import wraps
 from pathlib import Path
 from typing import Union
-import re
 
 import requests  # for issuing commands
 from requests.adapters import HTTPAdapter, Retry
@@ -218,7 +218,7 @@ class Machine:
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
-                print('response in connect: ', response)
+                print("response in connect: ", response)
                 if len(response) == 0:
                     continue
                 else:
@@ -243,8 +243,8 @@ class Machine:
             # TODO: recover absolute/relative from object model instead of enforcing it here.
             self._set_absolute_positioning()
         except json.decoder.JSONDecodeError as e:
-            print('Response in connect: ', response)
-            print('Error in connect: ', e)
+            print("Response in connect: ", response)
+            print("Error in connect: ", e)
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError(
@@ -464,7 +464,7 @@ class Machine:
         Split text strings from gcode responses when multiple responses held in Duet buffer
         """
         # Split the string on newlines and filter out empty strings
-        matches = [line for line in s.split('\n') if line.strip()]
+        matches = [line for line in s.split("\n") if line.strip()]
         return matches
 
     def gcode(self, cmd: str = "", timeout=None, response_wait: float = 60):
@@ -480,7 +480,7 @@ class Machine:
         :return: The response message from the machine. If too long, the message might not display in the terminal.
         :rtype: str
         """
-        print('gcode cmd: ', cmd)
+        print("gcode cmd: ", cmd)
 
         # TODO: Add serial option for gcode commands from MA
         if self.simulated:
@@ -504,13 +504,13 @@ class Machine:
                 reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
                 )
-                #print('init reply response: ', reply_response)
+                # print('init reply response: ', reply_response)
                 logging.debug(
                     f"MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}"
                 )
 
                 reply_count = reply_response.json()["result"]["reply"]
-                #print('init reply count: ', reply_count)
+                # print('init reply count: ', reply_count)
                 buffer_response = self.session.get(
                     f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout
                 )
@@ -531,7 +531,7 @@ class Machine:
                             f"MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}"
                         )
                         new_reply_count = new_reply_response.json()["result"]["reply"]
-                        #print('new reply count: ', new_reply_count)
+                        # print('new reply count: ', new_reply_count)
 
                         if new_reply_count != reply_count:
                             response = self.session.get(
@@ -543,16 +543,16 @@ class Machine:
                             )
 
                             response = response.text
-                            #print('response text in gcode: ',response)
+                            # print('response text in gcode: ',response)
 
                             # get last response if there are multiple
                             responses = self.split_response_objects(response)
-                            #print('split response text')
-                           # print('split respones: ', responses)
-                            #print('length of split respones: ', len(responses))
-                            #response_objects = [json.loads(js) for js in responses]
-                            #print('successfuly split json objects')
-                           # print('response objects: ', response_objects)
+                            # print('split response text')
+                            # print('split respones: ', responses)
+                            # print('length of split respones: ', len(responses))
+                            # response_objects = [json.loads(js) for js in responses]
+                            # print('successfuly split json objects')
+                            # print('response objects: ', response_objects)
 
                             """
                             # Iterate backwards over response objects to get most recent response matching gcode command string
