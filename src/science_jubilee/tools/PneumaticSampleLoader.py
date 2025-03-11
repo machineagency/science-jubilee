@@ -82,6 +82,7 @@ class PneumaticSampleLoader(Tool):
         tool.aspirate(volume, sample_location)
         tool.dispense(volume, self.cell_location)
 
+        self._machine.safe_z_movement()
         self._machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
 
         self._load_sample(volume)
@@ -103,7 +104,7 @@ class PneumaticSampleLoader(Tool):
         Returns:
             bool: True if cleaning was successful, False otherwise.
         """
-        
+        self._safe_position()
         self._rinse_cell()
 
     def prepare_cell(self):
@@ -113,7 +114,7 @@ class PneumaticSampleLoader(Tool):
         if self.get_cell_state() != "RINSED":
             self.rinse_cell()
 
-        self._machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
+        self._safe_position()
 
         self._prepare_load()
 
@@ -243,3 +244,32 @@ class PneumaticSampleLoader(Tool):
             raise Exception(f"Error pausing queue: {r.json()}")
 
         return
+
+    def _safe_position(self):
+        """
+        Check if currentlu in safe postion, and if not, move to it
+        """
+        if not self.get_safety_state():
+            self._machine.move_to(x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2])
+        
+        return
+
+
+    def get_safety_state(self):
+        """
+        Returns the safety state of the machine.
+        """
+        positions = self._machine.position
+        x, y, z = positions[0], positions[1], positions[2]
+        
+        # Check if position is within safe bounds
+        if x > self.safe_position[0]:
+            return False
+            
+        if y < self.safe_position[1]:
+            return False
+            
+        if z < self.safe_position[2]:
+            return False
+
+        return True

@@ -1,0 +1,58 @@
+{
+    "ordering": [
+        [
+            "A1"
+        ]
+    ],
+    "brand": {
+        "brand": "Custom",
+        "brandId": []
+    },
+    "metadata": {
+        "displayName": "afl_catch_assembly",
+        "displayCategory": "wellPlate",
+        "displayVolumeUnits": "µL",
+        "tags": []
+    },
+    "dimensions": {
+        "xDimension": 127.76,
+        "yDimension": 85.48,
+        "zDimension": 82
+    },
+    "wells": {
+        "A1": {
+            "depth": 15,
+            "totalLiquidVolume": 5000,
+            "shape": "circular",
+            "diameter": 10,
+            "x": 63.88,
+            "y": 70,
+            "z": 68
+        }
+    },
+    "groups": [
+        {
+            "metadata": {
+                "wellBottomShape": "flat"
+            },
+            "wells": [
+                "A1"
+            ]
+        }
+    ],
+    "parameters": {
+        "format": "irregular",
+        "quirks": [],
+        "isTiprack": false,
+        "isMagneticModuleCompatible": false,
+        "loadName": "20ccscintillation_screwdown_vialplate"
+    },
+    "namespace": "custom_beta",
+    "version": 1,
+    "schemaVersion": 2,
+    "cornerOffsetFromSlot": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+    }
+}
