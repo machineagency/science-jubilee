@@ -24,13 +24,14 @@ class HTTPSyringe(Tool):
         HTTP Syringe is digital syringe for Jubilee
 
         """
-
+        print('Syringe name: ', name)
         self.name = name
         self.index = index
         # get config things from HTTP interface
         config_r = requests.post(url + "/get_config", json={"name": name})
 
         config = config_r.json()
+        print(config)
 
         super().__init__(index, **config, url=url)
 
@@ -165,7 +166,7 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def aspirate(
-        self, vol: float, location: Union[Well, Tuple, Location], s: int = 100
+        self, vol: float, location: Union[Well, Tuple, Location], s: int = 100, dwell_before = 0, dwell_after = 0
     ):
         """Moves the pipette to the specified location and aspirates the desired volume of liquid
 
@@ -189,7 +190,9 @@ class HTTPSyringe(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
         self._machine.move_to(z=z, wait=True)
+        time.sleep(dwell_before)
         self._aspirate(vol, s)
+        time.sleep(dwell_after)
 
     @requires_active_tool
     def mix(
