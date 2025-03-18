@@ -84,7 +84,9 @@ class PneumaticSampleLoader(Tool):
         tool.aspirate(volume, sample_location)
         tool.dispense(volume, self.cell_location)
 
+
         self._machine.safe_z_movement()
+        self._machine.move_to(z = self.safe_position[2])
         self._machine.move_to(
             x=self.safe_position[0], y=self.safe_position[1], z=self.safe_position[2]
         )
