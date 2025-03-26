@@ -2,17 +2,17 @@ import json
 import os
 import time
 import warnings
+from typing import Any, Dict, List, Optional, Union
+
 import serial
 from serial.tools import list_ports
 
-
 from science_jubilee.tools.Tool import (
     Tool,
-    ToolStateError,
     ToolConfigurationError,
+    ToolStateError,
     requires_active_tool,
 )
-from typing import Union, Dict, Any, List, Optional
 
 
 class AS7341(Tool):
