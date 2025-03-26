@@ -5,8 +5,15 @@ import warnings
 import serial
 from serial.tools import list_ports
 
-from science_jubilee.tools.Tool import Tool, ToolStateError, ToolConfigurationError, requires_active_tool
+
+from science_jubilee.tools.Tool import (
+    Tool,
+    ToolStateError,
+    ToolConfigurationError,
+    requires_active_tool,
+)
 from typing import Union, Dict, Any, List, Optional
+
 
 class AS7341(Tool):
     """A class representation of the AS7341 spectral sensor.
@@ -14,12 +21,12 @@ class AS7341(Tool):
     :param Tool: The base tool class
     :type Tool: :class:`Tool`
     """
+
     def __init__(self, index, name, config):
-        """Constructor method
-        """
+        """Constructor method"""
         super().__init__(index, name)
 
-        self.lineEnding = '\n\r'
+        self.lineEnding = "\n\r"
         self.baudrate = 115200
         self.sensor_config = None
         self.serial_port = None
@@ -27,8 +34,7 @@ class AS7341(Tool):
         self.load_config(config)
 
     def load_config(self, config):
-        """Loads the configuration file for the AS7341 sensor tool
-        """
+        """Loads the configuration file for the AS7341 sensor tool"""
 
         config_directory = os.path.join(os.path.dirname(__file__), "configs")
         config_path = os.path.join(config_directory, f"{config}.json")
@@ -66,7 +72,7 @@ class AS7341(Tool):
         seeed_ports = [
             p.device
             for p in all_ports
-            if 'Seeed' in p.manufacturer or 'Espressif' in p.manufacturer
+            if "Seeed" in p.manufacturer or "Espressif" in p.manufacturer
         ]
 
         # Check if any Seeed devices were found
@@ -77,7 +83,9 @@ class AS7341(Tool):
             warnings.warn(f"Multiple Seeeds found - returning {len(seeed_ports)} ports")
 
         # Create Serial objects for each port
-        ser_list = [serial.Serial(port, self.baudrate, timeout=1) for port in seeed_ports]
+        ser_list = [
+            serial.Serial(port, self.baudrate, timeout=1) for port in seeed_ports
+        ]
 
         # Return Serial objects
         return ser_list
@@ -95,7 +103,9 @@ class AS7341(Tool):
 
         # Check if the requested index exists
         if ser_port_index >= len(seeed_devices):
-            raise IndexError(f"Serial port index {ser_port_index} out of range. Only {len(seeed_devices)} ports available.")
+            raise IndexError(
+                f"Serial port index {ser_port_index} out of range. Only {len(seeed_devices)} ports available."
+            )
 
         # Connect to the specified port
         ser_port = seeed_devices[ser_port_index].port
@@ -105,10 +115,12 @@ class AS7341(Tool):
 
         # Update the configuration to save the connection
         if self.sensor_config:
-            self.sensor_config['port'] = ser_port
+            self.sensor_config["port"] = ser_port
             # Save the updated configuration
             config_directory = os.path.join(os.path.dirname(__file__), "configs")
-            config_path = os.path.join(config_directory, f"{self.sensor_config.get('name', 'as7341')}.json")
+            config_path = os.path.join(
+                config_directory, f"{self.sensor_config.get('name', 'as7341')}.json"
+            )
             with open(config_path, "w") as f:
                 json.dump(self.sensor_config, f, indent=2)
 
@@ -130,10 +142,12 @@ class AS7341(Tool):
 
             # Update the configuration to remove the connection
             if self.sensor_config:
-                self.sensor_config['port'] = ""
+                self.sensor_config["port"] = ""
                 # Save the updated configuration
                 config_directory = os.path.join(os.path.dirname(__file__), "configs")
-                config_path = os.path.join(config_directory, f"{self.sensor_config.get('name', 'as7341')}.json")
+                config_path = os.path.join(
+                    config_directory, f"{self.sensor_config.get('name', 'as7341')}.json"
+                )
                 with open(config_path, "w") as f:
                     json.dump(self.sensor_config, f, indent=2)
 
@@ -151,9 +165,11 @@ class AS7341(Tool):
         :raises ToolStateError: If no serial port is connected
         """
         if self.serial_port is None:
-            raise ToolStateError("No serial port connected. Call connect_seeed() first.")
+            raise ToolStateError(
+                "No serial port connected. Call connect_seeed() first."
+            )
 
-        cmd_str = f'blink,{cmd}'
+        cmd_str = f"blink,{cmd}"
         cmd_str += self.lineEnding
         bcmd = cmd_str.encode()
 
@@ -175,10 +191,12 @@ class AS7341(Tool):
 
         # Check if serial port is connected
         if self.serial_port is None:
-            raise ToolStateError("No serial port connected. Call connect_seeed() first.")
+            raise ToolStateError(
+                "No serial port connected. Call connect_seeed() first."
+            )
 
         # Format the command with duty cycle
-        cmd = f'spec,{duty_cycle}'
+        cmd = f"spec,{duty_cycle}"
         cmd += self.lineEnding
         bcmd = cmd.encode()
 
@@ -201,14 +219,25 @@ class AS7341(Tool):
             values = spec_reading.split()
 
             # Handle different possible response formats
-            if ':' in spec_reading:
+            if ":" in spec_reading:
                 # Format like "415nm:123 445nm:456 ..."
                 for value in values:
-                    channel, reading = value.split(':')
+                    channel, reading = value.split(":")
                     readings[channel] = float(reading)
             else:
                 # Format like "123 456 789 ..." (raw values in expected order)
-                channels = ["415nm", "445nm", "480nm", "515nm", "555nm", "590nm", "630nm", "680nm", "Clear", "NIR"]
+                channels = [
+                    "415nm",
+                    "445nm",
+                    "480nm",
+                    "515nm",
+                    "555nm",
+                    "590nm",
+                    "630nm",
+                    "680nm",
+                    "Clear",
+                    "NIR",
+                ]
                 numeric_values = [float(v) for v in values]
 
                 # Match channels with values (handle case where lengths don't match)
@@ -219,7 +248,9 @@ class AS7341(Tool):
             return readings
 
         except Exception as e:
-            raise ToolStateError(f"Error parsing spectral data: {e}. Raw reading: {spec_reading}")
+            raise ToolStateError(
+                f"Error parsing spectral data: {e}. Raw reading: {spec_reading}"
+            )
 
     def get_raw_spectrum(self, duty_cycle: int = 100) -> str:
         """Get the raw spectral data string from the AS7341 sensor
@@ -236,10 +267,12 @@ class AS7341(Tool):
 
         # Check if serial port is connected
         if self.serial_port is None:
-            raise ToolStateError("No serial port connected. Call connect_seeed() first.")
+            raise ToolStateError(
+                "No serial port connected. Call connect_seeed() first."
+            )
 
         # Format the command with duty cycle
-        cmd = f'spec,{duty_cycle}'
+        cmd = f"spec,{duty_cycle}"
         cmd += self.lineEnding
         bcmd = cmd.encode()
 
