@@ -101,11 +101,13 @@ class Pipette(Tool):
         :type name: str
         :param config_file: The name of the config file containign the pipette parameters
         :type config_file: str
-        :param path: The path to the labware configuration `.json` files for the labware,
-                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
+        :param path: The path to the pipette configuration `.json` files for the tool,
+                defaults to the 'config/' in the science_jubilee/tools/configs directory.
         :returns: A :class:`Pipette` object
         :rtype: :class:`Pipette`
         """
+        if config_file[-4:] != "json":
+            config_file = config_file + ".json"
         config = os.path.join(path, config_file)
         with open(config) as f:
             kwargs = json.load(f)
