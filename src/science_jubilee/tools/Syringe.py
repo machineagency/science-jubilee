@@ -93,7 +93,7 @@ class Syringe(Tool):
         """
         de = vol * self.mm_to_ml
         self._machine.move(de=de, wait=True)
-    
+
     @requires_active_tool
     def retract_syringe(self, vol: float, s: int = 2000):
         """Retract the syringe directly, without checking access limits. This is used to zero the syringe when it has been picked up when not zeroed.
@@ -105,7 +105,7 @@ class Syringe(Tool):
         """
         de = vol * -1 * self.mm_to_ml
         self._machine.move(de=de, wait=True)
-    
+
     @requires_active_tool
     def _aspirate(self, vol: float, s: int = 2000):
         """Aspirate a certain volume in milliliters. Used only to move the syringe; to aspirate from a particular well, see aspirate()
@@ -176,7 +176,7 @@ class Syringe(Tool):
         self._machine.move_to(x=x, y=y)
         self._machine.move_to(z=z)
         self._dispense(vol, s=s)
-        
+
     @requires_active_tool
     def mix(self, vol: float, n: int, s: int = 5500):
         """Mixes liquid by alternating aspirate and dispense steps for the specified number of times
