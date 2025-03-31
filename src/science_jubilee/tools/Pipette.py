@@ -354,8 +354,9 @@ class Pipette(Tool):
                 else:
                     tip = TT.next_tip()
 
-                self.pickup_tip(tip)
-                TT.use_tip(tip)  # note on the TipTracker class that tip is being used
+                if new_tip != "never":  # don't pick up a tip if using 'never' strategy
+                    self.pickup_tip(tip)
+                    TT.use_tip(tip)  # note on the TipTracker class that tip is being used
 
                 # --------------- Aspirate ----------------
 
