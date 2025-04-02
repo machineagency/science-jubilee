@@ -1,0 +1,52 @@
+{
+    "deck_type": "Lab Automation Deck",
+    "deck_slots": {
+        "total": 6,
+        "type": "SLAS Standard Labware"
+    },
+    "slots": { 
+                "0": {
+                    "offset": [13.9, 4.8],
+                    "has_labware": false,
+                    "labware": null
+                },
+             
+                "1": {
+                    "offset": [153.9, 4.8],
+                    "has_labware": false,
+                    "labware": null
+                },
+             
+                "2": {
+                    "offset": [13.9, 101.9],
+                    "has_labware": false,
+                    "labware": null
+                },
+             
+                "3": {
+                    "offset": [153.9, 101.9],
+                    "has_labware": false,
+                    "labware": null
+                },
+             
+                "4": {
+                    "offset": [14.6, 198.9],
+                    "has_labware": false,
+                    "labware": null
+                },
+             
+                "5": {
+                    "offset": [154.8, 199.4],
+                    "has_labware": false,
+                    "labware": null
+                }
+             
+             },
+    "offset_from": {
+        "corner": "bottom_left"
+    },
+    "material": {
+        "plate": "Aluminum",
+        "mask": "Delrin"
+    }
+}
