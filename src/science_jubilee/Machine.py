@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import re
 import time
 import warnings
 from functools import wraps
@@ -213,9 +214,11 @@ class Machine:
             # TODO: This should handle a response from self.gcode of 'None' gracefully.
             max_tries = 50
             for i in range(max_tries):
+                print(i)
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
+                print("response in connect: ", response)
                 if len(response) == 0:
                     continue
                 else:
@@ -240,6 +243,8 @@ class Machine:
             # TODO: recover absolute/relative from object model instead of enforcing it here.
             self._set_absolute_positioning()
         except json.decoder.JSONDecodeError as e:
+            print("Response in connect: ", response)
+            print("Error in connect: ", e)
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError(
@@ -454,6 +459,14 @@ class Machine:
         self.deck = deck
         return deck
 
+    def split_response_objects(self, s):
+        """
+        Split text strings from gcode responses when multiple responses held in Duet buffer
+        """
+        # Split the string on newlines and filter out empty strings
+        matches = [line for line in s.split("\n") if line.strip()]
+        return matches
+
     def gcode(self, cmd: str = "", timeout=None, response_wait: float = 60):
         """Send a G-Code command to the Machine and return the response.
 
@@ -467,6 +480,7 @@ class Machine:
         :return: The response message from the machine. If too long, the message might not display in the terminal.
         :rtype: str
         """
+        print("gcode cmd: ", cmd)
 
         # TODO: Add serial option for gcode commands from MA
         if self.simulated:
@@ -490,11 +504,13 @@ class Machine:
                 reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
                 )
+                # print('init reply response: ', reply_response)
                 logging.debug(
                     f"MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}"
                 )
 
                 reply_count = reply_response.json()["result"]["reply"]
+                # print('init reply count: ', reply_count)
                 buffer_response = self.session.get(
                     f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout
                 )
@@ -515,6 +531,7 @@ class Machine:
                             f"MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}"
                         )
                         new_reply_count = new_reply_response.json()["result"]["reply"]
+                        # print('new reply count: ', new_reply_count)
 
                         if new_reply_count != reply_count:
                             response = self.session.get(
@@ -526,6 +543,34 @@ class Machine:
                             )
 
                             response = response.text
+                            # print('response text in gcode: ',response)
+
+                            # get last response if there are multiple
+                            responses = self.split_response_objects(response)
+                            # print('split response text')
+                            # print('split respones: ', responses)
+                            # print('length of split respones: ', len(responses))
+                            # response_objects = [json.loads(js) for js in responses]
+                            # print('successfuly split json objects')
+                            # print('response objects: ', response_objects)
+
+                            """
+                            # Iterate backwards over response objects to get most recent response matching gcode command string
+                            for i, response_obj in enumerate(reversed(response_objects)):
+                                print(i)
+                                print(response_obj)
+                                print(response_obj["key"])
+                                print(cmd)
+                                if response_obj["key"] == cmd:
+                                    response = responses[len(response_objects)-1-i]
+                                    break
+                            print('Parsed response: ', response)
+                            """
+                            if len(responses) > 0:
+                                response = responses[-1]
+                            else:
+                                response = None
+
                             # crash detection monitoring happens here
                             if self.crash_detection:
                                 if "crash detected" in response:
@@ -903,7 +948,7 @@ class Machine:
         :rtype: int
         """
         if type(tool_item) == int:
-            assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            assert tool_item in set(self.tools.keys()), f"Tool {tool_item} not loaded"
             return tool_item
         elif type(tool_item) == str:
             assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
@@ -934,7 +979,9 @@ class Machine:
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
         tool.post_load()
-        tool.tool_offset = self.tool_z_offsets[idx]
+
+        if tool.index is not None:
+            tool.tool_offset = self.tool_z_offsets[idx]
 
     def reload_tool(self, tool: Tool = None):
         """Update a tool which has already been loaded."""
@@ -1009,8 +1056,9 @@ class Machine:
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         current_tool_index = self.active_tool_index
-        self.tools[current_tool_index]["tool"].is_active_tool = False
-        self._active_tool_index = -1
+        if current_tool_index != -1:
+            self.tools[current_tool_index]["tool"].is_active_tool = False
+            self._active_tool_index = -1
 
     def get_position(self):
         """Get the current position of the machine control point in mm.
