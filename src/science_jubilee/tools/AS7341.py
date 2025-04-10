@@ -2,6 +2,7 @@ import json
 import os
 import time
 import warnings
+import ast
 from typing import Any, Dict, List, Optional, Union
 
 import serial
@@ -215,35 +216,11 @@ class AS7341(Tool):
 
         # Parse the reading into a dictionary
         try:
-            readings = {}
-            values = spec_reading.split()
-
-            # Handle different possible response formats
-            if ":" in spec_reading:
-                # Format like "415nm:123 445nm:456 ..."
-                for value in values:
-                    channel, reading = value.split(":")
-                    readings[channel] = float(reading)
+            # If the raw reading is already in dictionary format, evaluate it
+            if spec_reading.startswith("{") and spec_reading.endswith("}"):
+                readings = ast.literal_eval(spec_reading)
             else:
-                # Format like "123 456 789 ..." (raw values in expected order)
-                channels = [
-                    "415nm",
-                    "445nm",
-                    "480nm",
-                    "515nm",
-                    "555nm",
-                    "590nm",
-                    "630nm",
-                    "680nm",
-                    "Clear",
-                    "NIR",
-                ]
-                numeric_values = [float(v) for v in values]
-
-                # Match channels with values (handle case where lengths don't match)
-                for i, channel in enumerate(channels):
-                    if i < len(numeric_values):
-                        readings[channel] = numeric_values[i]
+                raise ValueError("Unexpected format for spectral data")
 
             return readings
 
@@ -251,6 +228,7 @@ class AS7341(Tool):
             raise ToolStateError(
                 f"Error parsing spectral data: {e}. Raw reading: {spec_reading}"
             )
+        
 
     def get_raw_spectrum(self, duty_cycle: int = 100) -> str:
         """Get the raw spectral data string from the AS7341 sensor
