@@ -1,21 +1,90 @@
 ---
 title: Installation Guide for Science Jubilee
 ---
-
-(installation)=
 # Installation
 
 To install `science-jubilee`:
 
-- Clone the repository: `git clone https://github.com/machineagency/science-jubilee.git`
-- We recommend using virtual environments to handle dependencies. See [here](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/#creating-a-virtual-environment) for more information on virtual environments. To do this:
-  - Move into the new directory: `cd science-jubilee`
-  - Create a virtual environment named `.venv`: `python3 -m venv .venv`
-  - Activate the virtual environment: `source .venv/bin/activate`
-  - You should now see `(.venv)` to the left of your command line prompt! (If you wish to leave the virtual environment, type `deactivate` from any directory)
-- Make sure you're using the latest version of pip: `python3 -m pip install --upgrade pip`
-- Install the `science_jubilee` package: `python3 -m pip install -e .`
-- Installation complete! Whenever you try to run programs using `science_jubilee`, be sure to activate the virtual environment that you created.
+To install `science-jubilee`:
+
+### Unix/Mac:
+
+To set up `science-jubilee` on Unix/Mac:
+
+- Clone the repository:  
+  ```bash
+  git clone https://github.com/machineagency/science-jubilee.git
+  ```
+
+- Navigate to the project directory:  
+  ```bash
+  cd science-jubilee
+  ```
+
+- Create a virtual environment:  
+  ```bash
+  python3 -m venv .venv
+  ```
+
+- Activate the virtual environment:  
+  ```bash
+  source .venv/bin/activate
+  ```
+  *Note: You should now see `(.venv)` to the left of your command line prompt! If you wish to leave the virtual environment, type `deactivate` from any directory.*
+
+- Update pip:  
+  ```bash
+  python3 -m pip install --upgrade pip
+  ```
+
+- Install the package:  
+  ```bash
+  python3 -m pip install -e .
+  ```
+
+- Installation complete!  
+  Whenever you try to run programs using `science_jubilee`, ensure the virtual environment is activated.
+
+### Windows (Using Git Bash)
+
+To set up `science-jubilee` on Windows using Git Bash:
+- Download Git Bash.
+
+- Clone the repository:  
+  ```bash
+  git clone https://github.com/machineagency/science-jubilee.git
+  ```
+  *Note: cloning may fail because of a copy-paste issue; manually typing the command will solve this.*
+
+- Navigate to the project directory:  
+  ```bash
+  cd science-jubilee
+  ```
+
+- Create a virtual environment:  
+  ```bash
+  python -m venv .venv
+  ```
+
+- Activate the virtual environment:  
+  ```bash
+  source .venv/Scripts/activate
+  ```
+  *Note: In Git Bash, you can use the Unix-style `source` command instead of the Windows-specific activation scripts.*
+
+- Update pip:  
+  ```bash
+  python -m pip install --upgrade pip
+  ```
+
+- Install the package:  
+  ```bash
+  python -m pip install -e .
+  ```
+
+- Installation complete!  
+  Whenever you try to run programs using `science_jubilee`, ensure the virtual environment is activated.
+
 
 ## Jupyter Notebooks
 
