@@ -76,7 +76,11 @@ extensions = [
     "sphinx_design",
     "autoapi.extension",
     "sphinxcontrib.youtube",
+    "nbsphinx"
 ]
+
+# Don't execute notebooks cells by default
+nbsphinx_execute = 'never'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
