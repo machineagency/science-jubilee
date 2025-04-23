@@ -356,7 +356,9 @@ class Pipette(Tool):
 
                 if new_tip != "never":  # don't pick up a tip if using 'never' strategy
                     self.pickup_tip(tip)
-                    TT.use_tip(tip)  # note on the TipTracker class that tip is being used
+                    TT.use_tip(
+                        tip
+                    )  # note on the TipTracker class that tip is being used
 
                 # --------------- Aspirate ----------------
 
@@ -776,7 +778,6 @@ class TipTracker:
     """
 
     def __init__(self, tips, start_well=None):
-
         self._wells = tips[start_well:]
         self._available_clean_tips = tips
         self._tip_stock_mapping = {}
@@ -810,7 +811,6 @@ class TipTracker:
         tip_well.set_clean_tip(False)
 
     def previous_tip(self):
-
         drop_leading_filled = list(dropwhile(lambda w: w.has_tip, self._wells))
         first_gap = list(takewhile(lambda w: not w.has_tip, drop_leading_filled))
         try:
@@ -825,7 +825,6 @@ class TipTracker:
             well.set_has_tip(True)
 
     def assign_tip_to_stock(self, tip_well, stock_well):
-
         if stock_well in self._tip_stock_mapping.keys():
             pass
         else:

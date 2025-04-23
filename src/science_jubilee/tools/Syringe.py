@@ -274,7 +274,6 @@ class Syringe(Tool):
             self.current_well = destination_well
             self._dispense(vol, s=s)
 
-
             if mix_after:
                 self.mix(mix_after[0], mix_after[1])
             else:

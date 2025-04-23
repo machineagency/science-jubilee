@@ -483,7 +483,6 @@ class Machine:
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
-
                 # Paraphrased from Duet HTTP-requests page:
                 # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
                 # and the response is available at `rr_reply`.
