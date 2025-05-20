@@ -41,6 +41,7 @@ You will need one set of these parts for each indivdual tool you want to build.
 | 1/8" expandable wiring sleeve | 6ft | [Alex Tech via Amazon](https://www.amazon.com/gp/product/B074GN12PY/ref=ox_sc_act_title_1?smid=A2N7NRZ9X3BHHN&th=1) | $ 1 ($13/100 foot roll) |
 | Misc. M3 and M4 hardware | varies | [Suggested kit to have on hand](https://www.amazon.com/gp/product/B07L9MMN9K/ref=ppx_yo_dt_b_search_asin_title?ie=UTF8&th=1) | $2ish |
 | Jubilee tool vitamins (wedge plat and tool balls) | 1 set | Filastruder | |
+| Butt splice connectors for 22g wire | many | [Digikey](https://www.digikey.com/en/products/detail/panduit-corp/BS18-M/447759) | $0.30/ea |
 
 Syringes:
 
@@ -107,9 +108,52 @@ This control support module is designed to fit onto the [Autonomous Formulation 
 
 ## Assembly Instructions
 
-to come!
+Put it together. It should look like the pictures when you are done.
+
+
+Actually though it is pretty straightforward. Better instructions to come
+
+### Wiring
+
+To wire the servo motor, you need to extend the wires it comes with, connect the power wires to a 6V DC power supply, and connect the signal wire to a GPIO pin on a raspberry pi.
+
+1. Extend the servo motor leads to an appropriate length (~6 feet) using the 22g hookup wire, butt splices, and heat shrink. Use the same colored wires to extend them, or note how the extensions connect. Optional but strongly suggested: Place the expandable wiring sleeve over the wires to keep things tidy.
+2. Connect the wires to the M12 connector. The DC+ wire (red) should go in pin 1, ground (black) in pin 2, and white (signal) in pin 3.
+4. Solder leads onto the M12 panel mount socket. Ideally use the same wire colors as for the servo motor wiring. Match the pins on the socket to the pins on connector. The panel-mount connected signal wires should terminate with female jumper wire connectors to plug into the pi. The easiest way to do this is to sacrifice a pre-wired jumper wire.
+5. Install the through-panel connectors into the control module box.
+6. Select GPIO pins to use for the syringe control. Note which pin is used for which syringe tool, you will need this to configure the control software later. [Here](https://pinout.xyz/) is one diagram to do this. Note that you want the GPIO pin number, not the pin ordering number. (ie, GPIO23, not pin 16).
+6. Wire the inside of the control box as shown in the picture. The power wires for the connector get connected to the power rail, and the signal wires plug into pi GPIO pins. Connect a ground wire between a ground screw on the power rail and a ground pin on the pi. Connect the power rail to the separate 6V power supply, ideally using a through-panel barrel connector.
+
 ## Software configuration
-to come!
+
+The control software for the pipette tools runs as a [separate service](https://github.com/pozzo-research-group/digital_pipette_server/commit/648a55d3fccc71e3af343d0cc2fadfaf5d72ba73) on the raspberry pi. The science-jubilee http_syringe tool python module that you load in your notebook to control the tool makes requests to this service to aspirate and dispense volumes. The digital_pipette_server manages the positioning of the servo motors to dispense appropriate amounts of liquid. The science-jubilee 'tool' object still manages all the jubilee state, such as positioning the syringe tip in the correct location. Thus, all configuration related to volumetric calibration is done on the raspberry pi, and all tool offset configuration is still done on Jubilee. To configure the http_syringe tool, you need to provision the pi and install the digital_pipette server on it, configure the science-jubilee http_syringe tool to talk to the server, and run a calibration to determine appropriate syringe end limits and calibration constants.
+
+1. Install and configure the [digital_syringe_server](https://github.com/pozzo-research-group/digital_pipette_server/commit/648a55d3fccc71e3af343d0cc2fadfaf5d72ba73) library. The readme of this repository walks you through this process. This should be installed on the raspberry pi used to control the syringes.
+
+2. The rest of the syringe control and configuration will take place on the computer you use to control your jubilee. This could be but is not necessailly the same raspberry pi used to control the syringes
+
+3. Create local configuration files for your syringe tools in the `science_jubilee/src/science_jubilee/tools/configs` directory. There is an example template there. This configuration contains the URL of the server and the name of the syringe. The name in the config file must match the name you gave your syringe in the server configuration on the raspberry pi.
+
+Example format:
+
+```
+{
+    "url": "http://192.168.1.5:5000",
+    "name": "example_syringe"
+}
+```
+
+4. Once you have the digital pipette server running, bring up a jupyter notebook and connect to your science-jubilee.
+
+5. Import the syringe tool:
+
+```from science_jubilee.tools import HTTPSyringe as syringe```
+6. Instantiate a syringe:
+
+ syringe_10 = syringe.HTTPSyringe.from_config(1, "../../science-jubilee/src/science_jubilee/tools/configs/10cc_syringe.json")
+
+To be continued
+
 
 ## Using the tool
 to come !
