@@ -5,6 +5,9 @@ title: HTTP Syringe
 (http-syringe)=
 # HTTP Syringe Tool
 
+```{figure} _static/syringe_on_jubilee.JPEG
+```
+
 The HTTP Syringe tool is one adaptation of the [Digital Pipette tool developed by Naruki Yoshikawa et. al](https://pubs.rsc.org/en/content/articlehtml/2023/dd/d3dd00115f) to the Jubilee platform. This adaptation adds a Jubilee tool plate and parking post wings to the tool and adapts the control interface to integrate with the science-jubilee library. This tool uses a linear servo actuator mounted in a 3D printed frame to drive a disposable plastic syringe. The servo is controlled through a raspberry pi, which exposes an HTTP interface to interact with the science-jubilee library client for this tool. This tool is similar in principle to the other Jubilee [syringe tool](./syringe_tool.md). This tool uses linear servo motors instead of stepper motors and leadscrews. This makes this version lighter, easier to build, and extensible to a multi-tool setup with fewer duet boards. The stepper motor version will provide more force for handling viscous liquids.
 
 ### Pros of this tool
@@ -45,7 +48,7 @@ You will need one set of these parts for each indivdual tool you want to build.
 
 Syringes:
 
-The current printed parts are designed to hold either a [1cc](https://www.amazon.com/gp/product/B07VF8CKGL/ref=ox_sc_act_title_5?smid=A18RDK02R6I57P&psc=1) or [10cc](https://www.amazon.com/10ml-Syringe-Only-Luer-Lock/dp/B01DARHDV8/ref=sr_1_3?crid=157GJLC30XVJ9&dib=eyJ2IjoiMSJ9.JYh8OK67Yvbzp72tx29uGPg2PpjDkoZIzsEHqbYSZ7TYDGa-Sa4S9bgk6averhVPRhEEJLBaSeq55-h_R6KBy-3E__mDWWLcme8gDJF1JErycS3PMi3kNcYuwfLxHXUDP5t9UrDaUMRaovhOoNNO0yoqu2blQeJPCUe3FRBHP9loqN849YvCNJWKWEzBr71nXPECYZNnN9whmp4yb87-eWIGlAg91gXPcKN2ZjXPnkX6C0X8VHkihBx9TQ35pdH86HpgMS505LQlFKOdfIELqcExhh4P1VwwJeMGbCOaKWs.sSyVTbBx5DhOUQGO_iug8xDHJREEMmHR4Y9glbD2uC0&dib_tag=se&keywords=10mL+luer+lock+syringe&qid=1718385114&s=industrial&sprefix=10ml+luer+lock+syringe%2Cindustrial%2C102&sr=1-3) syringe. Specifically, they are designed around the ones listed. If you are using a different volume or brand, you may need to re-design the mounting interface. At the time of writing, both of the above listed options are out of stock, so shifting to a more reliable vendor may be worthwhile.
+The current printed parts are designed to hold either a [1cc](https://www.amazon.com/gp/product/B07VF8CKGL/ref=ox_sc_act_title_5?smid=A18RDK02R6I57P&psc=1) or [10cc](https://www.amazon.com/10ml-Syringe-Only-Luer-Lock/dp/B01DARHDV8/ref=sr_1_3?crid=157GJLC30XVJ9&dib=eyJ2IjoiMSJ9.JYh8OK67Yvbzp72tx29uGPg2PpjDkoZIzsEHqbYSZ7TYDGa-Sa4S9bgk6averhVPRhEEJLBaSeq55-h_R6KBy-3E__mDWWLcme8gDJF1JErycS3PMi3kNcYuwfLxHXUDP5t9UrDaUMRaovhOoNNO0yoqu2blQeJPCUe3FRBHP9loqN849YvCNJWKWEzBr71nXPECYZNnN9whmp4yb87-eWIGlAg91gXPcKN2ZjXPnkX6C0X8VHkihBx9TQ35pdH86HpgMS505LQlFKOdfIELqcExhh4P1VwwJeMGbCOaKWs.sSyVTbBx5DhOUQGO_iug8xDHJREEMmHR4Y9glbD2uC0&dib_tag=se&keywords=10mL+luer+lock+syringe&qid=1718385114&s=industrial&sprefix=10ml+luer+lock+syringe%2Cindustrial%2C102&sr=1-3) syringe. Specifically, they are designed around the ones listed. If you are using a different volume or brand, you may need to re-design the mounting interface. At the time of writing, both of the above listed options are out of stock, so shifting to a more reliable vendor may be worthwhile. There is also a version of the 1cc syringe tool designed to work with a Hamilton glass syringe [(PN 81320)](https://www.hamiltoncompany.com/laboratory-products/syringes/81320).
 
 Tips: We use a variety of blunt-tip luer lock tips with our syringe tools. We like [these](https://www.amazon.com/PATIKIL-Dispensing-Industrial-Dispenser-Refilling/dp/B0D54JYHJW/ref=sr_1_3?crid=8U54ML0Q5WUU&dib=eyJ2IjoiMSJ9.lqbSIws96oCkUxH1IUWBeoqKI8IBdezGy_FkfO05G-UBV5-DZlUc070givTsPLRKbBQEKaZr6wG-HoViokRqMkQfyflPnY46FBKP6PLXuVWl4uAfd-NATXmoF3wk0A9WS2G_I_fT5FQ8TCb23iuE5L859UOixh29JzJnZWCchLsl4a_j0wrqF9PDTv4UlefOLnzpfGn_G3HQvdWgbbkWPgiZwbMcQkqD6nytF5QBoWo.J8J1qaeqtn5_aSEC7nXtrKesdgwb6mBToZGHfpkcbbE&dib_tag=se&keywords=20+gauge+2+inch+luer+lock&qid=1721855915&sprefix=20+gauge+2+inch+luer+lock%2Caps%2C129&sr=8-3) 20gauge, 50mm blunt tips for general liquid handling as they are stout enough to pierce silicone septa and long enough to aspirate liquid from the bottom of a 20cc scintillation vial.
 
@@ -71,6 +74,7 @@ Tips: We use a variety of blunt-tip luer lock tips with our syringe tools. We li
 | Plunger holder 1cc | 1 | [holder_1cc v7.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/holder_1cc%20v7.stl) | Mind your supports and print orientation |
 | Plunger holder clamp 1cc | 1 | [holder_clamp v2.stl](https://github.com/machineagency/science-jubilee/blob/main/tool_library/HTTPsyringe/designs/syringe_tool/1cc_tool/stl/holder_clamp%20v2.stl) | Mind your supports and print orientation |
 
+Analogous versions for the hamilton glass syringe are also available in the github repo.
 
 ##### For 10cc tool:
 
@@ -108,10 +112,12 @@ This control support module is designed to fit onto the [Autonomous Formulation 
 
 ## Assembly Instructions
 
-Put it together. It should look like the pictures when you are done.
+Put it together. It should look like the pictures when you are done. Better instructions to come.
+
+```{figure} _static/syringe_assembly.png
+```
 
 
-Actually though it is pretty straightforward. Better instructions to come
 
 ### Wiring
 
