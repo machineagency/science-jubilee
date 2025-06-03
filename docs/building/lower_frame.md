@@ -13,8 +13,8 @@ title: Lower Frame Assembly
 - [Front Right Foot (FRF-05)](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/front_right_foot.STL) 
 - 3x [Z-thrust bearings](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/z_thrust_bearing_spacer.STL)
 
-**You will also need to print the following if you did not 
-purchase the recommended** [machined z-plates](https://mandalaroseworks.com/products/jubilee-machined-zplates):
+You will also need to print the following if you did **not** 
+purchase the recommended [machined z-plates](https://mandalaroseworks.com/products/jubilee-machined-zplates):
 
 - [Back Z-Plate](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/back_z_motor_plate.STL)
 - [Left Z-Plate](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/front_left_z_motor_plate.STL)
