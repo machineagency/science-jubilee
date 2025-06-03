@@ -5,6 +5,12 @@ title: Aluminum Motor Plate Assembly
 (motor-plate)=
 # Aluminum Motor Plate Assembly
 
+## 3D-printed parts
+
+- [Left motor spacer](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/left_motor_corner_bracket_spacer.STL) -- needs heatset inserts
+- [Right motor space](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/right_motor_corner_bracket_spacer.STL) -- needs heatset inserts
+- 2x [Motor reinforcement plate](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/motor_reinforcement_plate.STL)
+
 ## Video
 _Video editing in progress!_
 
