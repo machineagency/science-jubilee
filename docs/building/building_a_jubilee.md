@@ -47,7 +47,7 @@ Mandala Rose Works produces aluminum upgrades for several components on Jubilee.
 | --- | --- | ---|
 | Z yokes | https://mandalaroseworks.com/products/jubilee-machined-yokes | Allows use of a zip tie or pony clamp to prevent bed-tip issues |
 | Front Corner Brackets | https://mandalaroseworks.com/products/jubilee-front-corner-brackets | Improved durability of bracket. Note: requires 6 M5x25mm screws to install |
-| CoreXY Stepper mounts | https://mandalaroseworks.com/products/jubilee-aluminum-stepper-mounts | Improved pulley alignment and durability. Note hardware requirements listed at link |
+| CoreXY Stepper mounts | https://mandalaroseworks.com/products/jubilee-aluminum-stepper-mounts | Improved pulley alignment and durability. Note hardware requirements listed at link  *Comment:* This is included by default in the Filastruder kit, and so it is not necessary to purchase this or the hardware specified. |
 | Z motor mount plates | https://mandalaroseworks.com/products/jubilee-machined-zplates | Improved solvent resistance. Looks cool |
 | Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice |
 
