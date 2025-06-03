@@ -76,7 +76,11 @@ extensions = [
     "sphinx_design",
     "autoapi.extension",
     "sphinxcontrib.youtube",
+    "nbsphinx"
 ]
+
+# Don't execute notebooks cells by default
+nbsphinx_execute = 'never'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -110,7 +114,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Science Jubilee"
-copyright = "2024, Machine Agency"
+copyright = "2025, Machine Agency"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

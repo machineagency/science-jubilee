@@ -139,6 +139,20 @@ These tutorials focus on applications using a Lab Automation deck which holds 6 
             Color Mixing Demo Guide
 ```
 
+## Notebooks
+You can use the following notebooks to get started quickly. You can find these notebooks in the `docs/notebooks` folder of science-jubilee to run them on your machine.
+
+- [Machine Jogging](../notebooks/MachineJogging.ipynb)
+- [Taking Pictures with a Camera Tool](../notebooks/TakingPictures.ipynb)
+- [Automation Deck Intro](../notebooks/AutomationDeckIntro.ipynb)
+- [Labware Intro](../notebooks/LabwareIntro.ipynb)
+- [Setting Z Offsets for Gel Printing](../notebooks/SetZOffset.ipynb)
+- [Gel Printing Info](../notebooks/GelPrinting.ipynb)
+- [Extrusion Printing with a Syringe](../notebooks/SyringeExtruderIntro.ipynb)
+- [Pipette Intro](../notebooks/PipetteIntro.ipynb)
+- [Serial Dilution Example](../notebooks/SerialDilution.ipynb)
+
+
 ```{toctree}
 :hidden:
 installation

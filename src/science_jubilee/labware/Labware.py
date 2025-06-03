@@ -765,7 +765,7 @@ class Labware(WellSet):
             raise ValueError("Location should be of type Well or Tuple")
 
         return x, y, z
-    
+
     @staticmethod
     def list_labware_definitions():
         """Returns a list of all the labware definitions available in the labware_definition folder.
@@ -775,7 +775,6 @@ class Labware(WellSet):
         """
         path = os.path.join(os.path.dirname(__file__), "labware_definition")
         return os.listdir(path)
-        
 
 
 ## Adapted from Opentrons API  opentrons.types##
@@ -856,7 +855,6 @@ class Location:
     """
 
     def __init__(self, point: Point, labware: Union[Well, Labware]):
-
         self._point = point
         self._labware = labware
 
