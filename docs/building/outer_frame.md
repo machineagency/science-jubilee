@@ -5,6 +5,10 @@ title: Outer Frame Assembly and Alignment
 (outer-frame)=
 # Outer Frame Assembly and Alignment
 
+## 3D-printed parts
+
+None are required.
+
 ## Video
 ```{youtube} F9muWrowDzE
 ```
