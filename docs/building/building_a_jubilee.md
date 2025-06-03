@@ -110,8 +110,8 @@ outer_frame
 motor_plate
 corner_plate
 crossbar
-REL
 toolchanger_carriage
+REL
 build_plate
 panel
 ```
