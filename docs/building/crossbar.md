@@ -5,6 +5,14 @@ title: Aluminum Crossbar Assembly
 (crossbar)=
 # Aluminum Crossbar Assembly
 
+## 3D-printed parts needed
+
+- [Left-crossbar pulley reinforcement plate (LXR)](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/left_crossbar_pulley_reinforcement_plate.STL)
+- [Right-crossbar pulley reinforcement plate (RXR)](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/right_crossbar_pulley_reinforcement_plate.STL)
+- 3x [Printed Pulley Spacer](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/printed_pulley_spacer.STL)
+- [Crossbar X-Limit Trigger](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/x_limit_trigger.STL)
+- [X-axis hard stop](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/x_axis_hard_stop.STL)
+
 ## Video
 _Video editing in progress!_
 
