@@ -1,14 +1,15 @@
 ---
-title: HTTP Syringe
+title: Digital Pipette HTTP Syringe
 ---
 
 (http-syringe)=
-# HTTP Syringe Tool
+# Digital Pipette HTTP Syringe Tool
+
+
+The Digital Pipette HTTP Syringe tool is one adaptation of the [Digital Pipette tool developed by Naruki Yoshikawa et. al](https://pubs.rsc.org/en/content/articlehtml/2023/dd/d3dd00115f) to the Jubilee platform. This adaptation adds a Jubilee tool plate and parking post wings to the tool and adapts the control interface to integrate with the science-jubilee library. This tool uses a linear servo actuator mounted in a 3D printed frame to drive a disposable plastic syringe. The servo is controlled through a raspberry pi, which exposes an HTTP interface to interact with the science-jubilee library client for this tool. This tool is similar in principle to the other Jubilee [syringe tool](./syringe_tool.md). This tool uses linear servo motors instead of stepper motors and leadscrews. This makes this version lighter, easier to build, and extensible to a multi-tool setup with fewer duet boards. The stepper motor version will provide more force for handling viscous liquids.
 
 ```{figure} _static/syringe_on_jubilee.JPEG
 ```
-
-The HTTP Syringe tool is one adaptation of the [Digital Pipette tool developed by Naruki Yoshikawa et. al](https://pubs.rsc.org/en/content/articlehtml/2023/dd/d3dd00115f) to the Jubilee platform. This adaptation adds a Jubilee tool plate and parking post wings to the tool and adapts the control interface to integrate with the science-jubilee library. This tool uses a linear servo actuator mounted in a 3D printed frame to drive a disposable plastic syringe. The servo is controlled through a raspberry pi, which exposes an HTTP interface to interact with the science-jubilee library client for this tool. This tool is similar in principle to the other Jubilee [syringe tool](./syringe_tool.md). This tool uses linear servo motors instead of stepper motors and leadscrews. This makes this version lighter, easier to build, and extensible to a multi-tool setup with fewer duet boards. The stepper motor version will provide more force for handling viscous liquids.
 
 ### Pros of this tool
 - Low cost liquid handling - this tool can be built for a per-tool cost of around $80USD, with some additional control hardware costs spread across multiple tools. This is much cheaper than the [OT2 Pipette tool](./pipette_tool.md).
