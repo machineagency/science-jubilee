@@ -685,7 +685,7 @@ class Labware(WellSet):
         theta2 = acos((upper_right[0] - upper_left[0]) / plate_width)
         theta = -(theta1 + theta2) / 2.0
 
-        #print(theta)
+        # print(theta)
 
         # Apply direction correction to theta
         if (upper_right[1] <= upper_left[1]) and (bottom_right[0] <= upper_right[0]):

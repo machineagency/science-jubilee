@@ -235,7 +235,7 @@ class HTTPSyringe(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
         self._aspirate(
-            0.05*self.capacity, s_aspirate
+            0.05 * self.capacity, s_aspirate
         )  # pre-aspirate 500 uL then blow this out at the end to avoid holding onto extra solution
         self._machine.move_to(z=z, wait=True)
 
@@ -245,7 +245,7 @@ class HTTPSyringe(Tool):
             self._dispense(vol, s_dispense)
             time.sleep(t_hold)
 
-        self._dispense(self.capacity*0.05, s_dispense)
+        self._dispense(self.capacity * 0.05, s_dispense)
 
     def set_pulsewidth(self, pulsewidth: int, s: int = 100):
         """
