@@ -164,6 +164,7 @@ side_camera_tool
 syringe_tool
 http_syringe
 lab_automation_deck
+pneumatic_sample_loader
 designing_custom_tools
 tool_postreqs
 ```
