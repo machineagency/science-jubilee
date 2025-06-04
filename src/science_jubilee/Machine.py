@@ -504,13 +504,12 @@ class Machine:
                 reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
                 )
-                # print('init reply response: ', reply_response)
+
                 logging.debug(
                     f"MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}"
                 )
 
                 reply_count = reply_response.json()["result"]["reply"]
-                # print('init reply count: ', reply_count)
                 buffer_response = self.session.get(
                     f"http://{self.address}/rr_gcode?gcode={cmd}", timeout=timeout
                 )
@@ -543,29 +542,9 @@ class Machine:
                             )
 
                             response = response.text
-                            # print('response text in gcode: ',response)
 
-                            # get last response if there are multiple
                             responses = self.split_response_objects(response)
-                            # print('split response text')
-                            # print('split respones: ', responses)
-                            # print('length of split respones: ', len(responses))
-                            # response_objects = [json.loads(js) for js in responses]
-                            # print('successfuly split json objects')
-                            # print('response objects: ', response_objects)
 
-                            """
-                            # Iterate backwards over response objects to get most recent response matching gcode command string
-                            for i, response_obj in enumerate(reversed(response_objects)):
-                                print(i)
-                                print(response_obj)
-                                print(response_obj["key"])
-                                print(cmd)
-                                if response_obj["key"] == cmd:
-                                    response = responses[len(response_objects)-1-i]
-                                    break
-                            print('Parsed response: ', response)
-                            """
                             if len(responses) > 0:
                                 response = responses[-1]
                             else:
