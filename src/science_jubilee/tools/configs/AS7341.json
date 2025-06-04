@@ -1,0 +1,14 @@
+{
+    "port": {
+        "port": "/dev/cu.usbmodem84722E6EDD0A1",
+        "baudrate": 115200,
+        "bytesize": 8,
+        "parity": "N",
+        "stopbits": 1,
+        "timeout": 1,
+        "xonxoff": false,
+        "rtscts": false,
+        "dsrdtr": false
+      },
+      "sensor name": "AS7341 spectral sensor"
+}

@@ -18,7 +18,6 @@ from science_jubilee.tools.Tool import (
 
 
 class HTTPSyringe(Tool):
-
     def __init__(self, index, name, url):
         """
         HTTP Syringe is digital syringe for Jubilee
@@ -87,7 +86,6 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def _aspirate(self, vol, s):
-
         assert isinstance(vol, float) or isinstance(
             vol, int
         ), "Vol must be float or int"
@@ -112,7 +110,6 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def _dispense(self, vol, s):
-
         assert isinstance(vol, float) or isinstance(
             vol, int
         ), "Vol must be flaot or int"

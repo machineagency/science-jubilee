@@ -173,7 +173,7 @@ Add this command alongside the othe `M906` for the other moto5rs defined in your
 >     `M906 V350` ; 350mA peak current for gen1 pipette
 >     `M906 V500` ; 500mA peak current for gen2 pipette
 
-### 4. Set Stepper Direction
+### 4. Set Steps Per Millimeter and Step Type
 
     M92 V<steps_per_mm>
     M350 V16 I1
