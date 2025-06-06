@@ -9,6 +9,7 @@ matplotlib
 # under `install_requires` in `setup.cfg` is also listed here!
 # sphinx_rtd_theme
 myst-parser[linkify]
+nbsphinx
 numpy
 opencv_contrib_python #==4.5.3.56
 picamera; platform_machine=='aarch64'
