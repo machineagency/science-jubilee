@@ -59,11 +59,20 @@ You will need to procure some tools on your own, but some are already available 
 ### To Buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
-- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)]
+- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)] (*not strictly necessary with the filastruder kit, as the cables are already prepared for your*)
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
 - Thin flathead screwdriver (*for replacing the default soldering tip with the heatset insert tip*) and Phillips-head screwdriver (*for (un)screwing terminal plugs on the power supply*) [[US Amazon, 6-piece set](https://www.amazon.com/Magnetic-Screwdriver-Professional-Screwdrivers-Improvement/dp/B08XY5C41N/) (untested)]
 - 4" and 8" reusable cable ties [[US Amazon](https://www.amazon.com/Adjustable-Organizer-Multi-purpose-Management-Organizing/dp/B0CJ52WJZY/?th=1)]
+
+### Nice to have
+
+Because of small version changes, your kit may be missing some fasteners. To avoid delays it can be useful to have spares available:
+
+- [M3 * 6, 8, 10, 12, 16, 20, 25, 30 button head screw assortment](https://amzn.to/43NKTzH) --- you will definitely need some of these if you use the [machined z-yoke]( https://mandalaroseworks.com/products/jubilee-machined-yokes)
+- [M5 * 8/10/12/16/20/25/30 button head screw assortment](https://amzn.to/3Hutkgp) --- you will definitely need some of these if you use the [machined front corner brackets](https://mandalaroseworks.com/products/jubilee-front-corner-brackets)
+- [M3 / M4 / M5 drop-in T-nut assortment for 20x20 extrusion](https://amzn.to/3FpHjnm) --- useful if you are missing any of the square nuts; using drop-in nuts will you from needing to dismantle the frame if you forget to add a nut or two.
+- [M3 / M4 / M5 / M6 / M8 set screw assortment](https://amzn.to/3FpHjnm) --- my filastruder kit was deficient in a couple set screws.
 
 ### Already included in kit
 Certain tools are already included in the Filastruder kit. This information is included for your reference.
