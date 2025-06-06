@@ -18,6 +18,9 @@ _Video editing in progress!_
 [![Page1](_static/motor_plate0.png)](_static/outer_frame0.png)
 
 ## Spacer Assembly
+
+**Note:** The set screw should be inserted so that you can screw it in from the side with the lettering (this will be the outer facing face of the part)
+
 [![Page2](_static/motor_plate1.png)](_static/outer_frame1.png)
 
 ## Drive Pulley Assembly
@@ -33,6 +36,9 @@ _Video editing in progress!_
 [![Page6](_static/motor_plate5.png)](_static/outer_frame5.png)
 
 ## Left Motor Plate Assembly 4/4
+
+**Note:** A subtle detail to notice in this diagram—--you want the motor to be placed as close to the pulley assembly as possible.  This will be fine-tuned using the set-screw when the frame is assembled. 
+
 [![Page7](_static/motor_plate6.png)](_static/outer_frame6.png)
 
 ## Right Motor Plate Assembly 1/4
@@ -45,4 +51,7 @@ _Video editing in progress!_
 [![Page10](_static/motor_plate9.png)](_static/outer_frame9.png)
 
 ## Right Motor Plate Assembly 4/4
+
+**Note:** As before, place motor as close to the pulley assembly as possible for now.  
+
 [![Page11](_static/motor_plate10.png)](_static/outer_frame10.png)
