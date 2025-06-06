@@ -683,10 +683,12 @@ class Labware(WellSet):
         # Define and average the offset angles for the plate
         theta1 = acos((upper_right[1] - bottom_right[1]) / plate_height)
         theta2 = acos((upper_right[0] - upper_left[0]) / plate_width)
-        theta = (theta1 + theta2) / 2.0
+        theta = -(theta1 + theta2) / 2.0
+
+        # print(theta)
 
         # Apply direction correction to theta
-        if (upper_right[1] < upper_left[1]) and (bottom_right[0] < upper_right[0]):
+        if (upper_right[1] <= upper_left[1]) and (bottom_right[0] <= upper_right[0]):
             # in this case, plate is rotated down
             theta = -1 * theta
 
