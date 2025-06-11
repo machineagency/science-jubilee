@@ -480,7 +480,7 @@ class Machine:
         :return: The response message from the machine. If too long, the message might not display in the terminal.
         :rtype: str
         """
-        #print("gcode cmd: ", cmd)
+        # print("gcode cmd: ", cmd)
 
         # TODO: Add serial option for gcode commands from MA
         if self.simulated:
@@ -548,7 +548,7 @@ class Machine:
                                 response = responses[-1]
                             else:
                                 response = None
-                                #print('response length 0 in gcode')
+                                # print('response length 0 in gcode')
 
                             # crash detection monitoring happens here
                             if self.crash_detection:

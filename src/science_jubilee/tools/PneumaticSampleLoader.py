@@ -168,8 +168,8 @@ class PneumaticSampleLoader(Tool):
         """
         # Get status from HTTP endpoint
         r = requests.get(self.url + "/driver_status", headers=self.auth_header)
-        #print("status r code", r.status_code)
-        #print("status: ", r.content)
+        # print("status r code", r.status_code)
+        # print("status: ", r.content)
         status_str = r.content.decode("utf-8")
 
         self.status_list = json.loads(status_str)
