@@ -18,7 +18,6 @@ from science_jubilee.tools.Tool import (
 
 
 class HTTPSyringe(Tool):
-
     def __init__(self, index, name, url):
         """
         HTTP Syringe is digital syringe for Jubilee
@@ -87,7 +86,6 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def _aspirate(self, vol, s):
-
         assert isinstance(vol, float) or isinstance(
             vol, int
         ), "Vol must be float or int"
@@ -112,7 +110,6 @@ class HTTPSyringe(Tool):
 
     @requires_active_tool
     def _dispense(self, vol, s):
-
         assert isinstance(vol, float) or isinstance(
             vol, int
         ), "Vol must be flaot or int"
@@ -235,7 +232,7 @@ class HTTPSyringe(Tool):
         self._machine.safe_z_movement()
         self._machine.move_to(x=x, y=y, wait=True)
         self._aspirate(
-            0.05*self.capacity, s_aspirate
+            0.05 * self.capacity, s_aspirate
         )  # pre-aspirate 500 uL then blow this out at the end to avoid holding onto extra solution
         self._machine.move_to(z=z, wait=True)
 
@@ -245,7 +242,7 @@ class HTTPSyringe(Tool):
             self._dispense(vol, s_dispense)
             time.sleep(t_hold)
 
-        self._dispense(self.capacity*0.05, s_dispense)
+        self._dispense(self.capacity * 0.05, s_dispense)
 
     def set_pulsewidth(self, pulsewidth: int, s: int = 100):
         """

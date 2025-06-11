@@ -685,7 +685,7 @@ class Labware(WellSet):
         theta2 = acos((upper_right[0] - upper_left[0]) / plate_width)
         theta = -(theta1 + theta2) / 2.0
 
-        #print(theta)
+        # print(theta)
 
         # Apply direction correction to theta
         if (upper_right[1] <= upper_left[1]) and (bottom_right[0] <= upper_right[0]):
@@ -768,6 +768,16 @@ class Labware(WellSet):
 
         return x, y, z
 
+    @staticmethod
+    def list_labware_definitions():
+        """Returns a list of all the labware definitions available in the labware_definition folder.
+
+        :return: A list of all the labware definitions available
+        :rtype: List[str]
+        """
+        path = os.path.join(os.path.dirname(__file__), "labware_definition")
+        return os.listdir(path)
+
 
 ## Adapted from Opentrons API  opentrons.types##
 class Point(NamedTuple):
@@ -847,7 +857,6 @@ class Location:
     """
 
     def __init__(self, point: Point, labware: Union[Well, Labware]):
-
         self._point = point
         self._labware = labware
 

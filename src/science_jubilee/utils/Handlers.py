@@ -5,7 +5,6 @@ import requests
 
 
 class SlackInputHandler:
-
     def __init__(self, webhook, machine_name="Jubilee", notify=None):
         """Sends 'crash detected' message to specified slack webhook, then waits for input from user to resume run
 
@@ -27,7 +26,6 @@ class SlackInputHandler:
         return
 
     def send_message(self):
-
         if self.notify is not None:
             notification = f"<!{self.notify}>"
         else:
