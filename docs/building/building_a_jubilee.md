@@ -41,14 +41,14 @@ Check out the Sourcing video to to see how to order the kit:
 
 ### Recommended upgrades
 
-Mandala Rose Works produces aluminum upgrades for several components on Jubilee. Replacing stock PLA 3D printed parts with their aluminum counterparts can increase the reliability and solvent compatibility of the motion platform. These upgrades are listed in order of their priority in our view. If you plan to use the OT2 pipette tool on your Jubilee, you should purchase the aluminum Z yokes.
+[Mandala Rose Works](https://mandalaroseworks.com) produces aluminum upgrades for several components on Jubilee. Replacing stock PLA 3D printed parts with their aluminum counterparts can increase the reliability and solvent compatibility of the motion platform. These upgrades are listed in order of their priority in our view. If you plan to use the OT2 pipette tool on your Jubilee, you should purchase the aluminum Z yokes.
 
 | Part | Link | Reason to upgrade |
 | --- | --- | ---|
 | Z yokes | https://mandalaroseworks.com/products/jubilee-machined-yokes | Allows use of a zip tie or pony clamp to prevent bed-tip issues. *Note:* Requires 12 M3x10mm and 12 M3x12mm screws to install. |
 | Front Corner Brackets | https://mandalaroseworks.com/products/jubilee-front-corner-brackets | Improved durability of bracket. *Note:* requires 6 M5x25mm screws to install. |
 | CoreXY Stepper mounts | https://mandalaroseworks.com/products/jubilee-aluminum-stepper-mounts | Improved pulley alignment and durability. Note hardware requirements listed at link  *Note:* This is included by default in the Filastruder kit, and so it is not necessary to purchase this or the hardware specified. |
-| Z motor mount plates | https://mandalaroseworks.com/products/jubilee-machined-zplates | Improved solvent resistance. Looks cool |
+| Z motor mount plates | https://mandalaroseworks.com/products/jubilee-machined-zplates | Improved solvent resistance. Looks cool. |
 | Tool changer carriage | https://mandalaroseworks.com/products/jubilee-machined-carriage | We haven't used these but have heard they are nice. |
 
 
@@ -59,7 +59,7 @@ You will need to procure some tools on your own, but some are already available 
 ### To Buy
 - Calipers [[US Amazon](https://www.amazon.com/Neiko-01407A-Electronic-Digital-Stainless/dp/B000GSLKIW)]
 - Wire Cutters [[US Amazon](https://www.amazon.com/Hakko-CHP-170-Micro-Cutter/dp/B076M3ZHBV)]
-- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)] (*not strictly necessary with the filastruder kit, as the cables are already prepared for your*)
+- SN-2549 Wire Crimpers [[US Amazon](https://www.amazon.com/gp/product/B01N4L8QMW)] (*not strictly necessary with the filastruder kit, as the cables are already prepared for you*)
 - Arbor Press [[US Amazon](https://www.amazon.com/Palmgren-AP05-0-5-Arbor-Press/dp/B01MQD4CNR)]
 - Soldering iron [[US Amazon](https://www.amazon.com/Weller-SP40NUS-40-Watt-Soldering-Iron/dp/B00B3SG6UQ?th=1)] (*treat this one as dedicated tool meant only for heat set inserts*)
 - Thin flathead screwdriver (*for replacing the default soldering tip with the heatset insert tip*) and Phillips-head screwdriver (*for (un)screwing terminal plugs on the power supply*) [[US Amazon, 6-piece set](https://www.amazon.com/Magnetic-Screwdriver-Professional-Screwdrivers-Improvement/dp/B08XY5C41N/) (untested)]
