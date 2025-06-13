@@ -21,7 +21,7 @@ We recommend the following kit options for a Science Jubilee build:
 | Option Category | Selection |
 | --- | --- |
 Extrusion Anodization Color| `Purple` or `Blue` |
-| Printed Parts Color[^prints] | `Orange`, `Blue`, or `Black` |
+| Printed Parts Color[^prints] | `White`, `Orange`, `Blue`, or `Black` |
 | Panel Options | `Back and side panels (white)` |
 | Bed Plate Options | `PEI Plate and Magnetic Sticky Sheet` |
 | Bed Heater Options[^heater] | `None` |
@@ -35,7 +35,7 @@ Check out the Sourcing video to to see how to order the kit:
 ```{youtube} or2Qg8UBInM
 ```
 
-[^prints]: Luke's Laboratory also sells [a set of Jubilee 3D printed parts](https://lukeslabonline.com/products/jubilee-printed-parts-kit-asa?variant=40134863651001) in case the 3D printed parts are out of stock on Filastruder. This is the recommended option for Science Jubilee, and the build instructions here are based on the specific configuration in the kit. No royalties are given to us; however, Filastruder and Lukes Laboratory work with us to ensure the parts are of suitable quality and tolerance to meet the needs of a Jubilee build.
+[^prints]: Luke's Laboratory also sells [a set of Jubilee 3D printed parts](https://lukeslabonline.com/products/jubilee-printed-parts-kit-asa?variant=40134863651001) in case the 3D printed parts are out of stock on Filastruder. This is the recommended option for Science Jubilee, and the build instructions here are based on the specific configuration in the kit. No royalties are given to us; however, Filastruder and Lukes Laboratory work with us to ensure the parts are of suitable quality and tolerance to meet the needs of a Jubilee build. *Note:* Only a few printed parts are needed for each assembly step, and if you order the recommended machined parts this greatly reduces the number you need.  We have listed the parts required for each step on the construction pages to facilitate printing them yourself.
 [^heater]: `None` assumes you don't plan to use it as an FDM 3D printer or perform experiments with the entire bed heated; otherwise, you can choose `120v, 750W Keenovo Heater w/ 150C Thermal Cutoff & SSR` (assumes North America).
 [^duet]: Both the Ethernet and WiFi version can be controlled via a Raspberry Pi (e.g., RPi 4B, RPi 5) by directly connecting to the Duet 3 Mini, which we recommend. This allows you to connect to a variety of WiFi networks (e.g., WPA2-Personal, WPA2-Enterprise), which means connecting to networks such as Eduroam is supported. By contrast, the `Duet 3 Mini WiFi + 3HC` (without a Raspberry Pi connected) can only connect to 2.4 GHz WPA2-personal networks, which means 5G networks and networks like Eduroam typical of academic, government, and industry settings are not supported. While both the Ethernet and WiFi `Duet 3 Mini + 3HC` versions can be used with a Raspberry Pi, we recommend the Ethernet version primarily because it can simplify troubleshooting if you have any issues with the Raspberry Pi Duet 3 Mini firmware. Aside: For laboratory automation in general, you may consider [implementing a standalone IoT network](https://github.com/sparks-baird/self-driving-lab-demo/discussions/83) to support microcontrollers such as the Raspberry Pi Pico W, which can be used within custom Jubilee tools.
 
@@ -71,6 +71,7 @@ Because of small version changes, your kit may be missing some fasteners. To avo
 
 - [M3 * 6, 8, 10, 12, 16, 20, 25, 30 button head screw assortment](https://amzn.to/43NKTzH) --- you will definitely need some of these if you use the [machined z-yoke]( https://mandalaroseworks.com/products/jubilee-machined-yokes)
 - [M5 * 8/10/12/16/20/25/30 button head screw assortment](https://amzn.to/3Hutkgp) --- you will definitely need some of these if you use the [machined front corner brackets](https://mandalaroseworks.com/products/jubilee-front-corner-brackets)
+- [Nylon washer assortment](https://amzn.to/45oypB4) --- thse are recommended for the electronics panel assembly, but are not included in the Filastruder kit.
 - [M3 / M4 / M5 drop-in T-nut assortment for 20x20 extrusion](https://amzn.to/3FpHjnm) --- useful if you are missing any of the square nuts; using drop-in nuts will you from needing to dismantle the frame if you forget to add a nut or two.
 - [M3 / M4 / M5 / M6 / M8 set screw assortment](https://amzn.to/3FpHjnm) --- my filastruder kit was deficient in a couple set screws.
 
@@ -136,6 +137,7 @@ corexy
 :maxdepth: 1
 
 z_axis
+default-wiring
 ```
 
 ```{toctree}
