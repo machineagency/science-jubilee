@@ -115,7 +115,7 @@ class PneumaticSampleLoader(Tool):
         """
         Prepare the cell for loading - raise arm and make sure it is clean
         """
-        if self.get_cell_state() != "RINSED":
+        if self.get_cell_state() != "RINSED" and self.get_cell_state() != "READY":
             self.rinse_cell()
 
         self._safe_position()
@@ -168,8 +168,8 @@ class PneumaticSampleLoader(Tool):
         """
         # Get status from HTTP endpoint
         r = requests.get(self.url + "/driver_status", headers=self.auth_header)
-        print("status r code", r.status_code)
-        print("status: ", r.content)
+        # print("status r code", r.status_code)
+        # print("status: ", r.content)
         status_str = r.content.decode("utf-8")
 
         self.status_list = json.loads(status_str)
@@ -256,6 +256,7 @@ class PneumaticSampleLoader(Tool):
         Check if currentlu in safe postion, and if not, move to it
         """
         if not self.get_safety_state():
+            self._machine.safe_z_movement()
             self._machine.move_to(
                 x=self.safe_position[0],
                 y=self.safe_position[1],
