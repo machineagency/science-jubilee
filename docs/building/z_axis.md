@@ -5,6 +5,21 @@ title: Z Axis Assembly
 (z-axis)=
 # Z Axis Assembly
 
+## 3d-printed parts required
+
+- 3x [Z-lead screw retainer](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/z_carriage_retainer.STL)
+- [Astrodyne power switch case](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/psu_socket_holder_astrodyne.STL) - this corresponds to the swtich provided in the Filastruder kit; [other variants are available](https://jubilee3d.com/index.php?title=3D_Printed_Parts)
+
+
+You will also need to print the following parts if you did *not* purcahse the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes); they also require heat insets:
+
+- [Left bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/front_left_bed_coupling_lift.STL)
+- [Right bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/front_right_bed_coupling_lift.STL)
+- [Back bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/back_bed_coupling_lift.STL) 
+- [Coupling pin insertion fixture](https://github.com/machineagency/jubilee/blob/main/tools/assembly_fixtures/z_lift_pin_insertion_fixture.STL)
+
+
+
 ## Video
 _Video editing in progress!_
 
