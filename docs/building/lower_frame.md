@@ -7,8 +7,8 @@ title: Lower Frame Assembly
 
 ## 3d-printed parts required
 
-- [Back left foot (BLF-05_](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/back_left_foot.STL) 
-- [Back right foot (BRF-05_](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/back_right_foot.STL) 
+- [Back left foot (BLF-05)](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/back_left_foot.STL) 
+- [Back right foot (BRF-05)](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/back_right_foot.STL) 
 - [Front Left Foot (FLF-05)](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/front_left_foot.STL) 
 - [Front Right Foot (FRF-05)](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/front_right_foot.STL) 
 - 3x [Z-thrust bearings](https://github.com/machineagency/jubilee/blob/rel/jubilee_2.2.0/frame/fabrication_exports/3d_printed_parts/frame/z_thrust_bearing_spacer.STL)
