@@ -5,6 +5,20 @@ title: Z Axis Assembly
 (z-axis)=
 # Z Axis Assembly
 
+## 3d-printed parts required
+
+- 3x [Z-lead screw retainer](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/z_carriage_retainer.STL)
+- [Astrodyne power switch case](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/psu_socket_holder_astrodyne.STL) - this corresponds to the swtich provided in the Filastruder kit; [other variants are available](https://jubilee3d.com/index.php?title=3D_Printed_Parts)
+
+
+If you did *not* purchase the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes), then you will also need to print the following parts. Note that they require heat insets, so refer back to those instructions as needed.
+
+- [Left bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/front_left_bed_coupling_lift.STL)
+- [Right bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/front_right_bed_coupling_lift.STL)
+- [Back bed coupler](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/frame/back_bed_coupling_lift.STL) 
+- [Coupling pin insertion fixture](https://github.com/machineagency/jubilee/blob/main/tools/assembly_fixtures/z_lift_pin_insertion_fixture.STL)
+
+
 ## Video
 _Video editing in progress!_
 
@@ -15,9 +29,15 @@ _Video editing in progress!_
 [![Page2](_static/z_axis1.png)](_static/z_axis1.png)
 
 ## Front Coupling Plate Assemblies
+
+**Note:** This step is unnecessary if you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes)
+
 [![Page3](_static/z_axis2.png)](_static/z_axis2.png)
 
 ## Back Z Lift Assembly
+
+**Note:** This step is unnecessary if you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes)
+
 [![Page4](_static/z_axis3.png)](_static/z_axis3.png)
 
 ## Linear Rail Assembly
@@ -30,18 +50,33 @@ _Video editing in progress!_
 [![Page7](_static/z_axis6.png)](_static/z_axis6.png)
 
 ## Screw Preloading
+
+**Note:** This step is unnecessary if you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes)
+
 [![Page8](_static/z_axis7.png)](_static/z_axis7.png)
 
 ## Front Z Lift Assemblies
+
+**Note:** If you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes), you will need to substitue **M3x10 mm screws** to attach to the anti-backlash nut.  
+
 [![Page9](_static/z_axis8.png)](_static/z_axis8.png)
 
 ## Front Z Tower Assemblies
+
+**Note:** If you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes), you will need substitute **M3x12 mm screws** to attach to the rail carriage.
+
 [![Page10](_static/z_axis9.png)](_static/z_axis9.png)
 
 ## Back Z Lift Assembly
+
+**Note:** As with the Front Z-Lift assembly, if you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes), you will need to substitue **M3x10 mm screws** to attach to the anti-backlash nut.  
+
 [![Page11](_static/z_axis10.png)](_static/z_axis10.png)
 
 ## Back Z Tower Assembly
+
+**Note:** As with the Front Z-Tower Assemblies, if you are using the recommended [machined z-yokes](https://mandalaroseworks.com/products/jubilee-machined-yokes), you will need substitute **M3x12 mm screws** to attach to the rail carriage.
+
 [![Page12](_static/z_axis11.png)](_static/z_axis11.png)
 
 ## Ooze Control Assembly
