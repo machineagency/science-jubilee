@@ -20,17 +20,19 @@ _Video editing in progress!_
 
 ## Duet 2 Standoff Installation
 
+*Note:* The Filastruder kit does **not** include standoffs for the Raspberry Pi SBC.  You can [print four M2.5 x 12 mm standoffs](https://www.printables.com/model/609450-m25-standoff-spacer-female-female-polygon-4-30mm/files), and then use some spare M2.5 button head screws to attach them.
+
 [![Page2](_static/panel1.png)](_static/panel1.png)
 
 ## Mounting Screw Installation
 
-*Note:* The current Filastruder kits, and the other assembly instructions on this site, use stamped T-nuts that are pre-loaded into the frame.  This is inconsistent with below assembly instruction (which uses drop-in T nuts); drop-in T nuts are not included in the Filastruder kit, nor are they needed for later assembly if you have preloaded the nuts as described elsewhere. Therefore, it is recommended that you skip this step, reserving the screws to attach the planel after the z-axis assembly is complete.
+*Note:* The current Filastruder kits, and the other assembly instructions on this site, use stamped T-nuts that are pre-loaded into the frame.  This is inconsistent with below assembly instruction (which uses drop-in T nuts); drop-in T nuts are not included in the Filastruder kit, nor are they needed for later assembly if you have preloaded the nuts as described elsewhere. Therefore, it is recommended that you skip this step, reserving the screws to attach the panel after the z-axis assembly is complete.
 
 [![Page3](_static/panel2.png)](_static/panel2.png)
 
 ## Duet2 and Duex5 Installation
 
-*Note:* The current recommendation is to use a Duet 3 and Duet3 HC. Therefore, you should instead refer to [the relevant variant diagrams on the Jubilee3D Gtihub repository](https://github.com/machineagency/jubilee/blob/main/frame/assembly_instructions/wiring/duet_panel_layouts.pdf) for placement, instead of the guidance below. Additionally, the Filastruder does not come with the specified M4 nylon washers, so you will need to [purchase these elswhere](https://amzn.to/45oypB4)
+*Note:* The current recommendation is to use a Duet 3 and Duet3 HC. Therefore, you should instead refer to [the relevant variant diagrams on the Jubilee3D Gtihub repository](https://github.com/machineagency/jubilee/blob/main/frame/assembly_instructions/wiring/duet_panel_layouts.pdf) for placement, instead of the guidance below. Additionally, the Filastruder does not come with the specified M4 nylon washers, so you will need to [purchase these elswhere](https://amzn.to/45oypB4) (or you could [print your own](https://www.printables.com/model/409919-m2-m25-m3-m4-m5-m6-washers-many-diameters))
 
 [![Page4](_static/panel3.png)](_static/panel3.png)
 
