@@ -16,7 +16,7 @@ See the [10cc Syringe tool](https://jubilee3d.com/index.php?title=10cc_Syringe_T
 ## Parts to Buy
 
 - Syringe (10cc or 50cc)
-- The full shopping list can be found [here](https://docs.google.com/spreadsheets/d/19zSPgaUJId5xt-jpjvXQGE22AiIK3zP_XUoAT0gs4UI/edit#gid=1582949094) and is the same for both the 10cc and 50cc syringe.
+- The full shopping list can be found [here](https://docs.google.com/spreadsheets/d/1Fj20bxpdoopTrS_6ojMFQcdhQe556lmoZU1JOpwKWVU/edit?usp=sharing) and is the same for both the 10cc and 50cc syringe.
 
 ## Parts to 3D Print
 
