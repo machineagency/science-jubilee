@@ -5,8 +5,6 @@ title: Installation Guide for Science Jubilee
 
 To install `science-jubilee`:
 
-To install `science-jubilee`:
-
 ### Unix/Mac:
 
 To set up `science-jubilee` on Unix/Mac:
@@ -54,7 +52,16 @@ To set up `science-jubilee` on Windows using Git Bash:
   ```bash
   git clone https://github.com/machineagency/science-jubilee.git
   ```
-  *Note: cloning may fail because of a copy-paste issue; manually typing the command will solve this.*
+  *Note: cloning may fail because of a copy-paste issue; manually typing the command will solve this.
+  Git bash may also spit out error messages*
+
+  `fatal: unable to checkout working tree`
+
+  `warning: Clone succeeded, but checkout failed.`
+
+  `You can inspect what was checked out with 'git status'`
+
+  `and retry with 'git restore --source=HEAD :/'`
 
 - Navigate to the project directory:  
   ```bash
