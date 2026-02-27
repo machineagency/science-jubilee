@@ -23,6 +23,7 @@ To use `science_jubilee` from within Jupyter notebooks:
 
 - If you do not already have JupyterLab installed, do so from outside of your virtual environment: `python3 -m pip install jupyterlab`.
 - Activate the virtual environment where `science_jubilee` is installed.
-- Add your virtual environment to Jupyter: `python3 -m ipykernel install --user --name=<your_kernel_name>`
+- You need to add your virtual environment to Jupyter! First, make your kernel naming it something you want, e.g., "science-jubilee" `python3 -m ipykernel install --user --name=<your_kernel_name>`
 - Launch JupyterLab: `jupyter lab`
-- When creating notebooks, be sure to choose the kernel you just added!
+- Select the kernel you just made!
+- When creating new notebooks, be sure to also choose the kernel you just added there!
