@@ -1,7 +1,6 @@
 {
-    "make": "Arducam",
-    "model": "IMX298",
-    "camera_index": 0,
-    "output_dir": "./camera_output",
-    "focus_height" : 100
+  "camera_index": 0,
+  "output_dir": "./camera_output",
+  "focus_height": 100,
+  "port": 8000
 }
