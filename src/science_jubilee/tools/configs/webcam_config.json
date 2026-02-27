@@ -1,0 +1,6 @@
+{
+  "camera_index": 1,
+  "output_dir": "./camera_output",
+  "focus_height": 100,
+  "port": 8000
+}
