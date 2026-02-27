@@ -9,7 +9,6 @@ scratch_fp = "./"
 
 
 def create_app():
-
     app = Flask(__name__)
     from picamera2 import Picamera2
 

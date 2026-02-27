@@ -337,7 +337,6 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
         return
 
     def read_from_file(self, filepath, scale=True, reference_spectrum=None):
-
         metadata, measurements = MeasurementManager.read_file(filepath)
 
         if scale == True:
@@ -355,7 +354,6 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
 
     @staticmethod
     def scale_intensity(data: list, reference_spectrum: list):
-
         assert len(data) == len(
             reference_spectrum
         ), "Data and reference spectrum must be of same size"

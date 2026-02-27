@@ -5,6 +5,7 @@
 import json
 import logging
 import os
+import re
 import time
 import warnings
 from functools import wraps
@@ -213,9 +214,11 @@ class Machine:
             # TODO: This should handle a response from self.gcode of 'None' gracefully.
             max_tries = 50
             for i in range(max_tries):
+                print(i)
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
+                print("response in connect: ", response)
                 if len(response) == 0:
                     continue
                 else:
@@ -240,6 +243,8 @@ class Machine:
             # TODO: recover absolute/relative from object model instead of enforcing it here.
             self._set_absolute_positioning()
         except json.decoder.JSONDecodeError as e:
+            print("Response in connect: ", response)
+            print("Error in connect: ", e)
             raise MachineStateError("DCS not ready to connect.") from e
         except requests.exceptions.Timeout as e:
             raise MachineStateError(
@@ -454,6 +459,14 @@ class Machine:
         self.deck = deck
         return deck
 
+    def split_response_objects(self, s):
+        """
+        Split text strings from gcode responses when multiple responses held in Duet buffer
+        """
+        # Split the string on newlines and filter out empty strings
+        matches = [line for line in s.split("\n") if line.strip()]
+        return matches
+
     def gcode(self, cmd: str = "", timeout=None, response_wait: float = 60):
         """Send a G-Code command to the Machine and return the response.
 
@@ -467,6 +480,7 @@ class Machine:
         :return: The response message from the machine. If too long, the message might not display in the terminal.
         :rtype: str
         """
+        # print("gcode cmd: ", cmd)
 
         # TODO: Add serial option for gcode commands from MA
         if self.simulated:
@@ -483,13 +497,13 @@ class Machine:
         except requests.RequestException:
             # If requests.post fails ( not supported for standalone mode), try sending the command with requests.get
             try:
-
                 # Paraphrased from Duet HTTP-requests page:
                 # Client should query `rr_model?key=seqs` and monitor `seqs.reply`. If incremented, the command went through
                 # and the response is available at `rr_reply`.
                 reply_response = self.session.get(
                     f"http://{self.address}/rr_model?key=seqs"
                 )
+
                 logging.debug(
                     f"MODEL response, status: {reply_response.status_code}, headers:{reply_response.headers}, content:{reply_response.content}"
                 )
@@ -515,6 +529,7 @@ class Machine:
                             f"MODEL response, status: {new_reply_response.status_code}, headers:{new_reply_response.headers}, content:{new_reply_response.content}"
                         )
                         new_reply_count = new_reply_response.json()["result"]["reply"]
+                        # print('new reply count: ', new_reply_count)
 
                         if new_reply_count != reply_count:
                             response = self.session.get(
@@ -526,6 +541,15 @@ class Machine:
                             )
 
                             response = response.text
+
+                            responses = self.split_response_objects(response)
+
+                            if len(responses) > 0:
+                                response = responses[-1]
+                            else:
+                                response = None
+                                # print('response length 0 in gcode')
+
                             # crash detection monitoring happens here
                             if self.crash_detection:
                                 if "crash detected" in response:
@@ -903,7 +927,7 @@ class Machine:
         :rtype: int
         """
         if type(tool_item) == int:
-            assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
+            assert tool_item in set(self.tools.keys()), f"Tool {tool_item} not loaded"
             return tool_item
         elif type(tool_item) == str:
             assert tool_item in set(self.tools.values()), f"Tool {tool_item} not loaded"
@@ -934,7 +958,9 @@ class Machine:
         self.tools[idx] = {"name": name, "tool": tool}
         tool._machine = self
         tool.post_load()
-        tool.tool_offset = self.tool_z_offsets[idx]
+
+        if tool.index is not None:
+            tool.tool_offset = self.tool_z_offsets[idx]
 
     def reload_tool(self, tool: Tool = None):
         """Update a tool which has already been loaded."""
@@ -1009,8 +1035,9 @@ class Machine:
         self.gcode("T-1")
         # Update the cached value to prevent read delays.
         current_tool_index = self.active_tool_index
-        self.tools[current_tool_index]["tool"].is_active_tool = False
-        self._active_tool_index = -1
+        if current_tool_index != -1:
+            self.tools[current_tool_index]["tool"].is_active_tool = False
+            self._active_tool_index = -1
 
     def get_position(self):
         """Get the current position of the machine control point in mm.
@@ -1022,7 +1049,9 @@ class Machine:
         max_tries = 50
         for i in range(max_tries):
             resp = self.gcode("M114")
-            if "Count" not in resp:
+            if resp is None:
+                continue
+            elif "Count" not in resp:
                 continue
             else:
                 break

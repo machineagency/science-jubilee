@@ -36,3 +36,6 @@ Click the "Show Source" button on the upper-right of this page to see a real exa
 ### Adding Inline Documentation
 
 'Docstrings' are specifically formatted comments in code which can be used to generate documentation. We use the Sphinx docstring format to generate our API reference. Please see the description [here](https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html), and/or take a look at existing docstrings in the repository!
+
+### Adding Notebooks
+If you are adding a notebook, the conf.py file is set to not execute cells for you. You can override this on a per-notebook basis [like this](https://nbsphinx.readthedocs.io/en/0.9.7/never-execute.html).

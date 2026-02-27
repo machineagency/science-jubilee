@@ -683,10 +683,12 @@ class Labware(WellSet):
         # Define and average the offset angles for the plate
         theta1 = acos((upper_right[1] - bottom_right[1]) / plate_height)
         theta2 = acos((upper_right[0] - upper_left[0]) / plate_width)
-        theta = (theta1 + theta2) / 2.0
+        theta = -(theta1 + theta2) / 2.0
+
+        # print(theta)
 
         # Apply direction correction to theta
-        if (upper_right[1] < upper_left[1]) and (bottom_right[0] < upper_right[0]):
+        if (upper_right[1] <= upper_left[1]) and (bottom_right[0] <= upper_right[0]):
             # in this case, plate is rotated down
             theta = -1 * theta
 
@@ -765,7 +767,7 @@ class Labware(WellSet):
             raise ValueError("Location should be of type Well or Tuple")
 
         return x, y, z
-    
+
     @staticmethod
     def list_labware_definitions():
         """Returns a list of all the labware definitions available in the labware_definition folder.
@@ -775,7 +777,6 @@ class Labware(WellSet):
         """
         path = os.path.join(os.path.dirname(__file__), "labware_definition")
         return os.listdir(path)
-        
 
 
 ## Adapted from Opentrons API  opentrons.types##
@@ -856,7 +857,6 @@ class Location:
     """
 
     def __init__(self, point: Point, labware: Union[Well, Labware]):
-
         self._point = point
         self._labware = labware
 
