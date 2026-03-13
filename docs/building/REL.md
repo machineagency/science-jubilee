@@ -5,6 +5,15 @@ title: Toolchanger Remote Elastic Lock Assembly
 (REL)=
 # Toolchanger Remote Elastic Lock Assembly
 
+## 3d-printed parts required
+
+- [fixed half pulley](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/fixed_half_pulley.STL)
+- [floating half pulley](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/floating_half_pulley.STL) --- **print with support material**
+- [knob](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/knob.STL)
+- [lock actuator base plate](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/lock_actuator_base_plate.STL)
+- [lock actuator motor clip](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/lock_actuator_motor_clip.STL)
+- [spring anchor guide](https://github.com/machineagency/jubilee/blob/main/frame/fabrication_exports/3d_printed_parts/toolchanger/toolchanger_locking_mechanism/spring_guide_anchor_block.STL)
+
 ## Video
 _Video editing in progress!_
 
@@ -57,4 +66,7 @@ _Video editing in progress!_
 [![Page16](_static/REL15.png)](_static/REL15.png)
 
 ## Wire Rope Termination
+
+*Note:* Just leave the rope loosely attached now; it is easier to cinch it into place after the assembly is completed later.
+
 [![Page17](_static/REL16.png)](_static/REL16.png)
