@@ -41,7 +41,7 @@ def tip_check(func):
                 "Error: No tip is attached. Cannot complete this action"
             )
         else:
-            func(self, *args, **kwargs)
+            return func(self, *args, **kwargs)
 
     return wrapper
 
