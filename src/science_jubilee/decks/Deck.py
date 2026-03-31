@@ -5,6 +5,23 @@ from typing import Dict, Tuple
 
 from science_jubilee.labware.Labware import Labware
 
+_DECK_DEF_DIR = os.path.join(os.path.dirname(__file__), "deck_definition")
+
+
+def _find_deck(filename: str, path: str = None) -> str:
+    """Return the full path to a deck definition file.
+
+    If *path* is given explicitly, look there.  Otherwise check
+    ``deck_definition/user/`` first (user-calibrated configs), then fall back
+    to ``deck_definition/examples/`` (shipped reference files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_DECK_DEF_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_DECK_DEF_DIR, "examples", filename)
+
 
 @dataclass
 class Slot:
@@ -73,21 +90,22 @@ class Deck(SlotSet):
     def __init__(
         self,
         deck_filename,
-        path: str = os.path.join(os.path.dirname(__file__), "deck_definition"),
+        path: str = None,
     ):
         """Initializes the :class:`Deck` object by loading its configuration file and creating a dictionary of :class:`Slot` objects.
 
         :param deck_filename: The name of the deck configuration file.
         :type deck_filename: str
-        :param path: The path to the deck configuration `.json` files for the labware,
-                defaults to the 'deck_definition/' in the science_jubilee/decks directory.
+        :param path: Directory containing the deck config file.  If omitted,
+                ``deck_definition/user/`` is checked first, then
+                ``deck_definition/examples/``.
         :type path: str, optional
         """
         # load in the deck configuration file
-        if deck_filename[-4:] != "json":
+        if not deck_filename.endswith(".json"):
             deck_filename = deck_filename + ".json"
 
-        config_path = os.path.join(path, f"{deck_filename}")
+        config_path = _find_deck(deck_filename, path)
 
         with open(config_path, "r") as f:
             deck_config = json.load(f)
