@@ -4,6 +4,23 @@ import time
 import warnings
 from typing import Any, Dict, List, Optional, Union
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
 import serial
 from serial.tools import list_ports
 
@@ -34,22 +51,24 @@ class AS7341(Tool):
         self.load_config(config)
 
     def load_config(self, config):
-        """Loads the configuration file for the AS7341 sensor tool"""
+        """Loads the configuration file for the AS7341 sensor tool
 
-        config_directory = os.path.join(os.path.dirname(__file__), "configs")
-        config_path = os.path.join(config_directory, f"{config}.json")
+        :param config: Name of the config file (without ``.json``).  Place personal
+                configs in ``tools/configs/user/``; example configs live in
+                ``tools/configs/examples/``.
+        :type config: str
+        """
+
+        config_path = _find_config(f"{config}.json")
         if not os.path.isfile(config_path):
             raise ToolConfigurationError(
                 f"Error: Config file {config_path} does not exist!"
             )
 
         with open(config_path, "r") as f:
-            config = json.load(f)
+            self.sensor_config = json.load(f)
+        self._config_path = config_path
 
-        # Store the configuration
-        self.sensor_config = config
-
-        # Check that all necessary information was provided
         if self.sensor_config is None:
             raise ToolConfigurationError(
                 "Error: Not enough information provided in configuration file."
@@ -113,16 +132,19 @@ class AS7341(Tool):
         self.serial_port.reset_input_buffer()
         self.serial_port.reset_output_buffer()
 
-        # Update the configuration to save the connection
+        # Save the updated port back to wherever the config was loaded from.
+        # If the config came from examples/, write a copy to user/ instead so
+        # the shipped example file is never modified.
         if self.sensor_config:
             self.sensor_config["port"] = ser_port
-            # Save the updated configuration
-            config_directory = os.path.join(os.path.dirname(__file__), "configs")
-            config_path = os.path.join(
-                config_directory, f"{self.sensor_config.get('name', 'as7341')}.json"
-            )
-            with open(config_path, "w") as f:
+            save_path = self._config_path
+            if os.path.join(_CONFIGS_DIR, "examples") in save_path:
+                save_path = os.path.join(
+                    _CONFIGS_DIR, "user", os.path.basename(save_path)
+                )
+            with open(save_path, "w") as f:
                 json.dump(self.sensor_config, f, indent=2)
+            self._config_path = save_path
 
         return self.serial_port
 
@@ -140,15 +162,9 @@ class AS7341(Tool):
             self.serial_port.close()
             self.serial_port = None
 
-            # Update the configuration to remove the connection
             if self.sensor_config:
                 self.sensor_config["port"] = ""
-                # Save the updated configuration
-                config_directory = os.path.join(os.path.dirname(__file__), "configs")
-                config_path = os.path.join(
-                    config_directory, f"{self.sensor_config.get('name', 'as7341')}.json"
-                )
-                with open(config_path, "w") as f:
+                with open(self._config_path, "w") as f:
                     json.dump(self.sensor_config, f, indent=2)
 
             return True

@@ -3,6 +3,23 @@ import os
 import warnings
 from typing import Tuple, Union
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
 import numpy as np
 
 from science_jubilee.labware.Labware import Labware, Location, Well
@@ -33,14 +50,15 @@ class Syringe(Tool):
         self.load_config(config)
 
     def load_config(self, config):
-        """Loads the confirguration file for the syringe tool
+        """Loads the configuration file for the syringe tool
 
-        :param config: Name of the config file for your syringe. Expects the file to be in /tools/configs
+        :param config: Name of the config file for your syringe (without ``.json``).
+                Place personal configs in ``tools/configs/user/``; example configs
+                live in ``tools/configs/examples/``.
         :type config: str
         """
 
-        config_directory = os.path.join(os.path.dirname(__file__), "configs")
-        config_path = os.path.join(config_directory, f"{config}.json")
+        config_path = _find_config(f"{config}.json")
         if not os.path.isfile(config_path):
             raise ToolConfigurationError(
                 f"Error: Config file {config_path} does not exist!"

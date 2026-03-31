@@ -4,6 +4,23 @@ import time
 import webbrowser
 from typing import Tuple, Union
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -74,24 +91,24 @@ class Camera(Tool):
         index,
         name,
         config_file: str,
-        path: str = os.path.join(os.path.dirname(__file__), "configs"),
+        path: str = None,
     ):
-        """Initialize the pipette object from a config file
+        """Initialize the Camera object from a config file
 
-        :param index: The tool index of the pipette on the machine
+        :param index: The tool index of the camera on the machine
         :type index: int
         :param name: The name associated with the tool (e.g. 'WebCamera')
         :type name: str
         :param config_file: The name of the config file containing the tool parameters
         :type config_file: str
-        :param path: The path to the labware configuration `.json` files for the labware,
-                defaults to the 'labware_definition/' in the science_jubilee/labware directory.
+        :param path: Directory containing the config file.  If omitted, ``configs/user/``
+                is checked first, then ``configs/examples/``.
         :type path: str, optional
         :return: the initialized :class:`Camera` object
         :rtype: :class:`Camera` object
         """
 
-        config = os.path.join(path, config_file)
+        config = _find_config(config_file, path)
         with open(config, "rt") as f:
             kwargs = json.load(f)
         return cls(index=index, name=name, **kwargs)

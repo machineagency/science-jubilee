@@ -3,6 +3,40 @@ import logging
 import os
 from typing import Union
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
 from science_jubilee.tools.Tool import Tool
 
 
@@ -43,16 +77,19 @@ class PeristalticPumps(Tool):
     def from_config(
         cls,
         config_file: str,
-        path: str = os.path.join(os.path.dirname(__file__), "configs"),
+        path: str = None,
     ):
         """Initialize a PeristalticPumps object from a config file
 
-        :param config_file: The name of the config file containign the pump parameters
+        :param config_file: The name of the config file containing the pump parameters
         :type config_file: str
+        :param path: Directory containing the config file.  If omitted, ``configs/user/``
+                is checked first, then ``configs/examples/``.
+        :type path: str, optional
         :returns: A :class:`PeristalticPumps` object
         :rtype: :class:`PeristalticPumps`
         """
-        config = os.path.join(path, config_file)
+        config = _find_config(config_file, path)
         with open(config) as f:
             kwargs = json.load(f)
         print(kwargs)

@@ -4,6 +4,23 @@ import os
 from itertools import dropwhile, takewhile
 from typing import Iterator, List, Tuple, Union
 
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
+
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)
+
 from science_jubilee.labware.Labware import Labware, Location, Well
 from science_jubilee.tools.Tool import (
     Tool,
@@ -91,7 +108,7 @@ class Pipette(Tool):
         index,
         name,
         config_file: str,
-        path: str = os.path.join(os.path.dirname(__file__), "configs"),
+        path: str = None,
     ):
         """Initialize the pipette object from a config file
 
@@ -99,16 +116,17 @@ class Pipette(Tool):
         :type index: int
         :param name: The tool name
         :type name: str
-        :param config_file: The name of the config file containign the pipette parameters
+        :param config_file: The name of the config file containing the pipette parameters
         :type config_file: str
-        :param path: The path to the pipette configuration `.json` files for the tool,
-                defaults to the 'config/' in the science_jubilee/tools/configs directory.
+        :param path: Directory containing the config file.  If omitted, ``configs/user/``
+                is checked first, then ``configs/examples/``.
+        :type path: str, optional
         :returns: A :class:`Pipette` object
         :rtype: :class:`Pipette`
         """
-        if config_file[-4:] != "json":
+        if not config_file.endswith(".json"):
             config_file = config_file + ".json"
-        config = os.path.join(path, config_file)
+        config = _find_config(config_file, path)
         with open(config) as f:
             kwargs = json.load(f)
 

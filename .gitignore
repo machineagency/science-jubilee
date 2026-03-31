@@ -11,7 +11,7 @@
 __pycache__/*
 .cache/*
 .*.swp
-*/.ipynb_checkpoints/*
+**/.ipynb_checkpoints
 .DS_Store
 
 # Project files
@@ -53,4 +53,13 @@ docs/autoapi/*
 .venv*/
 .conda*/
 .python-version
+
+# User-specific tool and deck calibration configs (gitignored so personal
+# calibration data does not end up in the shared repository).
+# Place your configs in tools/configs/user/ and decks/deck_definition/user/
+src/science_jubilee/tools/configs/user/*
+src/science_jubilee/decks/deck_definition/user/*
+# Keep the .gitkeep placeholder so the empty directories are tracked
+!src/science_jubilee/tools/configs/user/.gitkeep
+!src/science_jubilee/decks/deck_definition/user/.gitkeep
 tool_library/OT2_pipette/designs/OT_post_base.3mf
