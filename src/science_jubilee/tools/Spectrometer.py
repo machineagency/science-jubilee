@@ -109,9 +109,9 @@ class SpectroscopyTool(Tool, OceanDirectAPI):
             supported_units[2],
         )
         if units == "ms":
-            time = t * 10e3
+            time = t * 1e3
         elif units == "s":
-            time = t * 10e6
+            time = t * 1e6
         else:
             time = t
 
