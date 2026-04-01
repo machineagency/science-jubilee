@@ -1,18 +1,18 @@
-# # Iterate through and import all modules in the plates/
-# # this allows us to add new plates in the plates folder and have it automatically usable in Machine.py
-# from inspect import isclass
-# from pkgutil import iter_modules
-# from pathlib import Path
-# from importlib import import_module
+import os
 
-# # iterate through the modules in the current package
-# package_dir = Path(__file__).resolve().parent
-# for (_, module_name, _) in iter_modules([package_dir]):
-#     # import the module and iterate through its attributes
-#     module = import_module(f"{__name__}.{module_name}")
-#     for attribute_name in dir(module):
-#         attribute = getattr(module, attribute_name)
+_CONFIGS_DIR = os.path.join(os.path.dirname(__file__), "configs")
 
-#         if isclass(attribute):
-#             # Add the class to this package's variables
-#             globals()[attribute_name] = attribute
+
+def _find_config(filename: str, path: str = None) -> str:
+    """Return the full path to a tool config file.
+
+    If *path* is given explicitly, look there.  Otherwise check ``configs/user/``
+    first (user-specific calibration), then fall back to ``configs/examples/``
+    (shipped example files).
+    """
+    if path is not None:
+        return os.path.join(path, filename)
+    user = os.path.join(_CONFIGS_DIR, "user", filename)
+    if os.path.isfile(user):
+        return user
+    return os.path.join(_CONFIGS_DIR, "examples", filename)

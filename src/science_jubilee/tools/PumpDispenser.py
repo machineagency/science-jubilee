@@ -1,7 +1,8 @@
 import json
 import logging
-import os
 from typing import Tuple, Union
+
+from science_jubilee.tools import _find_config
 
 from science_jubilee.labware.Labware import Labware, Location, Well
 from science_jubilee.tools.Tool import Tool
@@ -67,18 +68,23 @@ class PumpDispenser(Tool):
         index,
         pump_group,
         config_file: str,
-        path: str = os.path.join(os.path.dirname(__file__), "configs"),
+        path: str = None,
     ):
-        """Initialize the pipette object from a config file
+        """Initialize a PumpDispenser object from a config file
 
-        :param index: The tool index of the dispenser_head on the machine
+        :param index: The tool index of the dispenser head on the machine
         :type index: int
-        :param config_file: The name of the config file containign the dispenser tool parameters
+        :param pump_group: The PeristalticPumps object to assign to this dispenser
+        :type pump_group: :class:`PeristalticPumps`
+        :param config_file: The name of the config file containing the dispenser tool parameters
         :type config_file: str
+        :param path: Directory containing the config file.  If omitted, ``configs/user/``
+                is checked first, then ``configs/examples/``.
+        :type path: str, optional
         :returns: A :class:`PumpDispenser` object
         :rtype: :class:`PumpDispenser`
         """
-        config = os.path.join(path, config_file)
+        config = _find_config(config_file, path)
         with open(config) as f:
             kwargs = json.load(f)
         print(kwargs)

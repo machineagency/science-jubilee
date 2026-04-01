@@ -4,6 +4,8 @@ import os
 import warnings
 from typing import Tuple, Union
 
+from science_jubilee.tools import _find_config
+
 import numpy as np
 
 from science_jubilee.labware.Labware import Labware, Location, Well
@@ -43,8 +45,7 @@ class SyringeExtruder(Tool):
         :type config: str
         """
 
-        config_directory = os.path.join(os.path.dirname(__file__), "configs")
-        config_path = os.path.join(config_directory, f"{config}.json")
+        config_path = _find_config(f"{config}.json")
         if not os.path.isfile(config_path):
             raise ToolConfigurationError(
                 f"Error: Config file {config_path} does not exist!"
@@ -56,8 +57,8 @@ class SyringeExtruder(Tool):
         self.max_range = config["max_range"]
         self.mm_to_ml = config["mm_to_ml"]
 
-        # Check that all information was provided
-        if None in vars(self):
+        # Check that all required fields were provided
+        if None in (self.min_range, self.max_range, self.mm_to_ml):
             raise ToolConfigurationError(
                 "Error: Not enough information provided in configuration file."
             )
