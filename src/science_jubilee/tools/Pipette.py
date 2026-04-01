@@ -462,23 +462,17 @@ class Pipette(Tool):
         """
 
         if isinstance(volume, (float, int)):
-            vol_list = [self.vol2move(volume)] * total_xfers
             return [volume] * total_xfers
         elif isinstance(volume, list):
-            if not len(volume) == total_xfers:
+            if len(volume) != total_xfers:
                 raise RuntimeError(
-                    "List of volumes should be equal to number " "of transfers"
+                    "List of volumes should be equal to number of transfers"
                 )
-            else:
-                vol_list = [self.vol2move(v) for v in volume]
-                return vol_list
+            return volume
         else:
-            if not isinstance(volume, List):
-                raise TypeError(
-                    "Volume expected as a number or List or"
-                    " tuple but got {}".format(volume)
-                )
-            return vol_list
+            raise TypeError(
+                "Volume expected as a number or List but got {}".format(volume)
+            )
 
     @staticmethod
     def _extend_source_target_lists(
