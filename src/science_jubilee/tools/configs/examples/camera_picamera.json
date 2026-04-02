@@ -1,0 +1,6 @@
+{
+  "backend": "picamera",
+  "resolution": [1200, 1200],
+  "output_dir": "./camera_output",
+  "focus_height": 30
+}
