@@ -1,3 +1,7 @@
+# User-specific peripheral configs and calibration files
+src/science_jubilee/peripherals/configs/user/*
+!src/science_jubilee/peripherals/configs/user/.gitkeep
+
 # Temporary and binary files
 *~
 *.py[cod]
