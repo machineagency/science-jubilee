@@ -1,0 +1,6 @@
+{
+  "backend": "opencv",
+  "camera_index": 0,
+  "output_dir": "./camera_output",
+  "focus_height": 100
+}
