@@ -1,0 +1,9 @@
+{
+    "camera_index": 0,
+    "image_folder": "images",
+    "focus_height": 50.0,
+    "resolution": [3264, 2448],
+    "aruco_dict": "DICT_4X4_50",
+    "lens_calibration_path": "lens_calibration.npz",
+    "machine_calibration_path": "camera_calibration.npz"
+}
