@@ -1,291 +1,184 @@
+"""AS7341 spectral sensor tool.
+
+Communicates with an XIAO ESP32S3 running JSON-RPC firmware over USB serial.
+Mirrors the CircuitPython ``adafruit_as7341`` API — property access is
+transparently proxied to the firmware via JSON-RPC.
+
+Example::
+
+    spec = AS7341(index=0, name="AS7341", config="AS7341")
+    spec.connect()
+    spec.led_current = 50
+    spec.led = True
+    print(spec.all_channels)
+    spec.led = False
+"""
+
 import json
 import os
-import time
 import warnings
-from typing import Any, Dict, List, Optional, Union
-
-from science_jubilee.tools import _CONFIGS_DIR, _find_config
+from typing import Dict, List, Optional
 
 import serial
-from serial.tools import list_ports
 
 from science_jubilee.tools.Tool import (
     Tool,
     ToolConfigurationError,
     ToolStateError,
-    requires_active_tool,
 )
+from science_jubilee.utils.SerialDevice import SerialDevice
+
+from science_jubilee.tools import _CONFIGS_DIR, _find_config
+
+# Attributes that belong to the AS7341/Tool instance, NOT the remote sensor.
+# These are handled by normal Python attribute access.
+_LOCAL_ATTRS = frozenset({
+    "device", "sensor_config", "_config_path", "baudrate",
+    "_machine", "index", "name", "is_active_tool", "tool_offset",
+})
 
 
 class AS7341(Tool):
-    """A class representation of the AS7341 spectral sensor.
+    """AS7341 spectral sensor with transparent property proxy.
 
-    :param Tool: The base tool class
-    :type Tool: :class:`Tool`
+    After calling :meth:`connect`, any attribute access that isn't a local
+    attribute is forwarded to the remote sensor via JSON-RPC ``get_property``
+    / ``set_property`` commands.  This mirrors the CircuitPython
+    ``adafruit_as7341.AS7341`` API.
     """
 
     def __init__(self, index, name, config):
-        """Constructor method"""
         super().__init__(index, name)
-
-        self.lineEnding = "\n\r"
         self.baudrate = 115200
         self.sensor_config = None
-        self.serial_port = None
-
+        self.device = None
         self.load_config(config)
 
     def load_config(self, config):
-        """Loads the configuration file for the AS7341 sensor tool
-
-        :param config: Name of the config file (without ``.json``).  Place personal
-                configs in ``tools/configs/user/``; example configs live in
-                ``tools/configs/examples/``.
-        :type config: str
-        """
-
         config_path = _find_config(f"{config}.json")
         if not os.path.isfile(config_path):
             raise ToolConfigurationError(
                 f"Error: Config file {config_path} does not exist!"
             )
-
         with open(config_path, "r") as f:
             self.sensor_config = json.load(f)
         self._config_path = config_path
 
-        if self.sensor_config is None:
-            raise ToolConfigurationError(
-                "Error: Not enough information provided in configuration file."
+    # -- Property proxy --------------------------------------------------------
+
+    def __getattr__(self, name):
+        # __getattr__ is only called when normal lookup fails.
+        # If device is connected, proxy to firmware.
+        device = object.__getattribute__(self, "__dict__").get("device")
+        if device is not None and device.is_connected():
+            result = device.send_command(
+                "get_property", {"sensor": "as7341", "property": name}
             )
+            if result.get("success"):
+                return result["value"]
+        raise AttributeError(f"'{type(self).__name__}' has no attribute '{name}'")
 
-    def find_seeed(self) -> List[serial.Serial]:
-        """Find all Seeed Studio or Espressif devices connected to the system
+    def __setattr__(self, name, value):
+        # Local attrs, private attrs, and init-time attrs bypass the proxy.
+        if (
+            name in _LOCAL_ATTRS
+            or name.startswith("_")
+            or "device" not in self.__dict__
+            or self.__dict__.get("device") is None
+        ):
+            super().__setattr__(name, value)
+        else:
+            device = self.__dict__["device"]
+            if device.is_connected():
+                result = device.send_command(
+                    "set_property",
+                    {"sensor": "as7341", "property": name, "value": value},
+                )
+                if not result.get("success"):
+                    raise AttributeError(
+                        f"Failed to set '{name}': {result.get('error')}"
+                    )
+            else:
+                super().__setattr__(name, value)
 
-        :return: List of serial ports for connected Seeed devices
-        :rtype: List[serial.Serial]
-        :raises IOError: If no Seeed devices are found
+    # -- Connection ------------------------------------------------------------
+
+    def connect(self, port_index: int = 0) -> SerialDevice:
+        """Find and connect to the sensor board.
+
+        :param port_index: Index of the serial port if multiple are found
+        :type port_index: int, optional
+        :return: The connected SerialDevice
+        :rtype: SerialDevice
         """
-        # returns com ports
-        all_ports = [
-            p
-            for p in list_ports.comports()
-            if p.manufacturer is not None  # may need tweaking to match new arduinos
-        ]
+        ports = SerialDevice.find_ports(["Seeed", "Espressif"])
 
-        seeed_ports = [
-            p.device
-            for p in all_ports
-            if "Seeed" in p.manufacturer or "Espressif" in p.manufacturer
-        ]
-
-        # Check if any Seeed devices were found
-        if not seeed_ports:
-            raise IOError("No Seeed found")
-
-        if len(seeed_ports) > 1:
-            warnings.warn(f"Multiple Seeeds found - returning {len(seeed_ports)} ports")
-
-        # Create Serial objects for each port
-        ser_list = [
-            serial.Serial(port, self.baudrate, timeout=1) for port in seeed_ports
-        ]
-
-        # Return Serial objects
-        return ser_list
-
-    def connect_seeed(self, ser_port_index: int = 0) -> serial.Serial:
-        """Connect to a Seeed device at the specified port index
-
-        :param ser_port_index: Index of the serial port to connect to, defaults to 0
-        :type ser_port_index: int, optional
-        :return: Connected serial port
-        :rtype: serial.Serial
-        """
-        # Find all available Seeed devices
-        seeed_devices = self.find_seeed()
-
-        # Check if the requested index exists
-        if ser_port_index >= len(seeed_devices):
+        if not ports:
+            raise IOError("No Seeed/Espressif devices found.")
+        if port_index >= len(ports):
             raise IndexError(
-                f"Serial port index {ser_port_index} out of range. Only {len(seeed_devices)} ports available."
+                f"Port index {port_index} out of range. "
+                f"Only {len(ports)} devices found."
+            )
+        if len(ports) > 1:
+            warnings.warn(
+                f"Multiple devices found — connecting to index {port_index}"
             )
 
-        # Connect to the specified port
-        ser_port = seeed_devices[ser_port_index].port
-        self.serial_port = serial.Serial(ser_port, self.baudrate, timeout=1)
-        self.serial_port.reset_input_buffer()
-        self.serial_port.reset_output_buffer()
+        port_name = ports[port_index].device
+        ser = serial.Serial(port_name, self.baudrate, timeout=2)
+        ser.reset_input_buffer()
+        ser.reset_output_buffer()
 
-        # Save the updated port back to wherever the config was loaded from.
-        # If the config came from examples/, write a copy to user/ instead so
-        # the shipped example file is never modified.
+        self.device = SerialDevice(ser)
+
+        # Save port to config
         if self.sensor_config:
-            self.sensor_config["port"] = ser_port
+            self.sensor_config["port"] = port_name
             save_path = self._config_path
             if os.path.join(_CONFIGS_DIR, "examples") in save_path:
                 save_path = os.path.join(
                     _CONFIGS_DIR, "user", os.path.basename(save_path)
                 )
+                os.makedirs(os.path.dirname(save_path), exist_ok=True)
             with open(save_path, "w") as f:
                 json.dump(self.sensor_config, f, indent=2)
             self._config_path = save_path
 
-        return self.serial_port
+        print(f"Connected: {self.device}")
+        return self.device
 
-    def disconnect_seeed(self) -> bool:
-        """Disconnect from the currently connected Seeed device
+    def disconnect(self):
+        """Disconnect from the sensor board."""
+        if self.device is None:
+            warnings.warn("No device connected.")
+            return
 
-        :return: True if disconnection was successful
-        :rtype: bool
+        self.device.disconnect()
+        self.device = None
+
+        if self.sensor_config:
+            self.sensor_config["port"] = ""
+            with open(self._config_path, "w") as f:
+                json.dump(self.sensor_config, f, indent=2)
+
+    @property
+    def capabilities(self) -> Dict:
+        """Return discovered capabilities from the firmware."""
+        if self.device is None:
+            return {}
+        return self.device.capabilities
+
+    # -- Explicit methods (not part of CircuitPython API) ----------------------
+
+    def blink(self, duration: float = 0.5):
+        """Blink the XIAO onboard LED.
+
+        :param duration: Blink duration in seconds, defaults to 0.5
+        :type duration: float, optional
         """
-        if self.serial_port is None:
-            warnings.warn("No connected Seeed device to disconnect")
-            return False
-
-        try:
-            self.serial_port.close()
-            self.serial_port = None
-
-            if self.sensor_config:
-                self.sensor_config["port"] = ""
-                with open(self._config_path, "w") as f:
-                    json.dump(self.sensor_config, f, indent=2)
-
-            return True
-
-        except Exception as e:
-            warnings.warn(f"Error disconnecting from Seeed device: {e}")
-            return False
-
-    def blink(self, cmd: Union[int, str]) -> None:
-        """Send a blink command to the connected Seeed device
-
-        :param cmd: The blink command parameter
-        :type cmd: Union[int, str]
-        :raises ToolStateError: If no serial port is connected
-        """
-        if self.serial_port is None:
-            raise ToolStateError(
-                "No serial port connected. Call connect_seeed() first."
-            )
-
-        cmd_str = f"blink,{cmd}"
-        cmd_str += self.lineEnding
-        bcmd = cmd_str.encode()
-
-        self.serial_port.write(bcmd)
-
-    def measure_spectrum(self, duty_cycle: int = 100) -> Dict[str, Any]:
-        """Measure the spectral values from the AS7341 sensor
-
-        :param duty_cycle: The duty cycle for the measurement (0-100), defaults to 100
-        :type duty_cycle: int, optional
-        :return: Dictionary containing the spectral readings from different channels
-        :rtype: Dict[str, Any]
-        :raises ToolStateError: If no serial port is connected
-        :raises ValueError: If duty cycle is out of range
-        """
-        # Validate duty cycle value
-        if not (0 <= duty_cycle <= 100):
-            raise ValueError("Duty cycle must be between 0 and 100")
-
-        # Check if serial port is connected
-        if self.serial_port is None:
-            raise ToolStateError(
-                "No serial port connected. Call connect_seeed() first."
-            )
-
-        # Format the command with duty cycle
-        cmd = f"spec,{duty_cycle}"
-        cmd += self.lineEnding
-        bcmd = cmd.encode()
-
-        # Clear buffers
-        self.serial_port.reset_output_buffer()
-        self.serial_port.reset_input_buffer()
-
-        # Send command to the sensor
-        self.serial_port.write(bcmd)
-
-        # Wait for the sensor to complete measurement
-        time.sleep(1.1)
-
-        # Read the response
-        spec_reading = self.serial_port.readline().strip().decode()
-
-        # Parse the reading into a dictionary
-        try:
-            readings = {}
-            values = spec_reading.split()
-
-            # Handle different possible response formats
-            if ":" in spec_reading:
-                # Format like "415nm:123 445nm:456 ..."
-                for value in values:
-                    channel, reading = value.split(":")
-                    readings[channel] = float(reading)
-            else:
-                # Format like "123 456 789 ..." (raw values in expected order)
-                channels = [
-                    "415nm",
-                    "445nm",
-                    "480nm",
-                    "515nm",
-                    "555nm",
-                    "590nm",
-                    "630nm",
-                    "680nm",
-                    "Clear",
-                    "NIR",
-                ]
-                numeric_values = [float(v) for v in values]
-
-                # Match channels with values (handle case where lengths don't match)
-                for i, channel in enumerate(channels):
-                    if i < len(numeric_values):
-                        readings[channel] = numeric_values[i]
-
-            return readings
-
-        except Exception as e:
-            raise ToolStateError(
-                f"Error parsing spectral data: {e}. Raw reading: {spec_reading}"
-            )
-
-    def get_raw_spectrum(self, duty_cycle: int = 100) -> str:
-        """Get the raw spectral data string from the AS7341 sensor
-
-        :param duty_cycle: The duty cycle for the measurement (0-100), defaults to 100
-        :type duty_cycle: int, optional
-        :return: Raw string output from the sensor
-        :rtype: str
-        :raises ToolStateError: If no serial port is connected
-        """
-        # Validate duty cycle value
-        if not (0 <= duty_cycle <= 100):
-            raise ValueError("Duty cycle must be between 0 and 100")
-
-        # Check if serial port is connected
-        if self.serial_port is None:
-            raise ToolStateError(
-                "No serial port connected. Call connect_seeed() first."
-            )
-
-        # Format the command with duty cycle
-        cmd = f"spec,{duty_cycle}"
-        cmd += self.lineEnding
-        bcmd = cmd.encode()
-
-        # Clear buffers
-        self.serial_port.reset_output_buffer()
-        self.serial_port.reset_input_buffer()
-
-        # Send command to the sensor
-        self.serial_port.write(bcmd)
-
-        # Wait for the sensor to complete measurement
-        time.sleep(1.1)
-
-        # Read and return the raw response
-        return self.serial_port.readline().strip().decode()
+        if self.device is None or not self.device.is_connected():
+            raise ToolStateError("Not connected. Call connect() first.")
+        result = self.device.send_command("blink", {"duration": duration})
+        if not result.get("success"):
+            raise ToolStateError(f"Blink failed: {result.get('error')}")

@@ -1,4 +1,6 @@
 {
-  "port": "/dev/cu.usbmodem84722E6EDD061",
-  "sensor name": "AS7341 spectral sensor"
+  "port": "",
+  "sensor name": "AS7341 spectral sensor",
+  "protocol": "jsonrpc",
+  "baudrate": 115200
 }
