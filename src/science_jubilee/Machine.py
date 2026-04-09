@@ -443,7 +443,7 @@ class Machine:
     def load_deck(
         self,
         deck_filename: str,
-        path: str = os.path.join(os.path.dirname(__file__), "decks", "deck_definition"),
+        path: str = os.path.join(os.path.dirname(__file__), "decks", "deck_definition", "user"),
     ):
         """Load a deck configuration file onto the machine.
 

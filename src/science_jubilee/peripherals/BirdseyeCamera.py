@@ -103,23 +103,23 @@ class BirdseyeCamera(Tool):
             aruco_dict=aruco_dict,
         )
         self._cap = None
-        self._homography = None       # pixel coords → machine XY (2D)
-        self._homography_inv = None   # machine XY → pixel coords (2D)
-        self._camera_matrix = None    # intrinsic matrix
-        self._dist_coeffs = None      # distortion coefficients
-        self._rvec = None             # rotation vector (3D extrinsic)
-        self._tvec = None             # translation vector (3D extrinsic)
+        self._homography = None  # pixel coords → machine XY (2D)
+        self._homography_inv = None  # machine XY → pixel coords (2D)
+        self._camera_matrix = None  # intrinsic matrix
+        self._dist_coeffs = None  # distortion coefficients
+        self._rvec = None  # rotation vector (3D extrinsic)
+        self._tvec = None  # translation vector (3D extrinsic)
         # Z-stack: list of (z_cal, rvec, tvec) from successive calibrate_3d_charuco calls
         self._z_cal_stack: List = []
         # Board geometry — set by calibrate_3d_charuco, persisted via save/load
-        self._board_origin    = None
-        self._board_x_unit    = None
-        self._board_y_unit    = None
+        self._board_origin = None
+        self._board_x_unit = None
+        self._board_y_unit = None
         self._board_square_mm = None
-        self._board_n_cx      = None
+        self._board_n_cx = None
         self._board_n_markers = None
-        self._calib_obj_pts   = None
-        self._calib_img_pts   = None
+        self._calib_obj_pts = None
+        self._calib_img_pts = None
         self._calib_board_idx = None
         self._calib_board_geoms = None
 
@@ -155,7 +155,7 @@ class BirdseyeCamera(Tool):
             kwargs = json.load(f)
 
         lens_cal_file = kwargs.pop("lens_calibration_path", None)
-        cam_cal_file  = kwargs.pop("machine_calibration_path", None)
+        cam_cal_file = kwargs.pop("machine_calibration_path", None)
 
         cam = cls(name=name, **kwargs)
 
@@ -222,7 +222,9 @@ class BirdseyeCamera(Tool):
         with open(out_path, "wt") as f:
             json.dump(data, f, indent=4)
         print(f"Config written to {out_path}")
-        print("Edit it to add lens_calibration_path and machine_calibration_path once you have those files.")
+        print(
+            "Edit it to add lens_calibration_path and machine_calibration_path once you have those files."
+        )
 
     # ------------------------------------------------------------------
     # Machine attachment
@@ -323,15 +325,22 @@ class BirdseyeCamera(Tool):
         cv2.imwrite(path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
         return path
 
-    def show_frame(self, frame: np.ndarray):
+    def show_frame(self, frame: np.ndarray, show_pixels: bool = True):
         """Display a captured frame using matplotlib.
 
         :param frame: RGB frame to display
         :type frame: np.ndarray
+        :param show_pixels: Show pixel coordinate axes, defaults to True
+        :type show_pixels: bool, optional
         """
         plt.figure(figsize=(10, 8))
         plt.imshow(frame)
-        plt.axis("off")
+        if show_pixels:
+            plt.axis("on")
+            plt.xlabel("px")
+            plt.ylabel("py")
+        else:
+            plt.axis("off")
         plt.tight_layout()
         plt.show()
 
@@ -510,7 +519,8 @@ class BirdseyeCamera(Tool):
         for i, marker_id in enumerate(ids.flatten()):
             if marker_id in marker_machine_positions:
                 pixel_pt = (
-                    corners[i][0].mean(axis=0) if corner is None
+                    corners[i][0].mean(axis=0)
+                    if corner is None
                     else corners[i][0][corner]
                 )
                 pixel_pts.append(pixel_pt)
@@ -597,7 +607,8 @@ class BirdseyeCamera(Tool):
         for i, marker_id in enumerate(ids.flatten()):
             if marker_id in marker_machine_positions:
                 pixel_pt = (
-                    corners[i][0].mean(axis=0) if corner is None
+                    corners[i][0].mean(axis=0)
+                    if corner is None
                     else corners[i][0][corner]
                 )
                 image_pts.append(pixel_pt)
@@ -723,7 +734,7 @@ class BirdseyeCamera(Tool):
 
         gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
         zero_dist = np.zeros_like(self._dist_coeffs)
-        n_cx = board_cols - 1   # interior corners per row
+        n_cx = board_cols - 1  # interior corners per row
         n_markers = (board_cols * board_rows + 1) // 2
         aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
 
@@ -760,8 +771,11 @@ class BirdseyeCamera(Tool):
             first_id = board_idx * n_markers
             marker_ids = np.arange(first_id, first_id + n_markers, dtype=np.int32)
             board_obj = cv2.aruco.CharucoBoard(
-                (board_cols, board_rows), square_mm, square_mm * 0.75,
-                aruco_dict, marker_ids,
+                (board_cols, board_rows),
+                square_mm,
+                square_mm * 0.75,
+                aruco_dict,
+                marker_ids,
             )
             detector = cv2.aruco.CharucoDetector(board_obj)
             charuco_corners, charuco_ids, _, _ = detector.detectBoard(gray)
@@ -791,8 +805,12 @@ class BirdseyeCamera(Tool):
             # the initial rvec/tvec for LM refinement comes from whichever sign
             # IPPE can reliably place the camera overhead (negative machine Z).
             signs_to_try = [float(y_sign)] if y_sign is not None else [1.0, -1.0]
-            best_y: Optional[Tuple] = None  # (cam_pos_z, y_unit, obj_pts, img_pts, rv, tv)
-            best_neg_init: Optional[Tuple] = None  # (cam_z, rv, tv) — best cam_Z<0 from any sign
+            best_y: Optional[Tuple] = (
+                None  # (cam_pos_z, y_unit, obj_pts, img_pts, rv, tv)
+            )
+            best_neg_init: Optional[Tuple] = (
+                None  # (cam_z, rv, tv) — best cam_Z<0 from any sign
+            )
 
             for sign in [1.0, -1.0]:  # always try both for initial-guess tracking
                 y_unit = sign * np.array([-x_unit[1], x_unit[0]])
@@ -801,17 +819,26 @@ class BirdseyeCamera(Tool):
                     local_id = int(cid) - first_id
                     col = local_id % n_cx
                     row = local_id // n_cx
-                    obj_pts.append([
-                        a[0] + col * square_mm * x_unit[0] + row * square_mm * y_unit[0],
-                        a[1] + col * square_mm * x_unit[1] + row * square_mm * y_unit[1],
-                        z,
-                    ])
+                    obj_pts.append(
+                        [
+                            a[0]
+                            + col * square_mm * x_unit[0]
+                            + row * square_mm * y_unit[0],
+                            a[1]
+                            + col * square_mm * x_unit[1]
+                            + row * square_mm * y_unit[1],
+                            z,
+                        ]
+                    )
                     img_pts.append(charuco_corners[k][0])
 
                 obj_arr_s = np.array(obj_pts, dtype=np.float64)
                 img_arr_s = np.array(img_pts, dtype=np.float64)
                 retval, rvecs_ippe, tvecs_ippe, _ = cv2.solvePnPGeneric(
-                    obj_arr_s, img_arr_s, self._camera_matrix, zero_dist,
+                    obj_arr_s,
+                    img_arr_s,
+                    self._camera_matrix,
+                    zero_dist,
                     flags=cv2.SOLVEPNP_IPPE,
                 )
                 if retval == 0:
@@ -835,12 +862,21 @@ class BirdseyeCamera(Tool):
                             chosen_cam_z, chosen_rv, chosen_tv = cz, rv_i, tv_i
 
                 # Track best physically valid (cam_Z < 0) initial guess from any sign
-                if chosen_cam_z < 0 and (best_neg_init is None or chosen_cam_z < best_neg_init[0]):
+                if chosen_cam_z < 0 and (
+                    best_neg_init is None or chosen_cam_z < best_neg_init[0]
+                ):
                     best_neg_init = (chosen_cam_z, chosen_rv, chosen_tv)
 
                 if sign in signs_to_try:
                     if y_sign is not None or best_y is None or chosen_cam_z < best_y[0]:
-                        best_y = (chosen_cam_z, y_unit, obj_pts, img_pts, chosen_rv, chosen_tv)
+                        best_y = (
+                            chosen_cam_z,
+                            y_unit,
+                            obj_pts,
+                            img_pts,
+                            chosen_rv,
+                            chosen_tv,
+                        )
 
             if best_y is None:
                 print(f"  Board {board_idx+1}: solvePnP failed, skipping.")
@@ -852,8 +888,12 @@ class BirdseyeCamera(Tool):
                 if _initial_rvec is None:
                     # No pixel_axes hint: use the best physically valid
                     # (cam_Z < 0) IPPE guess, or fall back to best_y's pose.
-                    _initial_rvec = best_neg_init[1] if best_neg_init is not None else board_rv
-                    _initial_tvec = best_neg_init[2] if best_neg_init is not None else board_tv
+                    _initial_rvec = (
+                        best_neg_init[1] if best_neg_init is not None else board_rv
+                    )
+                    _initial_tvec = (
+                        best_neg_init[2] if best_neg_init is not None else board_tv
+                    )
                 else:
                     # pixel_axes supplied the rotation; estimate tvec via linear
                     # least squares so IPPE's tvec sign can't corrupt the seed.
@@ -894,8 +934,12 @@ class BirdseyeCamera(Tool):
 
         # Refine from the initial guess with Levenberg-Marquardt.
         ok, rvec, tvec = cv2.solvePnP(
-            obj_arr, img_arr, self._camera_matrix, zero_dist,
-            rvec=_initial_rvec.copy(), tvec=_initial_tvec.copy(),
+            obj_arr,
+            img_arr,
+            self._camera_matrix,
+            zero_dist,
+            rvec=_initial_rvec.copy(),
+            tvec=_initial_tvec.copy(),
             useExtrinsicGuess=True,
             flags=cv2.SOLVEPNP_ITERATIVE,
         )
@@ -904,7 +948,7 @@ class BirdseyeCamera(Tool):
 
         proj, _ = cv2.projectPoints(obj_arr, rvec, tvec, self._camera_matrix, zero_dist)
         per_pt_err = np.sqrt(np.sum((img_arr - proj.reshape(-1, 2)) ** 2, axis=1))
-        rms = float(np.sqrt(np.mean(per_pt_err ** 2)))
+        rms = float(np.sqrt(np.mean(per_pt_err**2)))
         n_good = int(np.sum(per_pt_err < 2.0))
         R_final, _ = cv2.Rodrigues(rvec)
         cam_pos_final = (-R_final.T @ tvec).flatten()
@@ -914,9 +958,7 @@ class BirdseyeCamera(Tool):
 
         # Add to Z-stack (replace any entry within 2 mm of this Z)
         z_cal = float(boards[0][0][2])
-        self._z_cal_stack = [
-            e for e in self._z_cal_stack if abs(e[0] - z_cal) > 2.0
-        ]
+        self._z_cal_stack = [e for e in self._z_cal_stack if abs(e[0] - z_cal) > 2.0]
         self._z_cal_stack.append((z_cal, rvec.copy(), tvec.copy()))
 
         # Store calibration points and board geometry for refine_calibration_z / flip_y_axis
@@ -929,11 +971,11 @@ class BirdseyeCamera(Tool):
         _a_xy = np.array(_a0[:2], dtype=np.float64)
         _b_xy = np.array(_b0[:2], dtype=np.float64)
         _xv = _b_xy - _a_xy
-        self._board_origin    = _a_xy
-        self._board_x_unit    = _xv / np.linalg.norm(_xv)
-        self._board_y_unit    = _best_y_unit_board0
+        self._board_origin = _a_xy
+        self._board_x_unit = _xv / np.linalg.norm(_xv)
+        self._board_y_unit = _best_y_unit_board0
         self._board_square_mm = square_mm
-        self._board_n_cx      = n_cx
+        self._board_n_cx = n_cx
         self._board_n_markers = n_markers
         self._calib_board_geoms = all_board_geoms  # [(a, x_unit, y_unit), ...]
 
@@ -975,7 +1017,7 @@ class BirdseyeCamera(Tool):
         :rtype: Tuple[np.ndarray, np.ndarray]
         :raises RuntimeError: If calibrate_3d_charuco has not been run first
         """
-        if self._rvec is None or not hasattr(self, '_calib_obj_pts'):
+        if self._rvec is None or not hasattr(self, "_calib_obj_pts"):
             raise RuntimeError(
                 "Run calibrate_3d_charuco() before refine_calibration_z()."
             )
@@ -998,8 +1040,10 @@ class BirdseyeCamera(Tool):
         board_rows = (self._board_n_markers * 2 + board_cols - 1) // board_cols
         board_obj = cv2.aruco.CharucoBoard(
             (board_cols, board_rows),
-            self._board_square_mm, self._board_square_mm * 0.75,
-            aruco_dict, marker_ids,
+            self._board_square_mm,
+            self._board_square_mm * 0.75,
+            aruco_dict,
+            marker_ids,
         )
         detector = cv2.aruco.CharucoDetector(board_obj)
         corners2, ids2, _, _ = detector.detectBoard(gray)
@@ -1020,37 +1064,50 @@ class BirdseyeCamera(Tool):
         for k, cid in enumerate(ids2.flatten()):
             col = int(cid) % n_cx
             row = int(cid) // n_cx
-            new_obj.append([
-                a[0] + col * sq * x_unit[0] + row * sq * y_unit[0],
-                a[1] + col * sq * x_unit[1] + row * sq * y_unit[1],
-                z2,
-            ])
+            new_obj.append(
+                [
+                    a[0] + col * sq * x_unit[0] + row * sq * y_unit[0],
+                    a[1] + col * sq * x_unit[1] + row * sq * y_unit[1],
+                    z2,
+                ]
+            )
             new_img.append(corners2[k][0])
 
         print(f"  Detected {len(new_obj)} corners at Z={z2:.2f}")
 
-        combined_obj = np.vstack([self._calib_obj_pts,
-                                   np.array(new_obj, dtype=np.float64)])
-        combined_img = np.vstack([self._calib_img_pts,
-                                   np.array(new_img, dtype=np.float64)])
-        combined_board_idx = np.concatenate([
-            self._calib_board_idx,
-            np.zeros(len(new_obj), dtype=np.int32),
-        ])
+        combined_obj = np.vstack(
+            [self._calib_obj_pts, np.array(new_obj, dtype=np.float64)]
+        )
+        combined_img = np.vstack(
+            [self._calib_img_pts, np.array(new_img, dtype=np.float64)]
+        )
+        combined_board_idx = np.concatenate(
+            [
+                self._calib_board_idx,
+                np.zeros(len(new_obj), dtype=np.int32),
+            ]
+        )
 
         zero_dist = np.zeros_like(self._dist_coeffs)
         # Use iterative LM refinement from the known-good initial pose rather than
         # RANSAC, which can sample degenerate all-same-Z subsets and flip to the
         # mirror solution.
         ok, rvec, tvec = cv2.solvePnP(
-            combined_obj, combined_img, self._camera_matrix, zero_dist,
-            rvec=self._rvec.copy(), tvec=self._tvec.copy(), useExtrinsicGuess=True,
+            combined_obj,
+            combined_img,
+            self._camera_matrix,
+            zero_dist,
+            rvec=self._rvec.copy(),
+            tvec=self._tvec.copy(),
+            useExtrinsicGuess=True,
             flags=cv2.SOLVEPNP_ITERATIVE,
         )
         if not ok:
             raise RuntimeError("solvePnP failed during Z refinement.")
 
-        proj, _ = cv2.projectPoints(combined_obj, rvec, tvec, self._camera_matrix, zero_dist)
+        proj, _ = cv2.projectPoints(
+            combined_obj, rvec, tvec, self._camera_matrix, zero_dist
+        )
         rms = float(np.sqrt(np.mean((combined_img - proj.reshape(-1, 2)) ** 2)))
         n_inliers = len(combined_obj)
 
@@ -1062,8 +1119,10 @@ class BirdseyeCamera(Tool):
 
         R, _ = cv2.Rodrigues(rvec)
         cam_pos = (-R.T @ tvec).flatten()
-        print(f"Refined calibration: {n_inliers} pts, "
-              f"RMS {rms:.2f} px,  camera at Z={cam_pos[2]:.1f} mm")
+        print(
+            f"Refined calibration: {n_inliers} pts, "
+            f"RMS {rms:.2f} px,  camera at Z={cam_pos[2]:.1f} mm"
+        )
 
         if save_path is not None:
             self.save_calibration(save_path)
@@ -1084,7 +1143,7 @@ class BirdseyeCamera(Tool):
             raise RuntimeError(
                 "No calibration to flip. Run calibrate_3d_charuco() first."
             )
-        if not hasattr(self, '_calib_board_geoms') or not self._calib_board_geoms:
+        if not hasattr(self, "_calib_board_geoms") or not self._calib_board_geoms:
             raise RuntimeError(
                 "Board geometry not stored. Re-run calibrate_3d_charuco()."
             )
@@ -1093,7 +1152,7 @@ class BirdseyeCamera(Tool):
 
         # Negate Y unit for all boards
         new_geoms = []
-        for (a_b, x_b, y_b) in self._calib_board_geoms:
+        for a_b, x_b, y_b in self._calib_board_geoms:
             new_geoms.append((a_b, x_b, -np.array(y_b)))
         self._calib_board_geoms = new_geoms
         self._board_y_unit = -np.array(self._board_y_unit)
@@ -1108,11 +1167,13 @@ class BirdseyeCamera(Tool):
             col = round(np.dot(diff2, x_b) / sq)
             row = round(np.dot(diff2, y_b_old) / sq)
             z = pt[2]
-            new_obj.append([
-                a_b[0] + col * sq * x_b[0] + row * sq * y_b_new[0],
-                a_b[1] + col * sq * x_b[1] + row * sq * y_b_new[1],
-                z,
-            ])
+            new_obj.append(
+                [
+                    a_b[0] + col * sq * x_b[0] + row * sq * y_b_new[0],
+                    a_b[1] + col * sq * x_b[1] + row * sq * y_b_new[1],
+                    z,
+                ]
+            )
 
         self._calib_obj_pts = np.array(new_obj, dtype=np.float64)
 
@@ -1123,8 +1184,10 @@ class BirdseyeCamera(Tool):
         if is_coplanar:
             # IPPE analytically returns both solutions; pick most-negative camera Z.
             retval, rvecs_m, tvecs_m, _ = cv2.solvePnPGeneric(
-                self._calib_obj_pts, self._calib_img_pts,
-                self._camera_matrix, zero_dist,
+                self._calib_obj_pts,
+                self._calib_img_pts,
+                self._camera_matrix,
+                zero_dist,
                 flags=cv2.SOLVEPNP_IPPE,
             )
             if retval == 0:
@@ -1139,25 +1202,35 @@ class BirdseyeCamera(Tool):
                         best_cz, rvec, tvec = cz, rv_i, tv_i
             # Refine with LM from the IPPE solution
             ok, rvec, tvec = cv2.solvePnP(
-                self._calib_obj_pts, self._calib_img_pts,
-                self._camera_matrix, zero_dist,
-                rvec=rvec, tvec=tvec, useExtrinsicGuess=True,
+                self._calib_obj_pts,
+                self._calib_img_pts,
+                self._camera_matrix,
+                zero_dist,
+                rvec=rvec,
+                tvec=tvec,
+                useExtrinsicGuess=True,
                 flags=cv2.SOLVEPNP_ITERATIVE,
             )
         else:
             # Non-coplanar (after refine_calibration_z): use SQPNP global solver
             # then refine with LM.
             retval, rvecs_m, tvecs_m, _ = cv2.solvePnPGeneric(
-                self._calib_obj_pts, self._calib_img_pts,
-                self._camera_matrix, zero_dist,
+                self._calib_obj_pts,
+                self._calib_img_pts,
+                self._camera_matrix,
+                zero_dist,
                 flags=cv2.SOLVEPNP_SQPNP,
             )
             if retval == 0:
                 raise RuntimeError("SQPNP failed after flipping Y axis.")
             ok, rvec, tvec = cv2.solvePnP(
-                self._calib_obj_pts, self._calib_img_pts,
-                self._camera_matrix, zero_dist,
-                rvec=rvecs_m[0], tvec=tvecs_m[0], useExtrinsicGuess=True,
+                self._calib_obj_pts,
+                self._calib_img_pts,
+                self._camera_matrix,
+                zero_dist,
+                rvec=rvecs_m[0],
+                tvec=tvecs_m[0],
+                useExtrinsicGuess=True,
                 flags=cv2.SOLVEPNP_ITERATIVE,
             )
         if not ok:
@@ -1166,8 +1239,10 @@ class BirdseyeCamera(Tool):
         proj, _ = cv2.projectPoints(
             self._calib_obj_pts, rvec, tvec, self._camera_matrix, zero_dist
         )
-        per_pt_err = np.sqrt(np.sum((self._calib_img_pts - proj.reshape(-1, 2)) ** 2, axis=1))
-        rms = float(np.sqrt(np.mean(per_pt_err ** 2)))
+        per_pt_err = np.sqrt(
+            np.sum((self._calib_img_pts - proj.reshape(-1, 2)) ** 2, axis=1)
+        )
+        rms = float(np.sqrt(np.mean(per_pt_err**2)))
         n_good = int(np.sum(per_pt_err < 2.0))
 
         self._rvec = rvec
@@ -1175,8 +1250,10 @@ class BirdseyeCamera(Tool):
 
         R, _ = cv2.Rodrigues(rvec)
         cam_pos = (-R.T @ tvec).flatten()
-        print(f"Y axis flipped: {n_good}/{len(self._calib_obj_pts)} within 2px, "
-              f"RMS {rms:.2f} px,  camera at Z={cam_pos[2]:.1f} mm")
+        print(
+            f"Y axis flipped: {n_good}/{len(self._calib_obj_pts)} within 2px, "
+            f"RMS {rms:.2f} px,  camera at Z={cam_pos[2]:.1f} mm"
+        )
 
         if save_path is not None:
             self.save_calibration(save_path)
@@ -1201,22 +1278,22 @@ class BirdseyeCamera(Tool):
             data["rvec"] = self._rvec
             data["tvec"] = self._tvec
         if self._board_origin is not None:
-            data["board_origin"]    = self._board_origin
-            data["board_x_unit"]    = self._board_x_unit
-            data["board_y_unit"]    = self._board_y_unit
+            data["board_origin"] = self._board_origin
+            data["board_x_unit"] = self._board_x_unit
+            data["board_y_unit"] = self._board_y_unit
             data["board_square_mm"] = np.array([self._board_square_mm])
-            data["board_n_cx"]      = np.array([self._board_n_cx])
+            data["board_n_cx"] = np.array([self._board_n_cx])
             data["board_n_markers"] = np.array([self._board_n_markers])
         if self._calib_obj_pts is not None:
-            data["calib_obj_pts"]   = self._calib_obj_pts
-            data["calib_img_pts"]   = self._calib_img_pts
+            data["calib_obj_pts"] = self._calib_obj_pts
+            data["calib_img_pts"] = self._calib_img_pts
             data["calib_board_idx"] = self._calib_board_idx
         if self._calib_board_geoms:
             data["board_geoms_a"] = np.array([g[0] for g in self._calib_board_geoms])
             data["board_geoms_x"] = np.array([g[1] for g in self._calib_board_geoms])
             data["board_geoms_y"] = np.array([g[2] for g in self._calib_board_geoms])
         if self._z_cal_stack:
-            data["z_cal_stack_z"]     = np.array([e[0] for e in self._z_cal_stack])
+            data["z_cal_stack_z"] = np.array([e[0] for e in self._z_cal_stack])
             data["z_cal_stack_rvecs"] = np.array([e[1] for e in self._z_cal_stack])
             data["z_cal_stack_tvecs"] = np.array([e[2] for e in self._z_cal_stack])
         np.savez(path, **data)
@@ -1239,34 +1316,36 @@ class BirdseyeCamera(Tool):
             self._rvec = data["rvec"]
             self._tvec = data["tvec"]
         if "board_origin" in data:
-            self._board_origin    = data["board_origin"]
-            self._board_x_unit    = data["board_x_unit"]
-            self._board_y_unit    = data["board_y_unit"]
+            self._board_origin = data["board_origin"]
+            self._board_x_unit = data["board_x_unit"]
+            self._board_y_unit = data["board_y_unit"]
             self._board_square_mm = float(data["board_square_mm"][0])
-            self._board_n_cx      = int(data["board_n_cx"][0])
+            self._board_n_cx = int(data["board_n_cx"][0])
             self._board_n_markers = int(data["board_n_markers"][0])
         if "calib_obj_pts" in data:
-            self._calib_obj_pts   = data["calib_obj_pts"]
-            self._calib_img_pts   = data["calib_img_pts"]
+            self._calib_obj_pts = data["calib_obj_pts"]
+            self._calib_img_pts = data["calib_img_pts"]
             self._calib_board_idx = data["calib_board_idx"]
         if "board_geoms_a" in data:
             n = len(data["board_geoms_a"])
             self._calib_board_geoms = [
-                (data["board_geoms_a"][i], data["board_geoms_x"][i], data["board_geoms_y"][i])
+                (
+                    data["board_geoms_a"][i],
+                    data["board_geoms_x"][i],
+                    data["board_geoms_y"][i],
+                )
                 for i in range(n)
             ]
         if "z_cal_stack_z" in data:
-            zs     = data["z_cal_stack_z"]
-            rvecs  = data["z_cal_stack_rvecs"]
-            tvecs  = data["z_cal_stack_tvecs"]
+            zs = data["z_cal_stack_z"]
+            rvecs = data["z_cal_stack_rvecs"]
+            tvecs = data["z_cal_stack_tvecs"]
             self._z_cal_stack = [
                 (float(zs[i]), rvecs[i], tvecs[i]) for i in range(len(zs))
             ]
         print(f"Calibration loaded from {path}")
 
-    def load_lens_calibration(
-        self, camera_matrix: np.ndarray, dist_coeffs: np.ndarray
-    ):
+    def load_lens_calibration(self, camera_matrix: np.ndarray, dist_coeffs: np.ndarray):
         """Provide lens intrinsic calibration.
 
         Required before calling :meth:`calibrate_3d`. If set, frames are
@@ -1352,8 +1431,11 @@ class BirdseyeCamera(Tool):
             # undistorted pixel space (zero dist_coeffs).
             zero_dist = np.zeros_like(self._dist_coeffs)
             pts_2d, _ = cv2.projectPoints(
-                pts_3d, self._rvec, self._tvec,
-                self._camera_matrix, zero_dist,
+                pts_3d,
+                self._rvec,
+                self._tvec,
+                self._camera_matrix,
+                zero_dist,
             )
             px, py = pts_2d[0][0]
             return float(px), float(py)
@@ -1401,8 +1483,22 @@ class BirdseyeCamera(Tool):
         :param wait: Wait for machine movement to complete, defaults to True
         :type wait: bool, optional
         """
-        # Resolve z_target for coordinate conversion
+        # Resolve z_target for coordinate conversion.
+        # If not provided and 3D calibration is available, read current machine Z.
         coord_z = z_target if z_target is not None else z_move
+        if coord_z is None and self._rvec is not None and hasattr(self, "_machine"):
+            pos = self._machine.get_position()
+            z_carriage = float(pos["Z"])
+            active_idx = self._machine.active_tool_index
+            if active_idx != -1 and active_idx in self._machine.tools:
+                tool_offset = self._machine.tools[active_idx]["tool"].tool_offset
+                coord_z = (
+                    z_carriage + abs(tool_offset)
+                    if tool_offset is not None
+                    else z_carriage
+                )
+            else:
+                coord_z = z_carriage
         mx, my = self.pixel_to_machine(px, py, z=coord_z)
         self._move_machine_xy(mx, my, z=z_move, wait=wait)
 
@@ -1446,8 +1542,11 @@ class BirdseyeCamera(Tool):
         idx = list(ids.flatten()).index(marker_id)
         center = corners[idx][0].mean(axis=0)
         self.move_to_pixel(
-            float(center[0]), float(center[1]),
-            z_target=z_target, z_move=z_move, wait=wait,
+            float(center[0]),
+            float(center[1]),
+            z_target=z_target,
+            z_move=z_move,
+            wait=wait,
         )
 
     # ------------------------------------------------------------------
@@ -1477,11 +1576,13 @@ class BirdseyeCamera(Tool):
         # The pixel is already in undistorted space (get_frame undistorts).
         # Apply K^-1 to get a normalized camera-space ray direction.
         K = self._camera_matrix
-        ray_cam = np.array([
-            (px - K[0, 2]) / K[0, 0],
-            (py - K[1, 2]) / K[1, 1],
-            1.0,
-        ])
+        ray_cam = np.array(
+            [
+                (px - K[0, 2]) / K[0, 0],
+                (py - K[1, 2]) / K[1, 1],
+                1.0,
+            ]
+        )
 
         # Select calibration: use nearest-Z entry from z_cal_stack if available
         if self._z_cal_stack:
@@ -1519,6 +1620,5 @@ class BirdseyeCamera(Tool):
         wait: bool = True,
     ):
         target_z = z if z is not None else self.focus_height
-        self._machine.safe_z_movement()
+        # self._machine.safe_z_movement()
         self._machine.move_to(x=mx, y=my, wait=wait)
-        self._machine.move_to(z=target_z, wait=wait)
