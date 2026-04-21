@@ -135,6 +135,7 @@ class Syringe(Tool):
         """
         de = vol * self.mm_to_ml
         pos = self._machine.get_position()
+
         end_pos = float(pos[self.e_drive]) + de
         self.check_bounds(end_pos)
         self._machine.move(de=de, wait=True)
