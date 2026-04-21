@@ -212,7 +212,6 @@ class Machine:
             # TODO: This should handle a response from self.gcode of 'None' gracefully.
             max_tries = 50
             for i in range(max_tries):
-                print(i)
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
