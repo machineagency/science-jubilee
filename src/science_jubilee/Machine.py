@@ -139,9 +139,7 @@ class Machine:
 
         """
         if address != self.__class__.LOCALHOST:
-            print(
-                "Warning: disconnecting this application from the network will halt connection to Jubilee."
-            )
+            print("Connected!")
         # Machine Specs
 
         # serial info
@@ -218,7 +216,7 @@ class Machine:
                 response = json.loads(self.gcode('M409 K"move.axes[].homed"'))[
                     "result"
                 ][:4]
-                print("response in connect: ", response)
+
                 if len(response) == 0:
                     continue
                 else:
@@ -443,7 +441,9 @@ class Machine:
     def load_deck(
         self,
         deck_filename: str,
-        path: str = os.path.join(os.path.dirname(__file__), "decks", "deck_definition", "user"),
+        path: str = os.path.join(
+            os.path.dirname(__file__), "decks", "deck_definition", "user"
+        ),
     ):
         """Load a deck configuration file onto the machine.
 
