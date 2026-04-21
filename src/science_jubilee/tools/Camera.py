@@ -112,18 +112,22 @@ class _OpenCVBackend(_CameraBackend):
 
     def record_video(self, filepath: str, duration: int = 10):
         """Record video to file."""
-        # Use mp4v codec (.mp4) which is widely supported on macOS/Linux/Windows
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        fps = 20.0
-        frame_size = (
-            int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
-            int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)),
-        )
-
         # Ensure filepath uses .mp4 extension to match codec
         if filepath.endswith(".avi"):
             filepath = filepath[:-4] + ".mp4"
 
+        # Re-open camera (may be released after construction or a prior call)
+        self.camera = cv2.VideoCapture(self.camera_index)
+        for _ in range(5):
+            self.camera.read()
+
+        # Use mp4v codec (.mp4) which is widely supported on macOS/Linux/Windows
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        fps = 30.0
+        frame_size = (
+            int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
+            int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+        )
         out = cv2.VideoWriter(filepath, fourcc, fps, frame_size)
         if not out.isOpened():
             raise RuntimeError(
@@ -157,7 +161,7 @@ class _OpenCVBackend(_CameraBackend):
 
     def _record_video_worker(self, filepath: str, duration: float = None):
         fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-        fps = 20.0
+        fps = 30.0
         frame_size = (
             int(self.camera.get(cv2.CAP_PROP_FRAME_WIDTH)),
             int(self.camera.get(cv2.CAP_PROP_FRAME_HEIGHT)),
@@ -363,10 +367,13 @@ class Camera(Tool):
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)
 
+        # release the camera in case it wasn't properly released before
+        self.release()
+
     @classmethod
     def from_config(cls, index: int, name: str, config_file: str, path: str = None):
         """Initialize from a JSON config file.
-
+        
         :param index: Tool index on the machine
         :type index: int
         :param name: Tool name
@@ -412,10 +419,11 @@ class Camera(Tool):
         """
         from PIL import Image
         from IPython.display import display
-
+        
+        time.sleep(0.5)
         frame = self._backend.capture_frame()
         display(Image.fromarray(frame))
-        return frame
+        return None #frame
 
     # -- Video -----------------------------------------------------------------
 
@@ -488,4 +496,5 @@ class Camera(Tool):
 
     def release(self):
         """Release hardware resources held by the backend."""
+        self.stop_recording()
         self._backend.release()
