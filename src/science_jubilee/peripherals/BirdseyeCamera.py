@@ -103,6 +103,7 @@ class BirdseyeCamera(Tool):
             aruco_dict=aruco_dict,
         )
         self._cap = None
+
         self._homography = None  # pixel coords → machine XY (2D)
         self._homography_inv = None  # machine XY → pixel coords (2D)
         self._camera_matrix = None  # intrinsic matrix
@@ -260,6 +261,7 @@ class BirdseyeCamera(Tool):
         self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, w)
         self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, h)
 
+
     def disconnect(self):
         """Release the camera device."""
         if self._cap is not None:
@@ -324,6 +326,21 @@ class BirdseyeCamera(Tool):
         path = os.path.join(self.image_folder, filename)
         cv2.imwrite(path, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
         return path
+
+    def capture(self, filename: str = "capture.jpg") -> str:
+        """Capture a frame and save it to the image folder.
+
+        :param filename: Output filename, defaults to "capture.jpg"
+        :type filename: str, optional
+        :return: Full path to the saved file
+        :rtype: str
+        """
+        frame = self.get_frame()
+        os.makedirs(self.image_folder, exist_ok=True)
+        filepath = os.path.join(self.image_folder, filename)
+        cv2.imwrite(filepath, cv2.cvtColor(frame, cv2.COLOR_RGB2BGR))
+        print(f"Saved to {filepath}")
+        return filepath
 
     def show_frame(self, frame: np.ndarray, show_pixels: bool = True):
         """Display a captured frame using matplotlib.
