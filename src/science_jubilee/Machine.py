@@ -263,6 +263,8 @@ class Machine:
         :rtype: list
         """
         if self._configured_axes is None:  # Starting from a fresh connection
+            if self.simulated:
+                return ["X", "Y", "Z", "U"]
             try:
                 max_tries = 50
                 for i in range(max_tries):
@@ -293,6 +295,8 @@ class Machine:
 
         # TODO: Compare this to loaded tools list
         if self._configured_tools is None:  # Starting from a fresh connection
+            if self.simulated:
+                return {}
             try:
                 max_tries = 50
                 for i in range(max_tries):
@@ -320,11 +324,14 @@ class Machine:
         """
 
         if self._active_tool_index is None:  # Starting from a fresh connection.
+            if self.simulated:
+                return -1
+            
             try:
                 max_tries = 50
                 for i in range(max_tries):
                     response = self.gcode("T")
-                    if len(response) == 0:
+                    if response is None or len(response) == 0:
                         continue
                     else:
                         break
@@ -372,6 +379,9 @@ class Machine:
         :rtype: list"""
         # Starting from fresh connection, query from the Duet.
         # if self._tool_z_offsets is None:
+        if self.simulated:
+            return {}
+            
         try:
             max_tries = 50
             for i in range(max_tries):
@@ -432,6 +442,8 @@ class Machine:
         :return: A dictionary of the machine control point in mm. The keys are the axis name, e.g. 'X'
         :rtype: dict
         """
+        if self.simulated:
+            return [0.0, 0.0, 0.0]
         # Axes are ordered X, Y, Z, U, E, E0, E1, ... En, where E is a copy of E0.
         response_chunks = self.gcode("M114").split()
         positions = [float(a.split(":")[1]) for a in response_chunks[:3]]
@@ -1045,6 +1057,8 @@ class Machine:
         :return: A dictionary of the machine control point in mm. The keys are the axis name, e.g. 'X'
         :rtype: dict
         """
+        if self.simulated:
+            return {"X": 0.0, "Y": 0.0, "Z": 0.0, "U": 0.0}
 
         max_tries = 50
         for i in range(max_tries):
